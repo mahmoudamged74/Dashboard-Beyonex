@@ -1,0 +1,71 @@
+.layout {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+}
+
+.mainContent {
+    flex: 1;
+    padding: 2rem;
+    transition: var(--transition);
+    width: 100%;
+}
+
+/* Sidebar Margin when OPEN */
+/* Margins handled by rtl/ltr selectors below */
+
+/* RTL Margins */
+[dir="rtl"] .layout:not(.collapsed) .mainContent {
+    margin-right: var(--sidebar-width);
+}
+
+/* LTR Margins */
+[dir="ltr"] .layout:not(.collapsed) .mainContent {
+    margin-left: var(--sidebar-width);
+}
+
+/* COLLAPSED State: No margins */
+.collapsed .mainContent {
+    margin: 0 !important;
+}
+
+/* Mobile: No margins ever (Sidebar overrides) */
+@media (max-width: 768px) {
+
+    [dir="rtl"] .mainContent,
+    [dir="ltr"] .mainContent {
+        margin: 0 !important;
+    }
+}
+
+/* Menu Button (Visible when collapsed) */
+.menuBtn {
+    position: fixed;
+    top: 1rem;
+    z-index: 90;
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--primary);
+    padding: 0.6rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.menuBtn:hover {
+    background: var(--primary);
+    color: #000;
+}
+
+[dir="ltr"] .menuBtn {
+    left: 1rem;
+}
+
+[dir="rtl"] .menuBtn {
+    right: 1rem;
+}

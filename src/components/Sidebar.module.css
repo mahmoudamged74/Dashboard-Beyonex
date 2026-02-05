@@ -1,0 +1,137 @@
+.sidebar {
+    width: var(--sidebar-width);
+    height: 100vh;
+    background-color: var(--bg-sidebar);
+    border-inline-end: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    transition: var(--transition);
+    position: fixed;
+    top: 0;
+    z-index: 100;
+}
+
+[dir="rtl"] .sidebar {
+    right: 0;
+}
+
+[dir="ltr"] .sidebar {
+    left: 0;
+}
+
+/* Closed State */
+[dir="ltr"] .sidebar.closed {
+    transform: translateX(-100%);
+}
+
+[dir="rtl"] .sidebar.closed {
+    transform: translateX(100%);
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 3rem;
+}
+
+.logoContainer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-main);
+    text-decoration: none;
+}
+
+/* Close Button */
+.closeBtn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.closeBtn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--primary);
+}
+
+[dir="rtl"] .closeIcon {
+    transform: rotate(180deg);
+}
+
+.logo {
+    width: 40px;
+    height: auto;
+}
+
+.brandName {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.5px;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.navItem:hover,
+.active {
+    background: rgba(231, 183, 66, 0.1);
+    color: var(--primary);
+}
+
+.icon {
+    font-size: 1.25rem;
+}
+
+.footer {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.langBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem;
+    background: var(--bg-card);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: var(--transition);
+    font-family: inherit;
+}
+
+.langBtn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
