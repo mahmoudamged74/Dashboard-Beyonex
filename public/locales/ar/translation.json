@@ -12,6 +12,9 @@
   "logout": "تسجيل خروج",
   "language": "English",
   "hero_section": "قسم الهيرو (الرئيسي)",
+  "main_title": "العنوان الرئيسي",
+  "second_title": "العنوان الفرعي",
+  "description": "الوصف",
   "image": "الصورة",
   "title": "العنوان",
   "subtitle": "العنوان الفرعي",
@@ -33,5 +36,18 @@
     "desc_clients": "+12% عن الشهر الماضي",
     "desc_projects": "3 مشاريع جارية حالياً",
     "desc_revenue": "+8% مقارنة بالأسبوع الماضي"
-  }
+  },
+  "our_services": "خدماتنا",
+  "services_list": "قائمة الخدمات",
+  "add_service": "إضافة خدمة",
+  "edit_service": "تعديل خدمة",
+  "icon": "الأيقونة",
+  "short_description": "وصف قصير",
+  "long_description": "وصف طويل",
+  "save": "حفظ",
+  "about_section": "قسم من نحن",
+  "edit_about_content": "تعديل محتوى من نحن",
+  "main_info": "المعلومات الرئيسية",
+  "mission": "المهمة",
+  "vision": "الرؤية"
 }

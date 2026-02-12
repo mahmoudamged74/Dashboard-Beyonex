@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import HomeManager from './pages/HomeManager';
+import ServicesManager from './pages/ServicesManager';
 import './App.css';
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="home" element={<HomeManager />} />
+          <Route path="services" element={<ServicesManager />} />
           <Route path="*" element={<div style={{padding: '2rem'}}><h2>Page Under Construction</h2></div>} />
         </Route>
       </Routes>

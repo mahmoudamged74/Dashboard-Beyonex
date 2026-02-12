@@ -12,6 +12,9 @@
   "logout": "Logout",
   "language": "العربية",
   "hero_section": "Hero Section",
+  "main_title": "Main Title",
+  "second_title": "Second Title",
+  "description": "Description",
   "image": "Image",
   "title": "Title",
   "subtitle": "Subtitle",
@@ -33,5 +36,18 @@
     "desc_clients": "+12% from last month",
     "desc_projects": "3 active currently",
     "desc_revenue": "+8% vs last week"
-  }
+  },
+  "our_services": "Our Services",
+  "services_list": "Services List",
+  "add_service": "Add Service",
+  "edit_service": "Edit Service",
+  "icon": "Icon",
+  "short_description": "Short Description",
+  "long_description": "Long Description",
+  "save": "Save",
+  "about_section": "About Us Section",
+  "edit_about_content": "Edit About Content",
+  "main_info": "Main Information",
+  "mission": "Mission",
+  "vision": "Vision"
 }

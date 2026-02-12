@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdEdit, MdAdd, MdDelete, MdClose, MdSave } from 'react-icons/md';
 import styles from './ContentManager.module.css';
+import AboutManager from '../components/AboutManager';
 
 const HomeManager = () => {
   const { t } = useTranslation();
@@ -15,9 +16,18 @@ const HomeManager = () => {
       titleAr: 'أهلاً بك في بيونكس اي تي',
       subtitleEn: 'Advanced Software Solutions',
       subtitleAr: 'حلول برمجية متطورة',
+      descriptionEn: 'We deliver comprehensive software and technology solutions that transform your ideas into exceptional digital experiences. Your trusted partner in digital transformation.',
+      descriptionAr: 'نقدم حلول برمجية وتقنية متكاملة تساعدك على تحويل أفكارك إلى واقع رقمي متميز. نحن شركاؤك في رحلة التحول الرقمي.',
       status: 'active'
     }
   ]);
+
+  const truncateText = (text, wordLimit) => {
+    if (!text) return '';
+    const words = text.split(' ');
+    if (words.length <= wordLimit) return text;
+    return words.slice(0, wordLimit).join(' ') + '...';
+  };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(null);
@@ -123,6 +133,16 @@ const HomeManager = () => {
                 className={styles.input} 
               />
             </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>{t('description')} (EN)</label>
+              <textarea 
+                name="descriptionEn" 
+                value={currentSlide.descriptionEn} 
+                onChange={handleChange} 
+                className={styles.input}
+                rows="3"
+              />
+            </div>
 
             {/* Arabic Fields */}
             <div className={styles.formGroup}>
@@ -145,6 +165,17 @@ const HomeManager = () => {
                 onChange={handleChange} 
                 className={styles.input}
                 dir="rtl" 
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label className={styles.label}>{t('description')} (AR)</label>
+              <textarea 
+                name="descriptionAr" 
+                value={currentSlide.descriptionAr} 
+                onChange={handleChange} 
+                className={styles.input}
+                dir="rtl"
+                rows="3"
               />
             </div>
           </div>
@@ -177,7 +208,10 @@ const HomeManager = () => {
                 <th>{t('image')}</th>
                 <th>{t('title')} (EN)</th>
                 <th>{t('title')} (AR)</th>
-                <th>{t('status')}</th>
+                <th>{t('subtitle')} (EN)</th>
+                <th>{t('subtitle')} (AR)</th>
+                <th>{t('description')} (EN)</th>
+                <th>{t('description')} (AR)</th>
                 <th>{t('actions')}</th>
               </tr>
             </thead>
@@ -189,11 +223,10 @@ const HomeManager = () => {
                   </td>
                   <td>{slide.titleEn}</td>
                   <td>{slide.titleAr}</td>
-                  <td>
-                    <span className={`${styles.status} ${styles[slide.status]}`}>
-                      {t(slide.status)}
-                    </span>
-                  </td>
+                  <td>{slide.subtitleEn}</td>
+                  <td>{slide.subtitleAr}</td>
+                  <td>{truncateText(slide.descriptionEn, 5)}</td>
+                  <td>{truncateText(slide.descriptionAr, 5)}</td>
                   <td>
                     <button 
                       className={`${styles.actionBtn} ${styles.editBtn}`} 
@@ -211,6 +244,8 @@ const HomeManager = () => {
       </div>
 
       {isModalOpen && currentSlide && <Modal />}
+      
+      <AboutManager />
     </div>
   );
 };
