@@ -1,0 +1,354 @@
+.container {
+    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+    border: 1px solid rgba(255, 215, 0, 0.1);
+    /* Gold tint border */
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.mainTitle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffd700;
+    /* Gold */
+    margin-bottom: 1rem;
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.mainDesc {
+    color: rgba(255, 255, 255, 0.7);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Cards Section */
+.cardsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 215, 0, 0.1);
+    border-color: rgba(255, 215, 0, 0.5);
+}
+
+.cardIcon {
+    font-size: 3rem;
+    color: #ffd700;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+    padding: 1rem;
+    background: rgba(255, 215, 0, 0.1);
+    border-radius: 50%;
+}
+
+.cardTitle {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffd700;
+    margin-bottom: 1rem;
+}
+
+.cardDesc {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+}
+
+/* Timeline Section */
+.timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 0;
+}
+
+/* Vertical Line */
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: linear-gradient(180deg,
+            transparent 0%,
+            rgba(255, 215, 0, 0.5) 15%,
+            rgba(255, 215, 0, 0.5) 85%,
+            transparent 100%);
+    transform: translateX(-50%);
+}
+
+.timelineItem {
+    position: relative;
+    margin-bottom: 3rem;
+    width: 50%;
+}
+
+.timelineItem:last-child {
+    margin-bottom: 0;
+}
+
+/* Alternating Sides */
+.timelineItem:nth-child(odd) {
+    left: 0;
+    padding-right: 3rem;
+    text-align: right;
+}
+
+.timelineItem:nth-child(even) {
+    left: 50%;
+    padding-left: 3rem;
+    text-align: left;
+}
+
+/* Use dir="rtl" logic for Arabic if needed, but handled via React usually.
+   For simplicity in CSS, we'll assume LTR structure and let RTL flip it via CSS mirroring or flex direction globally.
+   However, absolute positioning needs care. 
+*/
+
+[dir="rtl"] .timelineItem:nth-child(odd) {
+    right: 0;
+    left: auto;
+    padding-left: 3rem;
+    padding-right: 0;
+    text-align: left;
+}
+
+[dir="rtl"] .timelineItem:nth-child(even) {
+    right: 50%;
+    left: auto;
+    padding-right: 3rem;
+    padding-left: 0;
+    text-align: right;
+}
+
+/* Dot on Line */
+.timelineDot {
+    position: absolute;
+    top: 0;
+    width: 40px;
+    height: 40px;
+    background: #0d0d0d;
+    border: 2px solid #ffd700;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffd700;
+    z-index: 2;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.timelineItem:nth-child(odd) .timelineDot {
+    right: -20px;
+}
+
+.timelineItem:nth-child(even) .timelineDot {
+    left: -20px;
+}
+
+[dir="rtl"] .timelineItem:nth-child(odd) .timelineDot {
+    left: -20px;
+    right: auto;
+}
+
+[dir="rtl"] .timelineItem:nth-child(even) .timelineDot {
+    right: -20px;
+    left: auto;
+}
+
+.year {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffd700;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.itemTitle {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.5rem;
+}
+
+.itemDesc {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Edit Controls */
+.controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    z-index: 10;
+}
+
+[dir="rtl"] .controls {
+    right: auto;
+    left: 1rem;
+}
+
+.editBtn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.editBtn:hover {
+    background: rgba(255, 215, 0, 0.2);
+    color: #ffd700;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .timeline::before {
+        left: 20px;
+    }
+
+    [dir="rtl"] .timeline::before {
+        right: 20px;
+        left: auto;
+    }
+
+    .timelineItem {
+        width: 100%;
+        margin-bottom: 2.5rem;
+    }
+
+    .timelineItem:nth-child(odd),
+    .timelineItem:nth-child(even) {
+        left: 0;
+        padding-left: 60px;
+        padding-right: 0;
+        text-align: left;
+    }
+
+    [dir="rtl"] .timelineItem:nth-child(odd),
+    [dir="rtl"] .timelineItem:nth-child(even) {
+        right: 0;
+        left: auto;
+        padding-right: 60px;
+        padding-left: 0;
+        text-align: right;
+    }
+
+    /* Adjust dots */
+    .timelineItem:nth-child(odd) .timelineDot,
+    .timelineItem:nth-child(even) .timelineDot {
+        left: 0;
+        right: auto;
+    }
+
+    [dir="rtl"] .timelineItem:nth-child(odd) .timelineDot,
+    [dir="rtl"] .timelineItem:nth-child(even) .timelineDot {
+        right: 0;
+        left: auto;
+    }
+}
+
+/* Modal Styles Reuse/Adapt */
+.modalForm {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.modalBody {
+    padding: 1.5rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+.formSectionTitle {
+    color: #ffd700;
+    /* Gold for section headers in modal */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+}
+
+/* Add Item Button in Modal */
+.addTimelineBtn {
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    color: var(--primary);
+    padding: 0.8rem;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.addTimelineBtn:hover {
+    background: rgba(var(--primary-rgb), 0.05);
+    border-color: var(--primary);
+}
+
+.timelineItemEditor {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 8px;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.removeTimelineBtn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    /* Or left based on dir, check later */
+    background: transparent;
+    border: none;
+    color: #ff4d4d;
+    cursor: pointer;
+}
+
+[dir="rtl"] .removeTimelineBtn {
+    left: 0.5rem;
+    right: auto;
+}

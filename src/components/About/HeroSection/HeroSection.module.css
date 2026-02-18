@@ -1,0 +1,329 @@
+.container {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 1rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-main);
+    border-left: 4px solid var(--primary);
+    padding-left: 1rem;
+}
+
+[dir="rtl"] .title {
+    border-left: none;
+    border-right: 4px solid var(--primary);
+    padding-left: 0;
+    padding-right: 1rem;
+}
+
+.editBtn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.editBtn:hover {
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Visual Preview Styles */
+.previewContent {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    /* More space for text */
+    gap: 2rem;
+    align-items: start;
+}
+
+.previewTextWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.previewText {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.langLabel {
+    font-size: 0.8rem;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    opacity: 0.8;
+}
+
+.previewTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.previewSubtitle {
+    font-size: 1.1rem;
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.previewDesc {
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.previewImageContainer {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.previewImage {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modalContent {
+    background: var(--bg-card, #1a1a1a);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    /* Limit height to viewport */
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease-out;
+}
+
+.modalHeader {
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    /* Prevent header from shrinking */
+}
+
+.modalTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.closeBtn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    transition: color 0.2s;
+}
+
+.closeBtn:hover {
+    color: #ff4d4d;
+}
+
+.modalForm {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    /* Take remaining space */
+    overflow: hidden;
+    /* Prevent double scrollbars */
+    min-height: 0;
+    /* Flexbox fix */
+}
+
+.modalBody {
+    padding: 1.5rem;
+    overflow-y: auto;
+    /* Scroll ONLY the body */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    flex: 1;
+    /* Take all available space in form */
+}
+
+.modalFooter {
+    padding: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    flex-shrink: 0;
+    /* Prevent footer from shrinking */
+}
+
+/* Form Elements */
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.label {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.input,
+.textarea {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.8rem;
+    border-radius: 8px;
+    color: var(--text-main);
+    font-family: inherit;
+    width: 100%;
+}
+
+.input:focus,
+.textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.fileInputWrapper {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 8px;
+}
+
+.fileBtn {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-main);
+}
+
+.saveBtn {
+    background: var(--primary);
+    border: none;
+    color: #fff;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.saveBtn:hover {
+    filter: brightness(1.1);
+}
+
+.cancelBtn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancelBtn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 900px) {
+    .previewContent {
+        grid-template-columns: 1fr;
+    }
+
+    .previewImageContainer {
+        order: -1;
+        /* Image first on mobile */
+        margin-bottom: 2rem;
+    }
+}

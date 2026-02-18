@@ -1,0 +1,30 @@
+.pageContainer {
+    padding: 2rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.pageTitle {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.5rem;
+}
+
+.pageSubtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

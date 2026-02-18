@@ -10,7 +10,9 @@ import {
   MdSettings, 
   MdLogout,
   MdLanguage,
-  MdKeyboardDoubleArrowLeft
+  MdKeyboardDoubleArrowLeft,
+  MdRecommend,
+  MdViewAgenda
 } from 'react-icons/md';
 import styles from './Sidebar.module.css';
 
@@ -27,6 +29,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { path: '/home', icon: <MdHome />, label: 'home' },
     { path: '/about', icon: <MdInfo />, label: 'about' },
     { path: '/services', icon: <MdDesignServices />, label: 'services' },
+    { path: '/why-us', icon: <MdRecommend />, label: 'why_us' },
+    { path: '/footer', icon: <MdViewAgenda />, label: 'footer_manager' },
     { path: '/contact', icon: <MdContactMail />, label: 'contact' },
   ];
 

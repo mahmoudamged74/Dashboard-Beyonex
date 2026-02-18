@@ -4,6 +4,8 @@ import { MdMenu } from 'react-icons/md';
 import Sidebar from './Sidebar';
 import styles from './Layout.module.css';
 
+import ScrollToTop from './ScrollToTop';
+
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 768);
   const location = useLocation();
@@ -35,6 +37,7 @@ const Layout = () => {
 
   return (
     <div className={`${styles.layout} ${!isSidebarOpen ? styles.collapsed : ''}`}>
+      <ScrollToTop />
       <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
       
       <main className={styles.mainContent}>
