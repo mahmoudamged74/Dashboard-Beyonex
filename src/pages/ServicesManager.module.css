@@ -251,6 +251,8 @@
     font-weight: 700;
     color: var(--text-main);
     margin-right: 0.5rem;
+    word-break: break-word;
+    flex-grow: 1;
 }
 
 .cardActions {
@@ -281,8 +283,13 @@
     color: var(--text-muted);
     font-size: 0.9rem;
     line-height: 1.6;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     flex-grow: 1;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .cardFooter {
@@ -433,6 +440,133 @@
     background: rgba(0, 0, 0, 0.3);
 }
 
+/* React Quill Styles */
+.quillContainer {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    margin-top: 0.25rem;
+}
+
+.quillContainer :global(.ql-toolbar) {
+    background: rgba(255, 255, 255, 0.05);
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.quillContainer :global(.ql-container) {
+    border: none;
+    min-height: 180px;
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--text-main);
+}
+
+.quillContainer :global(.ql-editor) {
+    padding: 1rem;
+    min-height: 180px;
+}
+
+.quillContainer :global(.ql-stroke) {
+    stroke: var(--text-muted);
+}
+
+.quillContainer :global(.ql-fill) {
+    fill: var(--text-muted);
+}
+
+.quillContainer :global(.ql-picker) {
+    color: var(--text-muted);
+}
+
+[dir="rtl"] .quillContainer :global(.ql-editor) {
+    text-align: right;
+}
+
+
+/* ===== QUILL RTL FIX COMPLETE ===== */
+
+[dir="rtl"] .ql-editor {
+    direction: rtl;
+    text-align: right;
+}
+
+[dir="rtl"] .ql-editor ul,
+[dir="rtl"] .ql-editor ol {
+    padding-right: 3rem !important;
+    padding-left: 0 !important;
+}
+
+[dir="rtl"] .ql-editor li {
+    text-align: right;
+    padding-left: 0 !important;
+    padding-right: 0.5rem !important;
+    position: relative;
+}
+
+[dir="rtl"] .ql-editor ol li:before,
+[dir="rtl"] .ql-editor ul li:before {
+    right: -2rem !important;
+    left: auto !important;
+    text-align: left !important;
+    direction: ltr !important;
+    width: auto !important;
+    margin-left: 0 !important;
+}
+
+/* User suggested fix for list marker spacing - Wrapped in :global to target Quill classes */
+:global(.ql-editor li:not(.ql-direction-rtl)::before) {
+    margin-left: 0 !important;
+}
+
+.ql-editor ul,
+.ql-editor ol {
+    margin-bottom: 1rem;
+}
+
+/* Toggle Switch Styles */
+.toggleContainer {
+    display: flex;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.4rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.toggleBtn {
+    flex: 1;
+    padding: 0.6rem;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.9rem;
+}
+
+.toggleBtn.active {
+    background: #10b981;
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.toggleBtn.inactive {
+    background: #ef4444;
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.toggleBtn:not(.active):not(.inactive):hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-main);
+}
+
 .inputGroup {
     display: flex;
     align-items: stretch;
@@ -500,4 +634,197 @@
 .btnCancel:hover {
     background: rgba(255, 255, 255, 0.05);
     color: var(--text-main);
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.uploadBox {
+    position: relative;
+    border: 2px dashed rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.uploadBox:hover {
+    border-color: var(--primary);
+    background: rgba(231, 183, 66, 0.05);
+}
+
+.uploadLabel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.uploadLabel svg {
+    font-size: 2rem;
+    color: var(--primary);
+}
+
+.iconSelectorContainer {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.searchBox svg {
+    color: var(--text-muted);
+}
+
+.searchInput {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    width: 100%;
+    outline: none;
+}
+
+.iconGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.iconItem {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.iconItem:hover {
+    background: rgba(231, 183, 66, 0.1);
+    color: var(--primary);
+}
+
+.selectedIcon {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.selectedIconName {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 0.5rem;
+    margin-top: 1rem;
+}
+
+.dynamicList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    background: rgba(255, 255, 255, 0.02);
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.arrayItem {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.removeBtn {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.removeBtn:hover {
+    background: #ef4444;
+    color: white;
+}
+
+.addArrayBtn {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    border: 1px dashed #22c55e;
+    padding: 0.5rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    margin-top: 0.5rem;
+}
+
+.addArrayBtn:hover {
+    background: #22c55e;
+    color: white;
+}
+
+.deleteConfirm {
+    text-align: center;
+    padding: 1rem;
+    color: var(--text-main);
+}
+
+.deleteBtn:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: white;
+}
+
+.orderBadge {
+    background: rgba(231, 183, 66, 0.1);
+    color: var(--primary);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.inactiveCard {
+    opacity: 0.6;
+}
+
+@media (max-width: 600px) {
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
 }

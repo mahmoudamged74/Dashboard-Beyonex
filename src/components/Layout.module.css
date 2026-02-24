@@ -8,7 +8,8 @@
     flex: 1;
     padding: 2rem;
     transition: var(--transition);
-    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 /* Sidebar Margin when OPEN */
@@ -31,6 +32,10 @@
 
 /* Mobile: No margins ever (Sidebar overrides) */
 @media (max-width: 768px) {
+    .mainContent {
+        padding: 4rem 1rem 1rem;
+        /* Space for menu button at top */
+    }
 
     [dir="rtl"] .mainContent,
     [dir="ltr"] .mainContent {

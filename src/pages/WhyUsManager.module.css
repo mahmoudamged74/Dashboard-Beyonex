@@ -184,6 +184,11 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
+.inactiveCard {
+    opacity: 0.6;
+    filter: grayscale(0.5);
+}
+
 .cardImageContainer {
     position: relative;
     height: 200px;
@@ -500,4 +505,114 @@
 .btnCancel:hover {
     background: rgba(255, 255, 255, 0.05);
     color: var(--text-main);
+}
+
+.iconSelectorContainer {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: var(--text-muted);
+}
+
+.searchInput {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    width: 100%;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+.iconGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.iconGrid::-webkit-scrollbar {
+    width: 5px;
+}
+
+.iconGrid::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+}
+
+.iconItem {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.iconItem:hover {
+    background: rgba(231, 183, 66, 0.1);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.selectedIcon {
+    background: var(--primary) !important;
+    color: #fff !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 15px rgba(231, 183, 66, 0.3);
+}
+
+.selectedIconName {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 0.5rem;
+}
+
+.statusActive {
+    color: #2ecc71 !important;
+    border-color: #2ecc71 !important;
+}
+
+.statusInactive {
+    color: #ff4d4d !important;
+    border-color: #ff4d4d !important;
+}
+
+.loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+}
+
+.deleteConfirm {
+    text-align: center;
+    padding: 1rem;
+    color: var(--text-main);
+}
+
+.formDivider {
+    opacity: 0.1;
+    margin: 1rem 0;
 }

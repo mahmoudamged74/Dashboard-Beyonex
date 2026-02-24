@@ -1,27 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MdEdit, MdAdd, MdDelete, MdClose, MdSave } from 'react-icons/md';
+import { MdEdit, MdClose, MdSave, MdCloudUpload } from 'react-icons/md';
+import { toast } from 'react-toastify';
+import axiosInstance from '../api/axiosInstance';
 import styles from './ContentManager.module.css';
 import AboutManager from '../components/AboutManager';
 
 const HomeManager = () => {
   const { t } = useTranslation();
+  const fileInputRef = useRef(null);
 
-  // Mock Data
-  const [heroSlides, setHeroSlides] = useState([
-    {
-      id: 1,
-      image: '/assets/slide1.jpg',
-      titleEn: 'Welcome to Beyonex IT',
-      titleAr: 'أهلاً بك في بيونكس اي تي',
-      subtitleEn: 'Advanced Software Solutions',
-      subtitleAr: 'حلول برمجية متطورة',
-      descriptionEn: 'We deliver comprehensive software and technology solutions that transform your ideas into exceptional digital experiences. Your trusted partner in digital transformation.',
-      descriptionAr: 'نقدم حلول برمجية وتقنية متكاملة تساعدك على تحويل أفكارك إلى واقع رقمي متميز. نحن شركاؤك في رحلة التحول الرقمي.',
-      status: 'active'
-    }
-  ]);
+  // ── State ──────────────────────────────────────────────────────────────────
+  const [heroData, setHeroData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Form fields
+  const [formData, setFormData] = useState({
+    titleEn: '',
+    titleAr: '',
+    subtitleEn: '',
+    subtitleAr: '',
+    descriptionEn: '',
+    descriptionAr: '',
+  });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
   const truncateText = (text, wordLimit) => {
     if (!text) return '';
     const words = text.split(' ');
@@ -29,52 +37,101 @@ const HomeManager = () => {
     return words.slice(0, wordLimit).join(' ') + '...';
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(null);
+  // ── Fetch data ─────────────────────────────────────────────────────────────
+  const fetchHeroSection = async () => {
+    setLoading(true);
+    try {
+      const res = await axiosInstance.get('admin/hero-section');
+      const data = res.data.data;
+      setHeroData(data);
+    } catch (err) {
+      toast.error(err.response?.data?.message || t('error_generic'));
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const handleEdit = (slide) => {
-    setCurrentSlide({ ...slide }); // copy object
+  useEffect(() => {
+    fetchHeroSection();
+  }, []);
+
+  // ── Modal open / close ─────────────────────────────────────────────────────
+  const openModal = () => {
+    if (!heroData) return;
+    setFormData({
+      titleEn: heroData.title?.en || '',
+      titleAr: heroData.title?.ar || '',
+      subtitleEn: heroData.subtitle?.en || '',
+      subtitleAr: heroData.subtitle?.ar || '',
+      descriptionEn: heroData.description?.en || '',
+      descriptionAr: heroData.description?.ar || '',
+    });
+    setImageFile(null);
+    setImagePreview(heroData.image || null);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setCurrentSlide(null);
+    setImageFile(null);
+    setImagePreview(null);
   };
 
-  const handleSave = (e) => {
-    e.preventDefault();
-    setHeroSlides((prev) => 
-      prev.map((item) => (item.id === currentSlide.id ? currentSlide : item))
-    );
-    closeModal();
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setCurrentSlide({ ...currentSlide, [name]: value });
-  };
-
-  // Handle ESC key to close modal
-  React.useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === 'Escape') closeModal();
-    };
-    if (isModalOpen) {
-      window.addEventListener('keydown', handleEsc);
-    }
+  // Close on ESC
+  useEffect(() => {
+    const handleEsc = (e) => { if (e.key === 'Escape') closeModal(); };
+    if (isModalOpen) window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
   }, [isModalOpen]);
 
-  // Handle File Upload
-  const handleImageUpload = (e) => {
+  // ── Field change ───────────────────────────────────────────────────────────
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // ── Image change ───────────────────────────────────────────────────────────
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setCurrentSlide({ ...currentSlide, image: imageUrl });
+    if (!file) return;
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setImagePreview(reader.result);
+    reader.readAsDataURL(file);
+  };
+
+  // ── Save (PUT) ─────────────────────────────────────────────────────────────
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+
+    const body = new FormData();
+    body.append('_method', 'PUT');
+    body.append('title[ar]', formData.titleAr);
+    body.append('title[en]', formData.titleEn);
+    body.append('subtitle[ar]', formData.subtitleAr);
+    body.append('subtitle[en]', formData.subtitleEn);
+    body.append('description[ar]', formData.descriptionAr);
+    body.append('description[en]', formData.descriptionEn);
+    if (imageFile) {
+      body.append('image', imageFile);
+    }
+
+    try {
+      const res = await axiosInstance.post('admin/hero-section', body, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      toast.success(res.data.message || t('save_success'));
+      closeModal();
+      fetchHeroSection(); // refresh table
+    } catch (err) {
+      toast.error(err.response?.data?.message || t('error_generic'));
+    } finally {
+      setSaving(false);
     }
   };
 
+  // ── Modal Component ────────────────────────────────────────────────────────
   const Modal = () => (
     <div className={styles.modalOverlay} onClick={closeModal} style={{ zIndex: 9999 }}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -82,111 +139,85 @@ const HomeManager = () => {
           <h3 className={styles.modalTitle}>{t('edit_content')}</h3>
           <button className={styles.closeBtn} onClick={closeModal}><MdClose /></button>
         </div>
-        
+
         <form onSubmit={handleSave}>
           <div className={styles.modalBody}>
-            {/* Image Input with Upload Button */}
+
+            {/* Image Upload */}
             <div className={styles.formGroup}>
-              <label className={styles.label}>{t('image_url')}</label>
-              <div className={styles.inputGroup}>
-                <input 
-                  type="text" 
-                  name="image" 
-                  value={currentSlide.image} 
-                  onChange={handleChange} 
-                  className={styles.input}
-                  readOnly 
-                />
-                <label className="btn-primary" style={{cursor: 'pointer', padding: '10px 15px', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:0, borderRadius: '0 8px 8px 0'}}>
-                  <MdEdit style={{marginRight: '0'}}/>
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    onChange={handleImageUpload} 
-                    style={{display: 'none'}} 
+              <label className={styles.label}>{t('image')}</label>
+              <div
+                onClick={() => fileInputRef.current.click()}
+                style={{
+                  cursor: 'pointer',
+                  border: '2px dashed var(--border-color)',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                {imagePreview ? (
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    style={{ height: '120px', width: '120px', objectFit: 'cover', borderRadius: '8px' }}
                   />
-                </label>
+                ) : (
+                  <MdCloudUpload size={40} color="var(--primary)" />
+                )}
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                  {t('click_to_upload') || 'Click to upload'}
+                </span>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  style={{ display: 'none' }}
+                />
               </div>
-              {currentSlide.image && (
-                <img src={currentSlide.image} alt="Preview" style={{height:'100px', width: '100px', objectFit: 'cover', borderRadius:'8px', marginTop:'10px', alignSelf: 'center'}} />
-              )}
             </div>
 
             {/* English Fields */}
             <div className={styles.formGroup}>
               <label className={styles.label}>{t('title')} (EN)</label>
-              <input 
-                type="text" 
-                name="titleEn" 
-                value={currentSlide.titleEn} 
-                onChange={handleChange} 
-                className={styles.input} 
-              />
+              <input type="text" name="titleEn" value={formData.titleEn} onChange={handleChange} className={styles.input} />
             </div>
             <div className={styles.formGroup}>
               <label className={styles.label}>{t('subtitle')} (EN)</label>
-              <input 
-                type="text" 
-                name="subtitleEn" 
-                value={currentSlide.subtitleEn} 
-                onChange={handleChange} 
-                className={styles.input} 
-              />
+              <input type="text" name="subtitleEn" value={formData.subtitleEn} onChange={handleChange} className={styles.input} />
             </div>
             <div className={styles.formGroup}>
               <label className={styles.label}>{t('description')} (EN)</label>
-              <textarea 
-                name="descriptionEn" 
-                value={currentSlide.descriptionEn} 
-                onChange={handleChange} 
-                className={styles.input}
-                rows="3"
-              />
+              <textarea name="descriptionEn" value={formData.descriptionEn} onChange={handleChange} className={styles.input} rows="3" />
             </div>
 
             {/* Arabic Fields */}
             <div className={styles.formGroup}>
               <label className={styles.label}>{t('title')} (AR)</label>
-              <input 
-                type="text" 
-                name="titleAr" 
-                value={currentSlide.titleAr} 
-                onChange={handleChange} 
-                className={styles.input}
-                dir="rtl" 
-              />
+              <input type="text" name="titleAr" value={formData.titleAr} onChange={handleChange} className={styles.input} dir="rtl" />
             </div>
             <div className={styles.formGroup}>
               <label className={styles.label}>{t('subtitle')} (AR)</label>
-              <input 
-                type="text" 
-                name="subtitleAr" 
-                value={currentSlide.subtitleAr} 
-                onChange={handleChange} 
-                className={styles.input}
-                dir="rtl" 
-              />
+              <input type="text" name="subtitleAr" value={formData.subtitleAr} onChange={handleChange} className={styles.input} dir="rtl" />
             </div>
             <div className={styles.formGroup}>
               <label className={styles.label}>{t('description')} (AR)</label>
-              <textarea 
-                name="descriptionAr" 
-                value={currentSlide.descriptionAr} 
-                onChange={handleChange} 
-                className={styles.input}
-                dir="rtl"
-                rows="3"
-              />
+              <textarea name="descriptionAr" value={formData.descriptionAr} onChange={handleChange} className={styles.input} dir="rtl" rows="3" />
             </div>
+
           </div>
 
           <div className={styles.modalFooter}>
             <button type="button" onClick={closeModal} className={styles.btnCancel}>
               {t('cancel')}
             </button>
-            <button type="submit" className="btn-primary">
+            <button type="submit" className="btn-primary" disabled={saving}>
               <MdSave />
-              {t('save_changes')}
+              {saving ? t('saving') : t('save_changes')}
             </button>
           </div>
         </form>
@@ -194,6 +225,7 @@ const HomeManager = () => {
     </div>
   );
 
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className={styles.container}>
       <div className="fade-in">
@@ -201,49 +233,60 @@ const HomeManager = () => {
           <h2 className={styles.title}>{t('hero_section')}</h2>
         </div>
 
-        <div className={`glass-panel ${styles.tableContainer}`}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>{t('image')}</th>
-                <th>{t('title')} (EN)</th>
-                <th>{t('title')} (AR)</th>
-                <th>{t('subtitle')} (EN)</th>
-                <th>{t('subtitle')} (AR)</th>
-                <th>{t('description')} (EN)</th>
-                <th>{t('description')} (AR)</th>
-                <th>{t('actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {heroSlides.map((slide) => (
-                <tr key={slide.id}>
-                  <td>
-                    <img src={slide.image} alt="Hero" className={styles.imgPreview} />
-                  </td>
-                  <td>{slide.titleEn}</td>
-                  <td>{slide.titleAr}</td>
-                  <td>{slide.subtitleEn}</td>
-                  <td>{slide.subtitleAr}</td>
-                  <td>{truncateText(slide.descriptionEn, 5)}</td>
-                  <td>{truncateText(slide.descriptionAr, 5)}</td>
-                  <td>
-                    <button 
-                      className={`${styles.actionBtn} ${styles.editBtn}`} 
-                      title={t('edit')}
-                      onClick={() => handleEdit(slide)}
-                    >
-                      <MdEdit />
-                    </button>
-                  </td>
+        {loading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
+            <span className="spinner" />
+          </div>
+        ) : (
+          <div className={`glass-panel ${styles.tableContainer}`}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>{t('image')}</th>
+                  <th>{t('title')} (EN)</th>
+                  <th>{t('title')} (AR)</th>
+                  <th>{t('subtitle')} (EN)</th>
+                  <th>{t('subtitle')} (AR)</th>
+                  <th>{t('description')} (EN)</th>
+                  <th>{t('description')} (AR)</th>
+                  <th>{t('actions')}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {heroData && (
+                  <tr>
+                    <td>
+                      <img
+                        src={heroData.image}
+                        alt="Hero"
+                        className={styles.imgPreview}
+                        onError={(e) => { e.target.src = '/assets/3.png'; }}
+                      />
+                    </td>
+                    <td>{heroData.title?.en}</td>
+                    <td>{heroData.title?.ar}</td>
+                    <td>{heroData.subtitle?.en}</td>
+                    <td>{heroData.subtitle?.ar}</td>
+                    <td>{truncateText(heroData.description?.en, 5)}</td>
+                    <td>{truncateText(heroData.description?.ar, 5)}</td>
+                    <td>
+                      <button
+                        className={`${styles.actionBtn} ${styles.editBtn}`}
+                        title={t('edit')}
+                        onClick={openModal}
+                      >
+                        <MdEdit />
+                      </button>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
-      {isModalOpen && currentSlide && <Modal />}
+      {isModalOpen && <Modal />}
       
       <AboutManager />
     </div>

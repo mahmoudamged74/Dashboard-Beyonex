@@ -1,27 +1,45 @@
-import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { 
-  MdDashboard, 
-  MdHome, 
-  MdInfo, 
-  MdDesignServices, 
-  MdContactMail, 
-  MdSettings, 
+import { toast } from 'react-toastify';
+import {
+  MdDashboard,
+  MdHome,
+  MdInfo,
+  MdDesignServices,
+  MdContactMail,
+  MdSettings,
   MdLogout,
   MdLanguage,
   MdKeyboardDoubleArrowLeft,
   MdRecommend,
-  MdViewAgenda
+  MdViewAgenda,
+  MdPerson,
+  MdSecurity,
+  MdMessage,
 } from 'react-icons/md';
+import axiosInstance from '../api/axiosInstance';
 import styles from './Sidebar.module.css';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'ar' ? 'en' : 'ar';
     i18n.changeLanguage(newLang);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post('admin/logout');
+    } catch {
+      // even if request fails, we still clear locally
+    } finally {
+      localStorage.removeItem('token');
+      toast.success(t('logout_success'));
+      navigate('/login');
+    }
   };
 
   const navItems = [
@@ -32,6 +50,9 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { path: '/why-us', icon: <MdRecommend />, label: 'why_us' },
     { path: '/footer', icon: <MdViewAgenda />, label: 'footer_manager' },
     { path: '/contact', icon: <MdContactMail />, label: 'contact' },
+    { path: '/roles', icon: <MdSecurity />, label: 'roles_manager' },
+    { path: '/admins', icon: <MdPerson />, label: 'admins_manager' },
+    { path: '/messages', icon: <MdMessage />, label: 'messages_manager' },
   ];
 
   return (
@@ -41,7 +62,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <img src="/assets/3.png" alt="Logo" className={styles.logo} />
           <span className={styles.brandName}>BEYONEX IT</span>
         </div>
-        
+
         <button onClick={toggleSidebar} className={styles.closeBtn}>
           <MdKeyboardDoubleArrowLeft className={styles.closeIcon} />
         </button>
@@ -52,7 +73,8 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <NavLink
             key={item.path}
             to={item.path}
-            className={({ isActive }) => 
+            end={item.path === '/'}
+            className={({ isActive }) =>
               `${styles.navItem} ${isActive ? styles.active : ''}`
             }
           >
@@ -63,15 +85,38 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       </nav>
 
       <div className={styles.footer}>
-        {/* Helper Link for Settings (example) */}
-        <NavLink to="/settings" className={styles.navItem} style={{ marginBottom: '1rem' }}>
+        {/* Settings */}
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.active : ''}`
+          }
+        >
           <span className={styles.icon}><MdSettings /></span>
           <span>{t('settings')}</span>
         </NavLink>
-        
+
+        {/* Profile */}
+        <NavLink
+          to="/profile"
+          className={({ isActive }) =>
+            `${styles.navItem} ${isActive ? styles.active : ''}`
+          }
+        >
+          <span className={styles.icon}><MdPerson /></span>
+          <span>{t('profile.title')}</span>
+        </NavLink>
+
+        {/* Language toggle */}
         <button onClick={toggleLanguage} className={styles.langBtn}>
           <MdLanguage />
           <span>{i18n.language === 'ar' ? 'English' : 'العربية'}</span>
+        </button>
+
+        {/* Logout */}
+        <button onClick={handleLogout} className={`${styles.langBtn} ${styles.logoutBtn}`}>
+          <MdLogout />
+          <span>{t('logout')}</span>
         </button>
       </div>
     </aside>

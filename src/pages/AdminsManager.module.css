@@ -1,0 +1,119 @@
+.adminImage {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+}
+
+.roleTag {
+    background: rgba(231, 183, 66, 0.1);
+    color: var(--primary);
+    border: 1px solid rgba(231, 183, 66, 0.25);
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.statusBtn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.statusActive {
+    color: #2ecc71;
+}
+
+.statusInactive {
+    color: #f87171;
+}
+
+/* Image Upload in Modal */
+.imageUpload {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+    cursor: pointer;
+}
+
+.uploadPreview {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.uploadPlaceholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    gap: 0.5rem;
+    transition: var(--transition);
+}
+
+.uploadPlaceholder:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.uploadIcon {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: var(--primary);
+    color: #000;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-card);
+}
+
+.hiddenInput {
+    display: none;
+}
+
+.passwordGroup {
+    position: relative;
+}
+
+.togglePass {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+}
+
+[dir="rtl"] .togglePass {
+    right: auto;
+    left: 1rem;
+}
+
+.helpText {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}

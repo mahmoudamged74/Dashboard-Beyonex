@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import HeroSection from '../components/About/HeroSection/HeroSection';
 import JourneySection from '../components/About/JourneySection/JourneySection';
 import AchievementsSection from '../components/About/AchievementsSection/AchievementsSection';

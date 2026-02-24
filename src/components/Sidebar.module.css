@@ -156,3 +156,23 @@
     border-color: var(--primary);
     color: var(--primary);
 }
+
+/* Logout button — same shape as langBtn but themed red on hover */
+.logoutBtn {
+    margin-top: 0.5rem;
+}
+
+.logoutBtn:hover {
+    border-color: #ef4444;
+    color: #ef4444;
+}
+
+/* Space between footer items */
+.footer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: auto;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
