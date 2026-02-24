@@ -19,7 +19,6 @@
   "image": "Image",
   "title": "Title",
   "subtitle": "Subtitle",
-  "status": "Status",
   "actions": "Actions",
   "edit": "Edit",
   "delete": "Delete",
@@ -83,6 +82,18 @@
   "edit_journey": "Edit Journey",
   "timeline": "Timeline",
   "year": "Year",
+  "hero_features": "Hero Features",
+  "main_logo": "Main Logo",
+  "change_logo": "Change Logo",
+  "display_order": "Display Order",
+  "loading": "Loading",
+  "no_data_found": "No data found",
+  "error_fetching_data": "Error fetching data",
+  "update_error": "Error updating data",
+  "add_error": "Error adding item",
+  "edit_error": "Error editing item",
+  "edit_milestone": "Edit Milestone",
+  "upload_custom_icon": "Upload Custom Icon",
 
   "login": {
     "welcome_back": "Welcome Back",
@@ -183,5 +194,12 @@
   "general_inquiry": "General Inquiry",
   "support": "Support",
   "hiring": "Hiring",
-  "other": "Other"
+  "other": "Other",
+  "add_achievement": "Add Achievement",
+  "edit_achievement": "Edit Achievement",
+  "edit_titles": "Edit Titles",
+  "edit_achievements_titles": "Edit Achievements Titles",
+  "achievement_title": "Achievement Title",
+  "achievement_subtitle": "Achievement Subtitle",
+  "value": "Value"
 }

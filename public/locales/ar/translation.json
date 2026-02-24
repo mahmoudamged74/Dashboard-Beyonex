@@ -19,7 +19,6 @@
   "image": "الصورة",
   "title": "العنوان",
   "subtitle": "العنوان الفرعي",
-  "status": "الحالة",
   "actions": "الإجراءات",
   "edit": "تعديل",
   "delete": "حذف",
@@ -83,6 +82,18 @@
   "edit_journey": "تعديل الرحلة",
   "timeline": "الخط الزمني",
   "year": "السنة",
+  "hero_features": "مميزات قسم الهيرو",
+  "main_logo": "الشعار الرئيسي",
+  "change_logo": "تغيير الشعار",
+  "display_order": "ترتيب العرض",
+  "loading": "جاري التحميل",
+  "no_data_found": "لم يتم العثور على بيانات",
+  "error_fetching_data": "خطأ في جلب البيانات",
+  "update_error": "خطأ في تحديث البيانات",
+  "add_error": "خطأ في إضافة العنصر",
+  "edit_error": "خطأ في تعديل العنصر",
+  "edit_milestone": "تعديل الحدث",
+  "upload_custom_icon": "رفع أيقونة مخصصة",
 
   "login": {
     "welcome_back": "مرحباً بعودتك",
@@ -183,5 +194,12 @@
   "general_inquiry": "استفسار عام",
   "support": "دعم فني",
   "hiring": "توظيف",
-  "other": "أخرى"
+  "other": "أخرى",
+  "add_achievement": "إضافة إنجاز",
+  "edit_achievement": "تعديل الإنجاز",
+  "edit_titles": "تعديل العناوين",
+  "edit_achievements_titles": "تعديل عناوين الإنجازات",
+  "achievement_title": "عنوان الإنجاز",
+  "achievement_subtitle": "عنوان فرعي للإنجاز",
+  "value": "القيمة"
 }

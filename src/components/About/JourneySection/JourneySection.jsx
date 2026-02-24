@@ -11,125 +11,161 @@ import {
     MdFlag,
     MdPublic,
     MdGroups,
-    MdStar
+    MdStar,
+    MdSearch,
+    MdImage
 } from 'react-icons/md';
 import styles from './JourneySection.module.css';
-import modalStyles from '../HeroSection/HeroSection.module.css'; // Reusing modal overlay/content structure
+import modalStyles from '../HeroSection/HeroSection.module.css'; 
+import { iconMap } from '../../../utils/iconMap';
+import { toast } from 'react-toastify';
 
-const JourneySection = () => {
+const JourneySection = ({ data, milestones, onUpdate, onMilestoneAction }) => {
     const { t, i18n } = useTranslation();
     const isRtl = i18n.dir() === 'rtl';
 
-    // Initial Data State
-    const [data, setData] = useState({
-        header: {
-            titleEn: 'Our Journey',
-            titleAr: 'رحلتنا',
-            descEn: 'From a small startup to a leading tech company, our journey has been marked by innovation and excellence.',
-            descAr: 'من شركة ناشئة صغيرة إلى شركة تقنية رائدة، تميزت رحلتنا بالابتكار والتميز.'
-        },
-        cards: [
-            {
-                id: 'mission',
-                icon: 'mission', // Helper to resolve icon
-                titleEn: 'Our Mission',
-                titleAr: 'مهمتنا',
-                descEn: 'To empower businesses to maximize technology benefits by delivering sophisticated software solutions.',
-                descAr: 'نهدف إلى تمكين الشركات من تحقيق أقصى استفادة من التكنولوجيا من خلال تقديم حلول برمجية متطورة.'
-            },
-            {
-                id: 'vision',
-                icon: 'vision',
-                titleEn: 'Our Vision',
-                titleAr: 'رؤيتنا',
-                descEn: 'To be the preferred technical partner for companies in the region by delivering innovative solutions.',
-                descAr: 'أن نكون الشريك التقني المفضل للشركات في المنطقة من خلال تقديم حلول مبتكرة.'
-            }
-        ],
-        timeline: [
-            {
-                id: 1,
-                year: '2020',
-                icon: 'start',
-                titleEn: 'The Beginning',
-                titleAr: 'البداية',
-                descEn: 'Beyonex IT was founded with a vision to create digital revolution.',
-                descAr: 'تأسست بيونكس IT برؤية لإحداث ثورة في الحلول الرقمية في المنطقة.'
-            },
-            {
-                id: 2,
-                year: '2021',
-                icon: 'team',
-                titleEn: 'Team Expansion',
-                titleAr: 'توسع الفريق',
-                descEn: 'Our team grew to include talented developers and tech experts.',
-                descAr: 'وسعنا فريقنا بمطورين ومصممين وخبراء تقنية موهوبين.'
-            },
-            {
-                id: 3,
-                year: '2023',
-                icon: 'global',
-                titleEn: 'Global Reach',
-                titleAr: 'الانتشار العالمي',
-                descEn: 'Expanded our services globally serving clients in multiple countries.',
-                descAr: 'وسعنا خدماتنا دولياً لخدمة العملاء في عدة دول.'
-            },
-            {
-                id: 4,
-                year: '2025',
-                icon: 'award',
-                titleEn: 'Industry Leader',
-                titleAr: 'ريادة الصناعة',
-                descEn: 'Recognized as a leading provider of technology solutions.',
-                descAr: 'معترف بنا كمزود رائد لحلول التكنولوجيا مع العديد من الجوائز.'
-            }
-        ]
-    });
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [formData, setFormData] = useState({});
+    const [missionIconSearch, setMissionIconSearch] = useState('');
+    const [visionIconSearch, setVisionIconSearch] = useState('');
+
+    // Milestone Modal State
+    const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
+    const [milestoneFormData, setMilestoneFormData] = useState({
+        year: new Date().getFullYear().toString(),
+        'title[en]': '',
+        'title[ar]': '',
+        'description[en]': '',
+        'description[ar]': '',
+        display_order: '0',
+        icon: 'starFill'
+    });
+    const [editingMilestoneId, setEditingMilestoneId] = useState(null);
+    const [iconSearch, setIconSearch] = useState('');
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
 
     // Icon Helper
-    const getIcon = (name) => {
-        switch(name) {
-            case 'mission': return <MdRocketLaunch />;
-            case 'vision': return <MdVisibility />;
-            case 'start': return <MdFlag />;
-            case 'team': return <MdGroups />;
-            case 'global': return <MdPublic />;
-            case 'award': return <MdStar />;
-            default: return <MdStar />;
-        }
+    const getIcon = (iconName) => {
+        // Check if iconName is a key in iconMap
+        const IconComponent = iconMap[iconName] || MdStar;
+        return <IconComponent />;
     };
 
     // Icon/Image Helper
     const renderIconOrImage = (item) => {
-        if (item.image) {
-            return <img src={item.image} alt={item.titleEn} style={{width: '60px', height: '60px', objectFit: 'cover', borderRadius: '50%'}} />;
+        // If icon field is a URL (starts with http) or we have an image field
+        if (item.icon && (item.icon.startsWith('http') || item.icon.startsWith('blob:'))) {
+            return <img src={item.icon} alt={isRtl ? item.title?.ar : item.title?.en} style={{width: '60px', height: '60px', objectFit: 'cover', borderRadius: '50%'}} />;
         }
+        // Otherwise treat as iconMap key
         return getIcon(item.icon);
     };
 
-    // Edit Handlers
-    const handleEdit = () => {
-        setFormData(JSON.parse(JSON.stringify(data))); // Deep copy
-        setIsModalOpen(true);
+    const filteredMissionIcons = Object.keys(iconMap).filter(name => 
+        name.toLowerCase().includes(missionIconSearch.toLowerCase())
+    );
+
+    const filteredVisionIcons = Object.keys(iconMap).filter(name => 
+        name.toLowerCase().includes(visionIconSearch.toLowerCase())
+    );
+
+    const filteredIcons = Object.keys(iconMap).filter(name => 
+        name.toLowerCase().includes(iconSearch.toLowerCase())
+    );
+
+    // Main Edit Handlers
+    const handleEditMain = () => {
+        setFormData(JSON.parse(JSON.stringify(data)));
+        setMissionIconSearch('');
+        setVisionIconSearch('');
+        setIsEditModalOpen(true);
     };
 
-    const closeModal = () => {
-        setIsModalOpen(false);
+    const closeEditModal = () => {
+        setIsEditModalOpen(false);
         setFormData({});
     };
 
-    const handleChange = (section, field, value, index = null) => {
+    // Milestone Handlers
+    const openAddMilestone = () => {
+        setMilestoneFormData({
+            year: new Date().getFullYear().toString(),
+            'title[en]': '',
+            'title[ar]': '',
+            'description[en]': '',
+            'description[ar]': '',
+            display_order: milestones.length.toString(),
+            icon: 'starFill'
+        });
+        setImageFile(null);
+        setImagePreview(null);
+        setEditingMilestoneId(null);
+        setIsMilestoneModalOpen(true);
+    };
+
+    const handleMilestoneEdit = (milestone) => {
+        setMilestoneFormData({
+            year: milestone.year?.toString() || '',
+            'title[en]': milestone.title?.en || '',
+            'title[ar]': milestone.title?.ar || '',
+            'description[en]': milestone.description?.en || '',
+            'description[ar]': milestone.description?.ar || '',
+            display_order: milestone.display_order?.toString() || '0',
+            icon: milestone.icon || 'starFill'
+        });
+        setImagePreview(milestone.icon && milestone.icon.startsWith('http') ? milestone.icon : null);
+        setEditingMilestoneId(milestone.id);
+        setIsMilestoneModalOpen(true);
+    };
+
+    const closeMilestoneModal = () => {
+        setIsMilestoneModalOpen(false);
+        setImageFile(null);
+        setImagePreview(null);
+        setIconSearch('');
+    };
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleMilestoneSubmit = (e) => {
+        e.preventDefault();
+        const submitData = new FormData();
+        
+        // Append nested fields
+        submitData.append('year', milestoneFormData.year);
+        submitData.append('title[en]', milestoneFormData['title[en]']);
+        submitData.append('title[ar]', milestoneFormData['title[ar]']);
+        submitData.append('description[en]', milestoneFormData['description[en]']);
+        submitData.append('description[ar]', milestoneFormData['description[ar]']);
+        submitData.append('display_order', milestoneFormData.display_order);
+        
+        // If we have a file, send it in the icon field. Otherwise send the icon name string.
+        if (imageFile) {
+            submitData.append('icon', imageFile);
+        } else {
+            submitData.append('icon', milestoneFormData.icon);
+        }
+
+        const action = editingMilestoneId ? 'edit' : 'add';
+        onMilestoneAction(action, editingMilestoneId, submitData);
+        closeMilestoneModal();
+    };
+
+    const handleChange = (section, field, value, lang = null) => {
         setFormData(prev => {
             const newData = { ...prev };
-            if (section === 'header') {
-                newData.header[field] = value;
-            } else if (section === 'cards' && index !== null) {
-                newData.cards[index][field] = value;
-            } else if (section === 'timeline' && index !== null) {
-                newData.timeline[index][field] = value;
+            if (lang) {
+                if (!newData[field]) newData[field] = { en: '', ar: '' };
+                newData[field][lang] = value;
+            } else {
+                newData[field] = value;
             }
             return newData;
         });
@@ -178,17 +214,41 @@ const JourneySection = () => {
         });
     };
 
-    const handleSave = (e) => {
+    const handleSaveMain = (e) => {
         e.preventDefault();
-        setData(formData); // In real app, API call here
-        closeModal();
+        
+        // Prepare FormData for submission (AboutManager expects either FormData or plain object)
+        const submitData = new FormData();
+        
+        // Loop through fields and append to FormData
+        const fields = [
+            'journey_title', 'journey_description', 
+            'mission_title', 'mission_content', 'mission_icon',
+            'vision_title', 'vision_content', 'vision_icon'
+        ];
+
+        fields.forEach(field => {
+            if (formData[field]) {
+                if (typeof formData[field] === 'object' && !Array.isArray(formData[field])) {
+                    // Handle translated fields
+                    submitData.append(`${field}[en]`, formData[field].en || '');
+                    submitData.append(`${field}[ar]`, formData[field].ar || '');
+                } else {
+                    // Handle simple fields like icons
+                    submitData.append(field, formData[field]);
+                }
+            }
+        });
+
+        onUpdate(submitData);
+        closeEditModal();
     };
 
     return (
         <div className={styles.container}>
             {/* Edit Controls */}
             <div className={styles.controls}>
-                <button className={styles.editBtn} onClick={handleEdit} title={t('edit')}>
+                <button className={styles.editBtn} onClick={handleEditMain} title={t('edit_journey')}>
                     <MdEdit />
                 </button>
             </div>
@@ -196,158 +256,364 @@ const JourneySection = () => {
             {/* Header */}
             <div className={styles.header}>
                 <h2 className={styles.mainTitle}>
-                    {isRtl ? data.header.titleAr : data.header.titleEn}
+                    {isRtl ? data.journey_title?.ar : data.journey_title?.en}
                 </h2>
                 <p className={styles.mainDesc}>
-                    {isRtl ? data.header.descAr : data.header.descEn}
+                    {isRtl ? data.journey_description?.ar : data.journey_description?.en}
                 </p>
             </div>
 
             {/* Mission & Vision Cards */}
             <div className={styles.cardsGrid}>
-                {data.cards.map(card => (
-                    <div key={card.id} className={styles.card}>
-                        <div className={styles.cardIcon}>
-                            {renderIconOrImage(card)}
-                        </div>
-                        <h3 className={styles.cardTitle}>
-                            {isRtl ? card.titleAr : card.titleEn}
-                        </h3>
-                        <p className={styles.cardDesc}>
-                            {isRtl ? card.descAr : card.descEn}
-                        </p>
+                <div className={styles.card}>
+                    <div className={styles.cardIcon}>
+                        {getIcon(data.mission_icon || 'rocketLaunch')}
                     </div>
-                ))}
+                    <h3 className={styles.cardTitle}>
+                        {isRtl ? data.mission_title?.ar : data.mission_title?.en}
+                    </h3>
+                    <p className={styles.cardDesc}>
+                        {isRtl ? data.mission_content?.ar : data.mission_content?.en}
+                    </p>
+                </div>
+                <div className={styles.card}>
+                    <div className={styles.cardIcon}>
+                        {getIcon(data.vision_icon || 'visibility')}
+                    </div>
+                    <h3 className={styles.cardTitle}>
+                        {isRtl ? data.vision_title?.ar : data.vision_title?.en}
+                    </h3>
+                    <p className={styles.cardDesc}>
+                        {isRtl ? data.vision_content?.ar : data.vision_content?.en}
+                    </p>
+                </div>
             </div>
 
-            {/* Timeline */}
+            {/* Timeline (Milestones) */}
+            <div className={styles.milestonesHeader}>
+                <h3 className={styles.milestonesTitle}>{t('timeline')}</h3>
+                <button className={styles.addMilestoneBtn} onClick={openAddMilestone}>
+                    <MdAdd /> {t('add_new')}
+                </button>
+            </div>
+            
             <div className={styles.timeline}>
-                {data.timeline.map((item, index) => (
+                {milestones.length > 0 ? milestones.map((item, index) => (
                     <div key={item.id} className={styles.timelineItem}>
                         <div className={styles.timelineDot}>
                             {renderIconOrImage(item)}
                         </div>
                         <span className={styles.year}>{item.year}</span>
                         <h4 className={styles.itemTitle}>
-                            {isRtl ? item.titleAr : item.titleEn}
+                            {isRtl ? item.title?.ar : item.title?.en}
                         </h4>
                         <p className={styles.itemDesc}>
-                            {isRtl ? item.itemDesc :  // Typo check: checking if descAr exists
-                             (isRtl ? item.descAr : item.descEn)}
+                            {isRtl ? item.description?.ar : item.description?.en}
                         </p>
+                        <div className={styles.milestoneActions}>
+                            <button className={styles.miniBtn} onClick={() => handleMilestoneEdit(item)}>
+                                <MdEdit />
+                            </button>
+                            <button className={`${styles.miniBtn} ${styles.deleteBtn}`} onClick={() => onMilestoneAction('delete', item.id)}>
+                                <MdDelete />
+                            </button>
+                        </div>
                     </div>
-                ))}
+                )) : (
+                    <div className={styles.noData}>{t('no_data_found')}</div>
+                )}
             </div>
 
-            {/* Modal */}
-            {isModalOpen && (
-                <div className={modalStyles.modalOverlay} onClick={closeModal}>
+            {/* Main Edit Modal */}
+            {isEditModalOpen && (
+                <div className={modalStyles.modalOverlay} onClick={closeEditModal}>
                     <div className={modalStyles.modalContent} onClick={e => e.stopPropagation()}>
                         <div className={modalStyles.modalHeader}>
-                            <h3 className={modalStyles.modalTitle}>{t('edit_journey') || 'Edit Journey'}</h3>
-                            <button className={modalStyles.closeBtn} onClick={closeModal}><MdClose /></button>
+                            <h3 className={modalStyles.modalTitle}>{t('edit_journey')}</h3>
+                            <button className={modalStyles.closeBtn} onClick={closeEditModal}><MdClose /></button>
                         </div>
                         
-                        <form className={styles.modalForm} onSubmit={handleSave}>
+                        <form className={styles.modalForm} onSubmit={handleSaveMain}>
                             <div className={styles.modalBody}>
                                 {/* Header Section */}
-                                <h4 className={styles.formSectionTitle}>{t('main_info')}</h4>
+                                <h4 className={styles.formSectionTitle}>{t('journey')}</h4>
                                 <div className={modalStyles.formGroup}>
                                     <label className={modalStyles.label}>{t('title')} (EN)</label>
-                                    <input className={modalStyles.input} value={formData.header.titleEn} onChange={(e) => handleChange('header', 'titleEn', e.target.value)} />
+                                    <input className={modalStyles.input} value={formData.journey_title?.en || ''} onChange={(e) => handleChange('header', 'journey_title', e.target.value, 'en')} />
                                 </div>
                                 <div className={modalStyles.formGroup}>
                                     <label className={modalStyles.label}>{t('title')} (AR)</label>
-                                    <input className={modalStyles.input} value={formData.header.titleAr} onChange={(e) => handleChange('header', 'titleAr', e.target.value)} dir="rtl" />
+                                    <input className={modalStyles.input} value={formData.journey_title?.ar || ''} onChange={(e) => handleChange('header', 'journey_title', e.target.value, 'ar')} dir="rtl" />
                                 </div>
                                 <div className={modalStyles.formGroup}>
                                     <label className={modalStyles.label}>{t('description')} (EN)</label>
-                                    <textarea className={modalStyles.textarea} value={formData.header.descEn} onChange={(e) => handleChange('header', 'descEn', e.target.value)} rows="2" />
+                                    <textarea className={modalStyles.textarea} value={formData.journey_description?.en || ''} onChange={(e) => handleChange('header', 'journey_description', e.target.value, 'en')} rows="2" />
                                 </div>
                                 <div className={modalStyles.formGroup}>
                                     <label className={modalStyles.label}>{t('description')} (AR)</label>
-                                    <textarea className={modalStyles.textarea} value={formData.header.descAr} onChange={(e) => handleChange('header', 'descAr', e.target.value)} dir="rtl" rows="2" />
+                                    <textarea className={modalStyles.textarea} value={formData.journey_description?.ar || ''} onChange={(e) => handleChange('header', 'journey_description', e.target.value, 'ar')} dir="rtl" rows="2" />
                                 </div>
 
-                                {/* Cards Section */}
-                                <h4 className={styles.formSectionTitle}>Mission & Vision</h4>
-                                {formData.cards.map((card, idx) => (
-                                    <div key={card.id} className={styles.timelineItemEditor} style={{marginBottom:'1rem'}}>
-                                        <h5 style={{color:'var(--text-muted)', marginBottom:'0.5rem'}}>{card.id.toUpperCase()}</h5>
-                                        
-                                        <div className={modalStyles.formGroup}>
-                                            <label className={modalStyles.label}>{t('image') || 'Image'}</label>
-                                            <div className={styles.fileInputWrapper} style={{display:'flex', alignItems:'center', gap:'1rem', background:'rgba(255,255,255,0.05)', padding:'0.5rem', borderRadius:'8px'}}>
-                                                {card.image && <img src={card.image} alt="Preview" style={{width:'40px', height:'40px', borderRadius:'50%', objectFit:'cover'}} />}
-                                                <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'cards', idx)} style={{color:'var(--text-muted)'}} />
-                                            </div>
+                                {/* Mission Section */}
+                                <h4 className={styles.formSectionTitle}>{t('mission')}</h4>
+                                <div className={modalStyles.formGroup}>
+                                    <label className={modalStyles.label}>{t('title')} (EN)</label>
+                                    <input className={modalStyles.input} value={formData.mission_title?.en || ''} onChange={(e) => handleChange('cards', 'mission_title', e.target.value, 'en')} />
+                                </div>
+                                <div className={modalStyles.formGroup}>
+                                    <label className={modalStyles.label}>{t('title')} (AR)</label>
+                                    <input className={modalStyles.input} value={formData.mission_title?.ar || ''} onChange={(e) => handleChange('cards', 'mission_title', e.target.value, 'ar')} dir="rtl" />
+                                </div>
+                                <div className={modalStyles.formGroup}>
+                                    <label className={modalStyles.label}>{t('content')} (EN)</label>
+                                    <textarea className={modalStyles.textarea} value={formData.mission_content?.en || ''} onChange={(e) => handleChange('cards', 'mission_content', e.target.value, 'en')} rows="2" />
+                                </div>
+                                <div className={modalStyles.formGroup}>
+                                    <label className={modalStyles.label}>{t('content')} (AR)</label>
+                                    <textarea className={modalStyles.textarea} value={formData.mission_content?.ar || ''} onChange={(e) => handleChange('cards', 'mission_content', e.target.value, 'ar')} dir="rtl" rows="2" />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>{t('icon')}</label>
+                                    <div className={styles.iconSelectorContainer}>
+                                        <div className={styles.searchBox}>
+                                            <MdSearch />
+                                            <input 
+                                                type="text" 
+                                                placeholder={t('search_icons')} 
+                                                value={missionIconSearch} 
+                                                onChange={(e) => setMissionIconSearch(e.target.value)}
+                                                className={styles.searchInput}
+                                            />
                                         </div>
-
-                                        <div className={modalStyles.formGroup}>
-                                            <label className={modalStyles.label}>{t('title')} (EN)</label>
-                                            <input className={modalStyles.input} value={card.titleEn} onChange={(e) => handleChange('cards', 'titleEn', e.target.value, idx)} />
+                                        <div className={styles.iconGrid}>
+                                            {filteredMissionIcons.map(iconName => {
+                                                const IconComp = iconMap[iconName];
+                                                return (
+                                                    <button 
+                                                        key={iconName}
+                                                        type="button" 
+                                                        className={`${styles.iconItem} ${formData.mission_icon === iconName ? styles.selectedIcon : ''}`}
+                                                        onClick={() => setFormData({...formData, mission_icon: iconName})}
+                                                        title={iconName}
+                                                    >
+                                                        <IconComp />
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
-                                         <div className={modalStyles.formGroup}>
-                                            <label className={modalStyles.label}>{t('title')} (AR)</label>
-                                            <input className={modalStyles.input} value={card.titleAr} onChange={(e) => handleChange('cards', 'titleAr', e.target.value, idx)} dir="rtl" />
-                                        </div>
-                                         <div className={modalStyles.formGroup}>
-                                            <label className={modalStyles.label}>{t('description')} (EN)</label>
-                                            <textarea className={modalStyles.textarea} value={card.descEn} onChange={(e) => handleChange('cards', 'descEn', e.target.value, idx)} rows="2"/>
-                                        </div>
-                                         <div className={modalStyles.formGroup}>
-                                            <label className={modalStyles.label}>{t('description')} (AR)</label>
-                                            <textarea className={modalStyles.textarea} value={card.descAr} onChange={(e) => handleChange('cards', 'descAr', e.target.value, idx)} dir="rtl" rows="2"/>
-                                        </div>
-                                    </div>
-                                ))}
-
-                                {/* Timeline Section */}
-                                <h4 className={styles.formSectionTitle}>
-                                    {t('timeline') || 'Timeline'}
-                                    <button type="button" onClick={addTimelineItem} style={{float: isRtl?'left':'right', background:'transparent', border:'none', color:'var(--primary)', cursor:'pointer', fontSize:'0.9rem', display:'flex', alignItems:'center', gap:'0.2rem'}}>
-                                        <MdAdd /> {t('add_new')}
-                                    </button>
-                                </h4>
-                                {formData.timeline.map((item, idx) => (
-                                    <div key={item.id} className={styles.timelineItemEditor} style={{marginBottom:'1rem'}}>
-                                        <button type="button" className={styles.removeTimelineBtn} onClick={() => removeTimelineItem(idx)}><MdDelete/></button>
-                                        
-                                        <div className={modalStyles.formGroup}>
-                                            <label className={modalStyles.label}>{t('image') || 'Image/Icon'}</label>
-                                            <div className={styles.fileInputWrapper} style={{display:'flex', alignItems:'center', gap:'1rem', background:'rgba(255,255,255,0.05)', padding:'0.5rem', borderRadius:'8px'}}>
-                                                {item.image && <img src={item.image} alt="Preview" style={{width:'40px', height:'40px', borderRadius:'50%', objectFit:'cover'}} />}
-                                                <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'timeline', idx)} style={{color:'var(--text-muted)'}} />
-                                            </div>
-                                        </div>
-
-                                        <div className={modalStyles.formGroup}>
-                                            <label className={modalStyles.label}>{t('year') || 'Year'}</label>
-                                            <input className={modalStyles.input} value={item.year} onChange={(e) => handleChange('timeline', 'year', e.target.value, idx)} style={{width:'100px'}} />
-                                        </div>
-                                        <div className={modalStyles.formGroup}>
-                                            <label className={modalStyles.label}>{t('title')} (EN)</label>
-                                            <input className={modalStyles.input} value={item.titleEn} onChange={(e) => handleChange('timeline', 'titleEn', e.target.value, idx)} />
-                                        </div>
-                                        <div className={modalStyles.formGroup}>
-                                            <label className={modalStyles.label}>{t('title')} (AR)</label>
-                                            <input className={modalStyles.input} value={item.titleAr} onChange={(e) => handleChange('timeline', 'titleAr', e.target.value, idx)} dir="rtl" />
-                                        </div>
-                                        <div className={modalStyles.formGroup}>
-                                            <label className={modalStyles.label}>{t('description')} (EN)</label>
-                                            <textarea className={modalStyles.textarea} value={item.descEn} onChange={(e) => handleChange('timeline', 'descEn', e.target.value, idx)} rows="2"/>
-                                        </div>
-                                        <div className={modalStyles.formGroup}>
-                                            <label className={modalStyles.label}>{t('description')} (AR)</label>
-                                            <textarea className={modalStyles.textarea} value={item.descAr} onChange={(e) => handleChange('timeline', 'descAr', e.target.value, idx)} dir="rtl" rows="2"/>
+                                        <div className={styles.selectedIconName}>
+                                            {t('selected')}: <strong>{formData.mission_icon || 'rocketLaunch'}</strong>
                                         </div>
                                     </div>
-                                ))}
+                                </div>
 
+                                <hr className={styles.formDivider} />
+
+                                {/* Vision Section */}
+                                <h4 className={styles.formSectionTitle}>{t('vision')}</h4>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>{t('title')} (EN)</label>
+                                    <input className={modalStyles.input} value={formData.vision_title?.en || ''} onChange={(e) => handleChange('cards', 'vision_title', e.target.value, 'en')} />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>{t('title')} (AR)</label>
+                                    <input className={modalStyles.input} value={formData.vision_title?.ar || ''} onChange={(e) => handleChange('cards', 'vision_title', e.target.value, 'ar')} dir="rtl" />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>{t('content')} (EN)</label>
+                                    <textarea className={modalStyles.textarea} value={formData.vision_content?.en || ''} onChange={(e) => handleChange('cards', 'vision_content', e.target.value, 'en')} rows="2" />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>{t('content')} (AR)</label>
+                                    <textarea className={modalStyles.textarea} value={formData.vision_content?.ar || ''} onChange={(e) => handleChange('cards', 'vision_content', e.target.value, 'ar')} dir="rtl" rows="2" />
+                                </div>
+                                <div className={styles.formGroup}>
+                                    <label className={styles.label}>{t('icon')}</label>
+                                    <div className={styles.iconSelectorContainer}>
+                                        <div className={styles.searchBox}>
+                                            <MdSearch />
+                                            <input 
+                                                type="text" 
+                                                placeholder={t('search_icons')} 
+                                                value={visionIconSearch} 
+                                                onChange={(e) => setVisionIconSearch(e.target.value)}
+                                                className={styles.searchInput}
+                                            />
+                                        </div>
+                                        <div className={styles.iconGrid}>
+                                            {filteredVisionIcons.map(iconName => {
+                                                const IconComp = iconMap[iconName];
+                                                return (
+                                                    <button 
+                                                        key={iconName}
+                                                        type="button" 
+                                                        className={`${styles.iconItem} ${formData.vision_icon === iconName ? styles.selectedIcon : ''}`}
+                                                        onClick={() => setFormData({...formData, vision_icon: iconName})}
+                                                        title={iconName}
+                                                    >
+                                                        <IconComp />
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        <div className={styles.selectedIconName}>
+                                            {t('selected')}: <strong>{formData.vision_icon || 'visibility'}</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* End of Content Sections */}
                             </div>
                             <div className={modalStyles.modalFooter}>
-                                <button type="button" className={modalStyles.cancelBtn} onClick={closeModal}>{t('cancel')}</button>
+                                <button type="button" className={modalStyles.cancelBtn} onClick={closeEditModal}>{t('cancel')}</button>
                                 <button type="submit" className={modalStyles.saveBtn}><MdSave /> {t('save')}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Milestone Management Modal */}
+            {isMilestoneModalOpen && (
+                <div className={modalStyles.modalOverlay} onClick={closeMilestoneModal}>
+                    <div className={modalStyles.modalContent} onClick={e => e.stopPropagation()}>
+                        <div className={modalStyles.modalHeader}>
+                            <h3 className={modalStyles.modalTitle}>
+                                {editingMilestoneId ? t('edit_milestone') : t('add_new')}
+                            </h3>
+                            <button className={modalStyles.closeBtn} onClick={closeMilestoneModal}>
+                                <MdClose />
+                            </button>
+                        </div>
+
+                        <form className={modalStyles.modalForm} onSubmit={handleMilestoneSubmit}>
+                            <div className={modalStyles.modalBody}>
+                                <div className={modalStyles.formGroup}>
+                                    <label className={modalStyles.label}>{t('year')}</label>
+                                    <input 
+                                        type="text" 
+                                        className={modalStyles.input} 
+                                        value={milestoneFormData.year} 
+                                        onChange={(e) => setMilestoneFormData({...milestoneFormData, year: e.target.value})} 
+                                        required 
+                                    />
+                                </div>
+
+                                <div className={modalStyles.formGrid}>
+                                    <div className={modalStyles.formGroup}>
+                                        <label className={modalStyles.label}>{t('title')} (EN)</label>
+                                        <input 
+                                            type="text" 
+                                            className={modalStyles.input} 
+                                            value={milestoneFormData['title[en]']} 
+                                            onChange={(e) => setMilestoneFormData({...milestoneFormData, 'title[en]': e.target.value})} 
+                                            required 
+                                        />
+                                    </div>
+                                    <div className={modalStyles.formGroup}>
+                                        <label className={modalStyles.label}>{t('title')} (AR)</label>
+                                        <input 
+                                            type="text" 
+                                            className={modalStyles.input} 
+                                            value={milestoneFormData['title[ar]']} 
+                                            onChange={(e) => setMilestoneFormData({...milestoneFormData, 'title[ar]': e.target.value})} 
+                                            dir="rtl" 
+                                            required 
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className={modalStyles.formGroup}>
+                                    <label className={modalStyles.label}>{t('description')} (EN)</label>
+                                    <textarea 
+                                        className={modalStyles.textarea} 
+                                        value={milestoneFormData['description[en]']} 
+                                        onChange={(e) => setMilestoneFormData({...milestoneFormData, 'description[en]': e.target.value})} 
+                                        rows="2"
+                                    />
+                                </div>
+                                <div className={modalStyles.formGroup}>
+                                    <label className={modalStyles.label}>{t('description')} (AR)</label>
+                                    <textarea 
+                                        className={modalStyles.textarea} 
+                                        value={milestoneFormData['description[ar]']} 
+                                        onChange={(e) => setMilestoneFormData({...milestoneFormData, 'description[ar]': e.target.value})} 
+                                        dir="rtl" 
+                                        rows="2"
+                                    />
+                                </div>
+
+                                <div className={modalStyles.formGroup}>
+                                    <label className={modalStyles.label}>{t('icon')} / {t('image')}</label>
+                                    
+                                    <div className={styles.iconSelectorContainer}>
+                                        <div className={styles.searchBox}>
+                                            <MdSearch />
+                                            <input 
+                                                type="text" 
+                                                placeholder={t('search_icons')} 
+                                                value={iconSearch} 
+                                                onChange={(e) => setIconSearch(e.target.value)}
+                                                className={styles.searchInput}
+                                            />
+                                        </div>
+                                        <div className={styles.iconGrid}>
+                                            {filteredIcons.map(iconName => {
+                                                const IconComp = iconMap[iconName];
+                                                return (
+                                                    <button 
+                                                        key={iconName}
+                                                        type="button" 
+                                                        className={`${styles.iconItem} ${milestoneFormData.icon === iconName ? styles.selectedIcon : ''}`}
+                                                        onClick={() => {
+                                                            setMilestoneFormData({...milestoneFormData, icon: iconName});
+                                                            setImageFile(null);
+                                                            setImagePreview(null);
+                                                        }}
+                                                        title={iconName}
+                                                    >
+                                                        <IconComp />
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        <div className={styles.selectedIconName}>
+                                            {t('selected')}: <strong>{milestoneFormData.icon}</strong>
+                                        </div>
+                                    </div>
+
+                                    <div className={styles.uploadBox} style={{marginTop: '1rem'}}>
+                                        <label className={styles.uploadLabel}>
+                                            <input type="file" accept="image/*" onChange={handleFileChange} style={{display:'none'}} />
+                                            <MdImage size={24} />
+                                            <span>{t('upload_custom_icon')}</span>
+                                        </label>
+                                        {imagePreview && (
+                                            <div className={styles.previewContainer}>
+                                                <img src={imagePreview} alt="Preview" style={{width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover'}} />
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className={modalStyles.formGroup}>
+                                    <label className={modalStyles.label}>{t('display_order')}</label>
+                                    <input 
+                                        type="number" 
+                                        className={modalStyles.input} 
+                                        value={milestoneFormData.display_order} 
+                                        onChange={(e) => setMilestoneFormData({...milestoneFormData, display_order: e.target.value})} 
+                                    />
+                                </div>
+                            </div>
+
+                            <div className={modalStyles.modalFooter}>
+                                <button type="button" className={modalStyles.cancelBtn} onClick={closeMilestoneModal}>
+                                    {t('cancel')}
+                                </button>
+                                <button type="submit" className={modalStyles.saveBtn}>
+                                    <MdSave /> {editingMilestoneId ? t('save') : t('add_new')}
+                                </button>
                             </div>
                         </form>
                     </div>

@@ -178,6 +178,107 @@
     color: #ff4d4d;
 }
 
+.logoLabel {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.featuresSection {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.featuresHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.featuresTitle {
+    font-size: 1.1rem;
+    color: var(--primary);
+    margin: 0;
+}
+
+.addFeatureBtn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.addFeatureBtn:hover {
+    filter: brightness(1.2);
+    transform: translateY(-2px);
+}
+
+.featuresGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.featureItem {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.featureName {
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.featureActions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.miniBtn {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    border: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.miniBtn:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.deleteBtn:hover {
+    background: #ff4d4d;
+}
+
+.smallModal {
+    max-width: 500px !important;
+}
+
 .modalForm {
     display: flex;
     flex-direction: column;

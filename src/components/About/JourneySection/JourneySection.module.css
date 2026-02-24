@@ -293,10 +293,12 @@
 .modalBody {
     padding: 1.5rem;
     overflow-y: auto;
+    /* Scroll ONLY the body */
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
     flex: 1;
+    /* Take all available space in form */
 }
 
 .formSectionTitle {
@@ -351,4 +353,185 @@
 [dir="rtl"] .removeTimelineBtn {
     left: 0.5rem;
     right: auto;
+}
+
+/* Milestones Management Header */
+.milestonesHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+}
+
+.milestonesTitle {
+    font-size: 1.5rem;
+    color: #ffd700;
+    margin: 0;
+}
+
+.addMilestoneBtn {
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    color: #ffd700;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.addMilestoneBtn:hover {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #ffd700;
+}
+
+/* Milestone Actions */
+.milestoneActions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    justify-content: flex-end;
+}
+
+.miniBtn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 0.4rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.miniBtn:hover {
+    background: rgba(255, 215, 0, 0.2);
+    color: #ffd700;
+    border-color: rgba(255, 215, 0, 0.5);
+}
+
+.deleteBtn:hover {
+    background: rgba(255, 77, 77, 0.2);
+    color: #ff4d4d;
+    border-color: rgba(255, 77, 77, 0.5);
+}
+
+.noData {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    padding: 2rem;
+    font-style: italic;
+}
+
+/* Image Upload in Modal */
+.uploadBox {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.uploadLabel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: #ffd700;
+    font-size: 0.9rem;
+}
+
+.previewContainer {
+    margin-top: 1rem;
+}
+
+.previewContainer img {
+    border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+/* Icon Selector Consistency with Services/WhyUs */
+.iconSelectorContainer {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 0.5rem;
+}
+
+.searchBox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.searchBox svg {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.searchInput {
+    background: transparent;
+    border: none;
+    color: #fff;
+    width: 100%;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+.iconGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 0.5rem;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.iconItem {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.iconItem:hover {
+    background: rgba(255, 215, 0, 0.1);
+    color: #ffd700;
+}
+
+.selectedIcon {
+    background: #ffd700 !important;
+    color: #000 !important;
+    border-color: #ffd700;
+}
+
+.selectedIconName {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 0.5rem;
+    margin-top: 1rem;
+}
+
+.formDivider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin: 1.5rem 0;
 }
