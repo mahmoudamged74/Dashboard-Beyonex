@@ -201,5 +201,18 @@
   "edit_achievements_titles": "تعديل عناوين الإنجازات",
   "achievement_title": "عنوان الإنجاز",
   "achievement_subtitle": "عنوان فرعي للإنجاز",
-  "value": "القيمة"
+  "value": "القيمة",
+  "core_values": "قيمنا الأساسية",
+  "add_core_value": "إضافة قيمة أساسية",
+  "edit_core_value": "تعديل القيمة الأساسية",
+  "core_value_title": "عنوان القيمة",
+  "core_value_description": "وصف القيمة",
+  "core_values_manager": "إدارة القيم الأساسية",
+  "team_members": "أعضاء الفريق",
+  "add_team_member": "إضافة عضو فريق",
+  "edit_team_member": "تعديل عضو الفريق",
+  "member_name": "اسم العضو",
+  "member_title": "المسمى الوظيفي",
+  "member_email": "البريد الإلكتروني",
+  "member_image": "صورة الشخص"
 }

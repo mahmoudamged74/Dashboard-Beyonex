@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 import HeroSection from '../components/About/HeroSection/HeroSection';
 import JourneySection from '../components/About/JourneySection/JourneySection';
 import AchievementsSection from '../components/About/AchievementsSection/AchievementsSection';
+import CoreValuesSection from '../components/About/CoreValuesSection/CoreValuesSection';
+import TeamSection from '../components/About/TeamSection/TeamSection';
 import styles from './AboutManager.module.css';
 
 const AboutManager = () => {
@@ -14,16 +16,20 @@ const AboutManager = () => {
     const [heroFeatures, setHeroFeatures] = useState([]);
     const [milestones, setMilestones] = useState([]);
     const [achievements, setAchievements] = useState([]);
+    const [coreValues, setCoreValues] = useState([]);
+    const [teamMembers, setTeamMembers] = useState([]);
 
     // Fetch Data
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [aboutRes, featuresRes, milestonesRes, achievementsRes] = await Promise.all([
+                const [aboutRes, featuresRes, milestonesRes, achievementsRes, coreValuesRes, teamRes] = await Promise.all([
                     axiosInstance.get('/admin/about-page'),
                     axiosInstance.get('/admin/about/hero-features'),
                     axiosInstance.get('/admin/about/milestones'),
-                    axiosInstance.get('/admin/about/achievements')
+                    axiosInstance.get('/admin/about/achievements'),
+                    axiosInstance.get('/admin/about/core-values'),
+                    axiosInstance.get('/admin/team-members')
                 ]);
                 
                 if (aboutRes.data.code === 200) {
@@ -37,6 +43,12 @@ const AboutManager = () => {
                 }
                 if (achievementsRes.data.code === 200) {
                     setAchievements(achievementsRes.data.data.about_achievements || []);
+                }
+                if (coreValuesRes.data.code === 200) {
+                    setCoreValues(coreValuesRes.data.data.about_core_values || []);
+                }
+                if (teamRes.data.code === 200) {
+                    setTeamMembers(teamRes.data.data.team_members || []);
                 }
             } catch (err) {
                 console.error('Error fetching about data:', err);
@@ -160,6 +172,72 @@ const handleAboutUpdate = async (newData) => {
         }
     };
 
+    const handleCoreValueAction = async (action, id = null, data = null) => {
+        try {
+            let res;
+            const isFormData = data instanceof FormData;
+            
+            if (action === 'add') {
+                res = await axiosInstance.post('/admin/about/core-values', data, {
+                    headers: { 'Content-Type': isFormData ? 'multipart/form-data' : 'application/json' }
+                });
+            } else if (action === 'edit' && id) {
+                if (isFormData) {
+                    data.append('_method', 'PUT');
+                    res = await axiosInstance.post(`/admin/about/core-values/${id}`, data, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+                } else {
+                    res = await axiosInstance.put(`/admin/about/core-values/${id}`, data);
+                }
+            } else if (action === 'delete' && id) {
+                res = await axiosInstance.delete(`/admin/about/core-values/${id}`);
+            }
+
+            if (res && (res.status === 200 || res.status === 201)) {
+                toast.success(t(`${action}_success`));
+                const coreValuesRes = await axiosInstance.get('/admin/about/core-values');
+                setCoreValues(coreValuesRes.data.data.about_core_values || []);
+            }
+        } catch (err) {
+            console.error(`Error during core value ${action}:`, err);
+            toast.error(t(`${action}_error`));
+        }
+    };
+
+    const handleTeamAction = async (action, id = null, data = null) => {
+        try {
+            let res;
+            const isFormData = data instanceof FormData;
+            
+            if (action === 'add') {
+                res = await axiosInstance.post('/admin/team-members', data, {
+                    headers: { 'Content-Type': isFormData ? 'multipart/form-data' : 'application/json' }
+                });
+            } else if (action === 'edit' && id) {
+                if (isFormData) {
+                    data.append('_method', 'PUT');
+                    res = await axiosInstance.post(`/admin/team-members/${id}`, data, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+                } else {
+                    res = await axiosInstance.put(`/admin/team-members/${id}`, data);
+                }
+            } else if (action === 'delete' && id) {
+                res = await axiosInstance.delete(`/admin/team-members/${id}`);
+            }
+
+            if (res && (res.status === 200 || res.status === 201)) {
+                toast.success(t(`${action}_success`));
+                const teamRes = await axiosInstance.get('/admin/team-members');
+                setTeamMembers(teamRes.data.data.team_members || []);
+            }
+        } catch (err) {
+            console.error(`Error during team member ${action}:`, err);
+            toast.error(t(`${action}_error`));
+        }
+    };
+
     if (loading) return <div className={styles.loading}>{t('loading')}...</div>;
     if (!aboutData) return <div className={styles.error}>{t('no_data_found')}</div>;
 
@@ -191,6 +269,16 @@ const handleAboutUpdate = async (newData) => {
                 achievements={achievements}
                 onUpdate={handleAboutUpdate}
                 onAchievementAction={handleAchievementAction}
+            />
+
+            <CoreValuesSection 
+                coreValues={coreValues}
+                onAction={handleCoreValueAction}
+            />
+
+            <TeamSection 
+                teamMembers={teamMembers}
+                onAction={handleTeamAction}
             />
         </div>
     );

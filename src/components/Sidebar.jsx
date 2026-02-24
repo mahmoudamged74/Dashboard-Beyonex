@@ -34,7 +34,6 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     try {
       await axiosInstance.post('admin/logout');
     } catch {
-      // even if request fails, we still clear locally
     } finally {
       localStorage.removeItem('token');
       toast.success(t('logout_success'));
@@ -82,10 +81,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <span>{t(item.label)}</span>
           </NavLink>
         ))}
-      </nav>
-
-      <div className={styles.footer}>
-        {/* Settings */}
+         {/* Settings */}
         <NavLink
           to="/settings"
           className={({ isActive }) =>
@@ -96,6 +92,10 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           <span>{t('settings')}</span>
         </NavLink>
 
+      </nav>
+
+      <div className={styles.footer}>
+       
         {/* Profile */}
         <NavLink
           to="/profile"

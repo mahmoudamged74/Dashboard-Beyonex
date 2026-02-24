@@ -201,5 +201,12 @@
   "edit_achievements_titles": "Edit Achievements Titles",
   "achievement_title": "Achievement Title",
   "achievement_subtitle": "Achievement Subtitle",
-  "value": "Value"
+  "value": "Value",
+  "team_members": "Team Members",
+  "add_team_member": "Add Team Member",
+  "edit_team_member": "Edit Team Member",
+  "member_name": "Name",
+  "member_title": "Job Title",
+  "member_email": "Email Address",
+  "member_image": "Person Photo"
 }
