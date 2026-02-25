@@ -341,15 +341,96 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+@media (max-width: 900px) {
+    .infoGrid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
 @media (max-width: 768px) {
-    .sectionHeader {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
+    .container {
+        padding: 1rem;
     }
 
-    .editBtn {
-        width: 100%;
+    .section {
+        padding: 1.5rem 1rem;
+    }
+
+    .sectionHeader {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        text-align: center;
+        padding-bottom: 1.5rem;
+    }
+
+    .sectionTitle {
+        border-left: none;
+        border-bottom: 3px solid var(--primary);
+        padding-left: 0;
+        padding-bottom: 0.5rem;
+        display: inline-block;
+        width: fit-content;
+    }
+
+    [dir="rtl"] .sectionTitle {
+        border-right: none;
+        border-bottom: 3px solid var(--primary);
+        padding-right: 0;
+    }
+
+    .editBtn,
+    .addBtn {
+        width: fit-content;
+        min-width: 150px;
         justify-content: center;
+    }
+
+    .infoGrid {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .infoItem {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .logoPreview {
+        margin: 0 auto;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .modalContent {
+        margin: 1rem;
+        max-height: calc(100vh - 2rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .sectionTitle {
+        font-size: 1.3rem;
+    }
+
+    .table th,
+    .table td {
+        white-space: nowrap;
+    }
+
+    .iconPreview span {
+        display: none;
+    }
+
+    .modalHeader,
+    .modalBody,
+    .modalFooter {
+        padding: 1rem;
     }
 }

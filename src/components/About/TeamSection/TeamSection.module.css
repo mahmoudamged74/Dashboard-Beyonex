@@ -59,6 +59,7 @@
     align-items: center;
     justify-content: center;
     gap: 1rem;
+    position: relative;
 }
 
 .card:hover {
@@ -337,9 +338,31 @@
 @media (max-width: 768px) {
     .header {
         flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .addBtn {
+        width: fit-content;
     }
 
     .formGrid {
         grid-template-columns: 1fr;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+
+    .card {
+        width: 100%;
+        max-width: 350px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 1.5rem 1rem;
     }
 }

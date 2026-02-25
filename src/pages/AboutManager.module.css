@@ -1,36 +1,29 @@
 .pageContainer {
     padding: 2rem;
     animation: fadeIn 0.5s ease;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.loading,
-.error {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 400px;
-    font-size: 1.2rem;
-    color: var(--text-muted);
-}
+@media (max-width: 768px) {
+    .pageContainer {
+        padding: 1rem;
+    }
 
-.error {
-    color: #ff4d4d;
-}
+    .pageTitle {
+        font-size: 1.5rem;
+        text-align: center;
+    }
 
-.header {
-    margin-bottom: 2rem;
-}
+    .pageSubtitle {
+        font-size: 0.9rem;
+        text-align: center;
+    }
 
-.pageTitle {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--text-main);
-    margin-bottom: 0.5rem;
-}
-
-.pageSubtitle {
-    color: var(--text-muted);
-    font-size: 1rem;
+    .header {
+        margin-bottom: 1.5rem;
+    }
 }
 
 @keyframes fadeIn {

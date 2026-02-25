@@ -17,6 +17,7 @@ import Profile from './pages/Profile';
 import RolesManager from './pages/RolesManager';
 import Settings from './pages/Settings';
 import MessagesManager from './pages/MessagesManager';
+import AdminsManager from './pages/AdminsManager';
 
 function App() {
   return (
@@ -56,6 +57,7 @@ function App() {
           <Route path="footer" element={<FooterManager />} />
           <Route path="profile" element={<Profile />} />
           <Route path="roles" element={<RolesManager />} />
+          <Route path="admins" element={<AdminsManager />} />
           <Route path="settings" element={<Settings />} />
           <Route path="messages" element={<MessagesManager />} />
         </Route>
