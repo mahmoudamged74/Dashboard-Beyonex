@@ -171,7 +171,7 @@ const ServicesManager = () => {
   };
 
   const handleSaveService = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setSaving(true);
     try {
       const data = new FormData();
@@ -180,7 +180,7 @@ const ServicesManager = () => {
       Object.keys(formData).forEach(key => {
         if (key === 'technologies' || key === 'features') {
           formData[key].forEach((item, index) => {
-            if (item.trim()) {
+            if (item && item.trim()) {
               data.append(`${key}[${index}]`, item);
             }
           });
@@ -216,7 +216,8 @@ const ServicesManager = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (e) => {
+    if (e) e.preventDefault();
     setSaving(true);
     try {
       const res = await axiosInstance.delete(`admin/services/${selectedService.id}`);
@@ -339,7 +340,14 @@ const ServicesManager = () => {
               </button>
             </div>
 
-            <form onSubmit={modalType === 'pageInfo' ? handleSavePageInfo : handleSaveService} className={styles.form}>
+            <form 
+              onSubmit={
+                modalType === 'pageInfo' ? handleSavePageInfo : 
+                modalType === 'delete' ? handleDelete : 
+                handleSaveService
+              } 
+              className={styles.form}
+            >
               <div className={styles.modalBody}>
                 {modalType === 'delete' ? (
                   <div className={styles.deleteConfirm}>
