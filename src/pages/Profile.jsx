@@ -3,10 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { MdEdit, MdClose, MdCloudUpload } from 'react-icons/md';
 import axiosInstance from '../api/axiosInstance';
+import usePermission from '../hooks/usePermission';
 import styles from './Profile.module.css';
 
 const Profile = () => {
   const { t } = useTranslation();
+  const { can } = usePermission();
   const [admin, setAdmin] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -123,10 +125,12 @@ const Profile = () => {
             {admin.status ? t('active') : t('inactive')}
           </span>
         </div>
-        <button className={styles.editBtn} onClick={() => setIsModalOpen(true)}>
-          <MdEdit size={18} />
-          <span>{t('profile.edit')}</span>
-        </button>
+        {can('profile.update') && (
+          <button className={styles.editBtn} onClick={() => setIsModalOpen(true)}>
+            <MdEdit size={18} />
+            <span>{t('profile.edit')}</span>
+          </button>
+        )}
       </div>
 
       {/* ── Role Card ──────────────────────────────────────────────────── */}

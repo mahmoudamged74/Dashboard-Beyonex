@@ -17,11 +17,13 @@ import {
 } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import axiosInstance from '../api/axiosInstance';
+import usePermission from '../hooks/usePermission';
 import styles from './ContentManager.module.css';
 import adminStyles from './AdminsManager.module.css';
 
 const AdminsManager = () => {
   const { t, i18n } = useTranslation();
+  const { can } = usePermission();
   const isAr = i18n.language === 'ar';
   const fileInputRef = useRef(null);
 
@@ -233,10 +235,12 @@ const AdminsManager = () => {
       <div className="fade-in">
         <div className={styles.header}>
           <h2 className={styles.title}>{t('admins_manager')}</h2>
-          <button className="btn-primary" onClick={openCreate}>
-            <MdAdd />
-            {t('add_admin')}
-          </button>
+          {can('admins.create') && (
+            <button className="btn-primary" onClick={openCreate}>
+              <MdAdd />
+              {t('add_admin')}
+            </button>
+          )}
         </div>
 
         {loading ? (
@@ -283,29 +287,35 @@ const AdminsManager = () => {
                         </span>
                       </td>
                       <td>
-                        <button 
-                          className={`${adminStyles.statusBtn} ${admin.status ? adminStyles.statusActive : adminStyles.statusInactive}`}
-                          onClick={() => toggleStatus(admin)}
-                          title={admin.status ? t('active') : t('inactive')}
-                        >
-                          {admin.status ? <MdCheckCircle /> : <MdCancel />}
-                        </button>
+                        {can('admins.update') && (
+                          <button 
+                            className={`${adminStyles.statusBtn} ${admin.status ? adminStyles.statusActive : adminStyles.statusInactive}`}
+                            onClick={() => toggleStatus(admin)}
+                            title={admin.status ? t('active') : t('inactive')}
+                          >
+                            {admin.status ? <MdCheckCircle /> : <MdCancel />}
+                          </button>
+                        )}
                       </td>
                       <td>
-                        <button
-                          className={`${styles.actionBtn} ${styles.editBtn}`}
-                          title={t('edit')}
-                          onClick={() => openEdit(admin)}
-                        >
-                          <MdEdit />
-                        </button>
-                        <button
-                          className={`${styles.actionBtn} ${styles.deleteBtn}`}
-                          title={t('delete')}
-                          onClick={() => openDelete(admin)}
-                        >
-                          <MdDelete />
-                        </button>
+                        {can('admins.update') && (
+                          <button
+                            className={`${styles.actionBtn} ${styles.editBtn}`}
+                            title={t('edit')}
+                            onClick={() => openEdit(admin)}
+                          >
+                            <MdEdit />
+                          </button>
+                        )}
+                        {can('admins.delete') && (
+                          <button
+                            className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                            title={t('delete')}
+                            onClick={() => openDelete(admin)}
+                          >
+                            <MdDelete />
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))

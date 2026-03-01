@@ -5,9 +5,11 @@ import styles from './WhyUsManager.module.css';
 import axiosInstance from '../api/axiosInstance';
 import { iconMap } from '../utils/iconMap';
 import { toast } from 'react-toastify';
+import usePermission from '../hooks/usePermission';
 
 const WhyUsManager = () => {
   const { t } = useTranslation();
+  const { can } = usePermission();
 
   const [features, setFeatures] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -172,10 +174,12 @@ const WhyUsManager = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2 className={styles.sectionTitle}>{t('why_us_manager') || 'Why Us Manager'}</h2>
-        <button className={styles.addButton} onClick={handleAddFeature}>
-          <MdAdd size={20} />
-          {t('add_why_us') || 'Add Item'}
-        </button>
+        {can('why_us.create') && (
+          <button className={styles.addButton} onClick={handleAddFeature}>
+            <MdAdd size={20} />
+            {t('add_why_us') || 'Add Item'}
+          </button>
+        )}
       </div>
 
       {loading && !features.length ? (
@@ -201,19 +205,25 @@ const WhyUsManager = () => {
 
                   <div className={styles.cardFooter}>
                       <div className={styles.cardActions}>
-                        <button className={styles.actionBtn} onClick={() => handleEditFeature(feature)} title={t('edit')}>
-                          <MdEdit />
-                        </button>
-                        <button className={styles.actionBtn} onClick={() => openDeleteModal(feature)} title={t('delete')} style={{color: '#ff4d4d', borderColor: 'rgba(255, 77, 77, 0.3)'}}>
-                          <MdDelete />
-                        </button>
-                        <button 
-                          className={`${styles.actionBtn} ${feature.status ? styles.statusActive : styles.statusInactive}`} 
-                          onClick={() => toggleStatus(feature)} 
-                          title={t('toggle_status')}
-                        >
-                          <MdVerifiedUser />
-                        </button>
+                        {can('why_us.update') && (
+                          <button className={styles.actionBtn} onClick={() => handleEditFeature(feature)} title={t('edit')}>
+                            <MdEdit />
+                          </button>
+                        )}
+                        {can('why_us.delete') && (
+                          <button className={styles.actionBtn} onClick={() => openDeleteModal(feature)} title={t('delete')} style={{color: '#ff4d4d', borderColor: 'rgba(255, 77, 77, 0.3)'}}>
+                            <MdDelete />
+                          </button>
+                        )}
+                        {can('why_us.update') && (
+                          <button 
+                            className={`${styles.actionBtn} ${feature.status ? styles.statusActive : styles.statusInactive}`} 
+                            onClick={() => toggleStatus(feature)} 
+                            title={t('toggle_status')}
+                          >
+                            <MdVerifiedUser />
+                          </button>
+                        )}
                       </div>
                       <span className={styles.badge}>{feature.icon}</span>
                   </div>

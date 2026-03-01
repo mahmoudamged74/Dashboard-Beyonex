@@ -19,9 +19,11 @@ import styles from './JourneySection.module.css';
 import modalStyles from '../HeroSection/HeroSection.module.css'; 
 import { iconMap } from '../../../utils/iconMap';
 import { toast } from 'react-toastify';
+import usePermission from '../../../hooks/usePermission';
 
 const JourneySection = ({ data, milestones, onUpdate, onMilestoneAction }) => {
     const { t, i18n } = useTranslation();
+    const { can } = usePermission();
     const isRtl = i18n.dir() === 'rtl';
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -248,9 +250,11 @@ const JourneySection = ({ data, milestones, onUpdate, onMilestoneAction }) => {
         <div className={styles.container}>
             {/* Edit Controls */}
             <div className={styles.controls}>
-                <button className={styles.editBtn} onClick={handleEditMain} title={t('edit_journey')}>
-                    <MdEdit />
-                </button>
+                {can('about_page.update') && (
+                    <button className={styles.editBtn} onClick={handleEditMain} title={t('edit_journey')}>
+                        <MdEdit />
+                    </button>
+                )}
             </div>
 
             {/* Header */}
@@ -292,9 +296,11 @@ const JourneySection = ({ data, milestones, onUpdate, onMilestoneAction }) => {
             {/* Timeline (Milestones) */}
             <div className={styles.milestonesHeader}>
                 <h3 className={styles.milestonesTitle}>{t('timeline')}</h3>
-                <button className={styles.addMilestoneBtn} onClick={openAddMilestone}>
-                    <MdAdd /> {t('add_new')}
-                </button>
+                {can('about_milestones.create') && (
+                    <button className={styles.addMilestoneBtn} onClick={openAddMilestone}>
+                        <MdAdd /> {t('add_new')}
+                    </button>
+                )}
             </div>
             
             <div className={styles.timeline}>
@@ -311,12 +317,16 @@ const JourneySection = ({ data, milestones, onUpdate, onMilestoneAction }) => {
                             {isRtl ? item.description?.ar : item.description?.en}
                         </p>
                         <div className={styles.milestoneActions}>
-                            <button className={styles.miniBtn} onClick={() => handleMilestoneEdit(item)}>
-                                <MdEdit />
-                            </button>
-                            <button className={`${styles.miniBtn} ${styles.deleteBtn}`} onClick={() => onMilestoneAction('delete', item.id)}>
-                                <MdDelete />
-                            </button>
+                            {can('about_milestones.update') && (
+                                <button className={styles.miniBtn} onClick={() => handleMilestoneEdit(item)}>
+                                    <MdEdit />
+                                </button>
+                            )}
+                            {can('about_milestones.delete') && (
+                                <button className={`${styles.miniBtn} ${styles.deleteBtn}`} onClick={() => onMilestoneAction('delete', item.id)}>
+                                    <MdDelete />
+                                </button>
+                            )}
                         </div>
                     </div>
                 )) : (

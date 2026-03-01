@@ -11,9 +11,11 @@ import {
 } from 'react-icons/md';
 import styles from './AchievementsSection.module.css';
 import { iconMap } from '../../../utils/iconMap';
+import usePermission from '../../../hooks/usePermission';
 
 const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction }) => {
     const { t, i18n } = useTranslation();
+    const { can } = usePermission();
     const isRtl = i18n.dir() === 'rtl';
 
     const [isAchievementModalOpen, setIsAchievementModalOpen] = useState(false);
@@ -106,9 +108,11 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
         <div className={styles.container}>
             <div className={styles.header}>
                 <div className={styles.achievementsHeader}>
-                    <button className={styles.addAchievementBtn} onClick={handleAddAchievement}>
-                        <MdAdd size={20} /> {t('add_achievement') || 'Add Achievement'}
-                    </button>
+                    {can('about_achievements.create') && (
+                        <button className={styles.addAchievementBtn} onClick={handleAddAchievement}>
+                            <MdAdd size={20} /> {t('add_achievement') || 'Add Achievement'}
+                        </button>
+                    )}
                 </div>
                 
                 <div className={styles.titleWrapper}>
@@ -132,12 +136,16 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
                             {isRtl ? item.title?.ar : item.title?.en}
                         </div>
                         <div className={styles.cardActions}>
-                            <button className={styles.miniBtn} onClick={() => handleEditAchievement(item)} title={t('edit')}>
-                                <MdEdit />
-                            </button>
-                            <button className={`${styles.miniBtn} ${styles.deleteBtn}`} onClick={() => onAchievementAction('delete', item.id)} title={t('delete')}>
-                                <MdDelete />
-                            </button>
+                            {can('about_achievements.update') && (
+                                <button className={styles.miniBtn} onClick={() => handleEditAchievement(item)} title={t('edit')}>
+                                    <MdEdit />
+                                </button>
+                            )}
+                            {can('about_achievements.delete') && (
+                                <button className={`${styles.miniBtn} ${styles.deleteBtn}`} onClick={() => onAchievementAction('delete', item.id)} title={t('delete')}>
+                                    <MdDelete />
+                                </button>
+                            )}
                         </div>
                     </div>
                 ))}

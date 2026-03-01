@@ -19,11 +19,13 @@ import {
   MdMessage,
 } from 'react-icons/md';
 import axiosInstance from '../api/axiosInstance';
+import { useAuth } from '../context/AuthContext';
 import styles from './Sidebar.module.css';
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { hasPermission, clearPermissions } = useAuth();
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'ar' ? 'en' : 'ar';
@@ -36,22 +38,24 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     } catch {
     } finally {
       localStorage.removeItem('token');
+      clearPermissions();
       toast.success(t('logout_success'));
       navigate('/login');
     }
   };
 
+  // Each item has an optional `permKey` — if present, the item is hidden when permission is absent
   const navItems = [
-    { path: '/', icon: <MdDashboard />, label: 'dashboard' },
-    { path: '/home', icon: <MdHome />, label: 'home' },
-    { path: '/about', icon: <MdInfo />, label: 'about' },
-    { path: '/services', icon: <MdDesignServices />, label: 'services' },
-    { path: '/why-us', icon: <MdRecommend />, label: 'why_us' },
-    { path: '/footer', icon: <MdViewAgenda />, label: 'footer_manager' },
-    { path: '/contact', icon: <MdContactMail />, label: 'contact' },
-    { path: '/roles', icon: <MdSecurity />, label: 'roles_manager' },
-    { path: '/admins', icon: <MdPerson />, label: 'admins_manager' },
-    { path: '/messages', icon: <MdMessage />, label: 'messages_manager' },
+    { path: '/',         icon: <MdDashboard />, label: 'dashboard',       permKey: 'dashboard.view' },
+    { path: '/home',     icon: <MdHome />,      label: 'home',            permKey: 'hero_section.view' },
+    { path: '/about',    icon: <MdInfo />,      label: 'about',           permKey: 'about_page.view' },
+    { path: '/services', icon: <MdDesignServices />, label: 'services',   permKey: 'services.view' },
+    { path: '/why-us',   icon: <MdRecommend />, label: 'why_us',          permKey: 'why_us.view' },
+    { path: '/footer',   icon: <MdViewAgenda />, label: 'footer_manager', permKey: 'settings.view' },
+    // { path: '/contact',  icon: <MdContactMail />, label: 'contact',       permKey: null },
+    { path: '/roles',    icon: <MdSecurity />,  label: 'roles_manager',   permKey: 'roles.view' },
+    { path: '/admins',   icon: <MdPerson />,    label: 'admins_manager',  permKey: 'admins.view' },
+    { path: '/messages', icon: <MdMessage />,   label: 'messages_manager', permKey: 'messages.view' },
   ];
 
   return (
@@ -68,44 +72,49 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       </div>
 
       <nav className={styles.nav}>
-        {navItems.map((item) => (
+        {navItems
+          .filter(item => !item.permKey || hasPermission(item.permKey))
+          .map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === '/'}
+              className={({ isActive }) =>
+                `${styles.navItem} ${isActive ? styles.active : ''}`
+              }
+            >
+              <span className={styles.icon}>{item.icon}</span>
+              <span>{t(item.label)}</span>
+            </NavLink>
+          ))}
+
+        {/* Settings — visible only if user has settings.view */}
+        {hasPermission('settings.view') && (
           <NavLink
-            key={item.path}
-            to={item.path}
-            end={item.path === '/'}
+            to="/settings"
             className={({ isActive }) =>
               `${styles.navItem} ${isActive ? styles.active : ''}`
             }
           >
-            <span className={styles.icon}>{item.icon}</span>
-            <span>{t(item.label)}</span>
+            <span className={styles.icon}><MdSettings /></span>
+            <span>{t('settings')}</span>
           </NavLink>
-        ))}
-         {/* Settings */}
-        <NavLink
-          to="/settings"
-          className={({ isActive }) =>
-            `${styles.navItem} ${isActive ? styles.active : ''}`
-          }
-        >
-          <span className={styles.icon}><MdSettings /></span>
-          <span>{t('settings')}</span>
-        </NavLink>
-
+        )}
       </nav>
 
       <div className={styles.footer}>
-       
-        {/* Profile */}
-        <NavLink
-          to="/profile"
-          className={({ isActive }) =>
-            `${styles.navItem} ${isActive ? styles.active : ''}`
-          }
-        >
-          <span className={styles.icon}><MdPerson /></span>
-          <span>{t('profile.title')}</span>
-        </NavLink>
+        {/* Profile — visible only if user has profile.view */}
+        {hasPermission('profile.view') && (
+          <NavLink
+            to="/profile"
+            className={({ isActive }) =>
+              `${styles.navItem} ${isActive ? styles.active : ''}`
+            }
+          >
+            <span className={styles.icon}><MdPerson /></span>
+            <span>{t('profile.title')}</span>
+          </NavLink>
+        )}
 
         {/* Language toggle */}
         <button onClick={toggleLanguage} className={styles.langBtn}>

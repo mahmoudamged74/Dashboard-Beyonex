@@ -11,9 +11,11 @@ import {
 } from 'react-icons/md';
 import styles from './CoreValuesSection.module.css';
 import { iconMap } from '../../../utils/iconMap';
+import usePermission from '../../../hooks/usePermission';
 
 const CoreValuesSection = ({ coreValues, onAction }) => {
     const { t, i18n } = useTranslation();
+    const { can } = usePermission();
     const isRtl = i18n.dir() === 'rtl';
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -107,9 +109,11 @@ const CoreValuesSection = ({ coreValues, onAction }) => {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <button className={styles.addBtn} onClick={() => handleOpenModal()}>
-                    <MdAdd size={20} /> {t('add_core_value')}
-                </button>
+                {can('about_core_values.create') && (
+                    <button className={styles.addBtn} onClick={() => handleOpenModal()}>
+                        <MdAdd size={20} /> {t('add_core_value')}
+                    </button>
+                )}
                 <div style={{textAlign: 'center', width: '100%'}}>
                     <h2 className={styles.title}>{t('core_values')}</h2>
                 </div>
@@ -128,12 +132,16 @@ const CoreValuesSection = ({ coreValues, onAction }) => {
                             {isRtl ? item.description?.ar : item.description?.en}
                         </p>
                         <div className={styles.cardActions}>
-                            <button className={styles.miniBtn} onClick={() => handleOpenModal(item)} title={t('edit')}>
-                                <MdEdit />
-                            </button>
-                            <button className={`${styles.miniBtn} ${styles.deleteBtn}`} onClick={() => onAction('delete', item.id)} title={t('delete')}>
-                                <MdDelete />
-                            </button>
+                            {can('about_core_values.update') && (
+                                <button className={styles.miniBtn} onClick={() => handleOpenModal(item)} title={t('edit')}>
+                                    <MdEdit />
+                                </button>
+                            )}
+                            {can('about_core_values.delete') && (
+                                <button className={`${styles.miniBtn} ${styles.deleteBtn}`} onClick={() => onAction('delete', item.id)} title={t('delete')}>
+                                    <MdDelete />
+                                </button>
+                            )}
                         </div>
                     </div>
                 ))}

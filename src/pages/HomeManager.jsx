@@ -3,10 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { MdClose, MdSave, MdCloudUpload } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import axiosInstance from '../api/axiosInstance';
+import usePermission from '../hooks/usePermission';
 import styles from './ContentManager.module.css';
 
 const HomeManager = () => {
   const { t } = useTranslation();
+  const { can } = usePermission();
   const fileInputRef = useRef(null);
 
   // ── State ──────────────────────────────────────────────────────────────────
@@ -134,8 +136,9 @@ const HomeManager = () => {
               {/* Image Section */}
               <div 
                 className={styles.heroImageSection} 
-                onClick={() => fileInputRef.current.click()}
-                title={t('click_to_upload')}
+                onClick={() => can('hero_section.update') && fileInputRef.current.click()}
+                title={can('hero_section.update') ? t('click_to_upload') : ''}
+                style={{ cursor: can('hero_section.update') ? 'pointer' : 'default' }}
               >
                 <img
                   src={imagePreview || heroData.image}
@@ -233,17 +236,18 @@ const HomeManager = () => {
                 </div>
               </div>
 
-              {/* Action Area */}
-              <div className={styles.cardActionArea}>
-                <button 
-                  className={styles.saveBtn} 
-                  onClick={handleSave} 
-                  disabled={saving}
-                >
-                  {saving ? <span className="spinner-small" /> : <MdSave size={20} />}
-                  {saving ? t('saving') : t('save_changes')}
-                </button>
-              </div>
+              {can('hero_section.update') && (
+                <div className={styles.cardActionArea}>
+                  <button 
+                    className={styles.saveBtn} 
+                    onClick={handleSave} 
+                    disabled={saving}
+                  >
+                    {saving ? <span className="spinner-small" /> : <MdSave size={20} />}
+                    {saving ? t('saving') : t('save_changes')}
+                  </button>
+                </div>
+              )}
             </div>
           )
         )}

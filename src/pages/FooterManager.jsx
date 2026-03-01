@@ -99,12 +99,16 @@ const FooterManager = () => {
     e.preventDefault();
     if (modalType === 'main') {
       setMainInfo(formData);
+      toast.success(t('save_success') || 'Main info updated');
     } else if (modalType === 'contact') {
       setContactInfo(formData);
+      toast.success(t('save_success') || 'Contact info updated');
     } else if (modalType === 'addSocial') {
       setSocialLinks(prev => [...prev, { ...formData, id: Date.now() }]);
+      toast.success(t('add_success') || 'Social link added');
     } else if (modalType === 'editSocial') {
       setSocialLinks(prev => prev.map(item => item.id === formData.id ? formData : item));
+      toast.success(t('update_success') || 'Social link updated');
     }
     closeModal();
   };
@@ -112,6 +116,7 @@ const FooterManager = () => {
   const handleDeleteSocial = (id) => {
     if (window.confirm(t('confirm_delete') || 'Are you sure?')) {
       setSocialLinks(prev => prev.filter(item => item.id !== id));
+      toast.success(t('delete_success') || 'Social link deleted');
     }
   };
 

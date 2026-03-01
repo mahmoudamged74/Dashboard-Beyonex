@@ -10,9 +10,11 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { iconMap } from '../utils/iconMap';
 import { toast } from 'react-toastify';
+import usePermission from '../hooks/usePermission';
 
 const ServicesManager = () => {
   const { t, i18n } = useTranslation();
+  const { can } = usePermission();
   const currentLang = i18n.language;
   const isAr = currentLang === 'ar';
 
@@ -268,9 +270,11 @@ const ServicesManager = () => {
                 <h1 className={styles.pageTitle}>{t('our_services')}</h1>
                 <p className={styles.pageSubtitle}>{truncate(isAr ? servicePageInfo['service_text[ar]'] : servicePageInfo['service_text[en]'], 150)}</p>
             </div>
-            <button className={styles.editInfoBtn} onClick={handleEditPageInfo}>
-                <MdEdit /> {t('edit_content')}
-            </button>
+            {can('services.update') && (
+              <button className={styles.editInfoBtn} onClick={handleEditPageInfo}>
+                  <MdEdit /> {t('edit_content')}
+              </button>
+            )}
         </div>
       </div>
 
@@ -278,10 +282,12 @@ const ServicesManager = () => {
 
       <div className={styles.header}>
         <h2 className={styles.sectionTitle}>{t('services_list')}</h2>
-        <button className={styles.addButton} onClick={handleAddService}>
-          <MdAdd size={20} />
-          {t('add_service')}
-        </button>
+        {can('services.create') && (
+          <button className={styles.addButton} onClick={handleAddService}>
+            <MdAdd size={20} />
+            {t('add_service')}
+          </button>
+        )}
       </div>
 
       {loading && !services.length ? (
@@ -303,12 +309,16 @@ const ServicesManager = () => {
                         {isAr ? service.title?.ar : service.title?.en}
                     </h3>
                     <div className={styles.cardActions}>
-                      <button className={styles.actionBtn} onClick={() => handleEditService(service)} title={t('edit')}>
-                        <MdEdit />
-                      </button>
-                      <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => openDeleteModal(service)} title={t('delete')}>
-                        <MdDelete />
-                      </button>
+                      {can('services.update') && (
+                        <button className={styles.actionBtn} onClick={() => handleEditService(service)} title={t('edit')}>
+                          <MdEdit />
+                        </button>
+                      )}
+                      {can('services.delete') && (
+                        <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => openDeleteModal(service)} title={t('delete')}>
+                          <MdDelete />
+                        </button>
+                      )}
                     </div>
                   </div>
                   

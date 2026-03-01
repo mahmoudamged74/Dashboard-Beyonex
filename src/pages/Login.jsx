@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '../api/axiosInstance';
+import { useAuth } from '../context/AuthContext';
 import styles from './Login.module.css';
 
 const Login = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { setPermissions } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,10 +28,18 @@ const Login = () => {
         password,
       });
 
-      const { token } = response.data.data;
+      const { token, admin } = response.data.data;
 
-      // ── Store token in localStorage ──────────────────────────────────────
+      // ── Store token and permissions in localStorage ───────────────────────
       localStorage.setItem('token', token);
+      
+      // Permissions can be directly in admin or nested in admin.role
+      const rawPermissions = admin?.role?.permissions || admin?.permissions || [];
+      const permKeys = rawPermissions.map(p =>
+        typeof p === 'string' ? p : p.key
+      );
+      
+      setPermissions(permKeys);
       toast.success(t('login.success'));
 
       // ── Redirect to dashboard ────────────────────────────────────────────
@@ -40,6 +50,7 @@ const Login = () => {
         err.message ||
         t('login.error_generic');
       setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }

@@ -11,9 +11,11 @@ import {
     MdPerson
 } from 'react-icons/md';
 import styles from './TeamSection.module.css';
+import usePermission from '../../../hooks/usePermission';
 
 const TeamSection = ({ teamMembers, onAction }) => {
     const { t, i18n } = useTranslation();
+    const { can } = usePermission();
     const isRtl = i18n.dir() === 'rtl';
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -88,21 +90,27 @@ const TeamSection = ({ teamMembers, onAction }) => {
         <div className={styles.container}>
             <div className={styles.header}>
                 <h2 className={styles.title}>{t('team_members')}</h2>
-                <button className={styles.addBtn} onClick={() => handleOpenModal()}>
-                    <MdAdd size={20} /> {t('add_team_member')}
-                </button>
+                {can('team_members.create') && (
+                    <button className={styles.addBtn} onClick={() => handleOpenModal()}>
+                        <MdAdd size={20} /> {t('add_team_member')}
+                    </button>
+                )}
             </div>
 
             <div className={styles.grid}>
                 {teamMembers.map((item) => (
                     <div className={styles.card} key={item.id}>
                         <div className={styles.cardActions}>
-                            <button className={styles.miniBtn} onClick={() => handleOpenModal(item)} title={t('edit')}>
-                                <MdEdit />
-                            </button>
-                            <button className={`${styles.miniBtn} ${styles.deleteBtn}`} onClick={() => onAction('delete', item.id)} title={t('delete')}>
-                                <MdDelete />
-                            </button>
+                            {can('team_members.update') && (
+                                <button className={styles.miniBtn} onClick={() => handleOpenModal(item)} title={t('edit')}>
+                                    <MdEdit />
+                                </button>
+                            )}
+                            {can('team_members.delete') && (
+                                <button className={`${styles.miniBtn} ${styles.deleteBtn}`} onClick={() => onAction('delete', item.id)} title={t('delete')}>
+                                    <MdDelete />
+                                </button>
+                            )}
                         </div>
                         <div className={styles.imageWrapper}>
                             {item.image_path ? (

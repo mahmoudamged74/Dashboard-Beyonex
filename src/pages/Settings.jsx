@@ -13,10 +13,12 @@ import {
 } from 'react-icons/md';
 import { toast } from 'react-toastify';
 import axiosInstance from '../api/axiosInstance';
+import usePermission from '../hooks/usePermission';
 import styles from './Settings.module.css';
 
 const Settings = () => {
   const { t, i18n } = useTranslation();
+  const { can } = usePermission();
   const isAr = i18n.language === 'ar';
   
   const logoInputRef = useRef(null);
@@ -186,9 +188,11 @@ const Settings = () => {
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.title}>{t('settings')}</h1>
-        <button onClick={handleSave} className="btn-primary" disabled={saving}>
-          <MdSave /> {saving ? t('saving') : t('save_changes')}
-        </button>
+        {can('settings.update') && (
+          <button onClick={handleSave} className="btn-primary" disabled={saving}>
+            <MdSave /> {saving ? t('saving') : t('save_changes')}
+          </button>
+        )}
       </header>
 
       <div className={styles.tabs}>

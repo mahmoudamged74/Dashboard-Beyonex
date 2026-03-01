@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MdEdit, MdClose, MdSave, MdImage, MdAdd, MdDelete } from 'react-icons/md';
+import usePermission from '../../../hooks/usePermission';
 import styles from './HeroSection.module.css';
 
 const HeroSection = ({ data, features, onUpdateAbout, onFeatureAction }) => {
   const { t, i18n } = useTranslation();
+  const { can } = usePermission();
   const isRtl = i18n.dir() === 'rtl';
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -111,9 +113,11 @@ const HeroSection = ({ data, features, onUpdateAbout, onFeatureAction }) => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2 className={styles.title}>{t('hero_section') || 'Hero Section'}</h2>
-        <button className={styles.editBtn} onClick={handleEdit}>
-          <MdEdit /> {t('edit')}
-        </button>
+        {can('about_page.update') && (
+          <button className={styles.editBtn} onClick={handleEdit}>
+            <MdEdit /> {t('edit')}
+          </button>
+        )}
       </div>
 
       <div className={styles.previewContent}>
@@ -140,9 +144,11 @@ const HeroSection = ({ data, features, onUpdateAbout, onFeatureAction }) => {
       <div className={styles.featuresSection}>
         <div className={styles.featuresHeader}>
             <h3 className={styles.featuresTitle}>{t('hero_features')}</h3>
-            <button className={styles.addFeatureBtn} onClick={openAddFeature}>
-                <MdAdd /> {t('add_feature')}
-            </button>
+            {can('about_hero_features.create') && (
+              <button className={styles.addFeatureBtn} onClick={openAddFeature}>
+                  <MdAdd /> {t('add_feature')}
+              </button>
+            )}
         </div>
         <div className={styles.featuresGrid}>
             {features.map(feature => (
@@ -151,12 +157,16 @@ const HeroSection = ({ data, features, onUpdateAbout, onFeatureAction }) => {
                         {isRtl ? feature.title?.ar : feature.title?.en}
                     </div>
                     <div className={styles.featureActions}>
-                        <button className={styles.miniBtn} onClick={() => handleFeatureEdit(feature)}>
-                            <MdEdit />
-                        </button>
-                        <button className={`${styles.miniBtn} ${styles.deleteBtn}`} onClick={() => onFeatureAction('delete', feature.id)}>
-                            <MdDelete />
-                        </button>
+                        {can('about_hero_features.update') && (
+                          <button className={styles.miniBtn} onClick={() => handleFeatureEdit(feature)}>
+                              <MdEdit />
+                          </button>
+                        )}
+                        {can('about_hero_features.delete') && (
+                          <button className={`${styles.miniBtn} ${styles.deleteBtn}`} onClick={() => onFeatureAction('delete', feature.id)}>
+                              <MdDelete />
+                          </button>
+                        )}
                     </div>
                 </div>
             ))}

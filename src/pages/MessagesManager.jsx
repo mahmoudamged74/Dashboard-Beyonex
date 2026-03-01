@@ -15,10 +15,12 @@ import {
   MdNavigateNext
 } from 'react-icons/md';
 import axiosInstance from '../api/axiosInstance';
+import usePermission from '../hooks/usePermission';
 import styles from './MessagesManager.module.css';
 
 const MessagesManager = () => {
   const { t, i18n } = useTranslation();
+  const { can } = usePermission();
   const isAr = i18n.language === 'ar';
 
   const [messages, setMessages] = useState([]);
@@ -58,6 +60,7 @@ const MessagesManager = () => {
         if (selectedMessage && selectedMessage.id === id) {
           setSelectedMessage(prev => ({ ...prev, read: true }));
         }
+        toast.success(t('update_success') || 'Message marked as read');
       }
     } catch (err) {
       toast.error(t('update_error') || 'Failed to update message status');
@@ -156,9 +159,11 @@ const MessagesManager = () => {
                       <button className={styles.actionBtn} onClick={() => openMessage(msg)} title={t('view')}>
                         <MdVisibility />
                       </button>
-                      <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => handleDelete(msg.id)} title={t('delete')}>
-                        <MdDelete />
-                      </button>
+                      {can('messages.delete') && (
+                        <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => handleDelete(msg.id)} title={t('delete')}>
+                          <MdDelete />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
