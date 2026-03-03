@@ -3,6 +3,12 @@
     animation: fadeIn 0.5s ease-out;
 }
 
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -20,6 +26,20 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1.5rem;
+    }
+
+    .header button {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 .title {
@@ -85,6 +105,27 @@
     border-radius: 20px;
     padding: 2.5rem;
     min-height: 400px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1200px) {
+    .settingsForm {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .settingsForm {
+        padding: 1.25rem;
+        border-radius: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .settingsForm {
+        padding: 1rem;
+    }
 }
 
 .section {
@@ -109,9 +150,15 @@
     gap: 1.5rem;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1200px) {
     .formGrid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .formGrid {
+        gap: 1.25rem;
     }
 }
 
@@ -136,6 +183,8 @@
     color: var(--text-main);
     font-family: inherit;
     transition: all 0.2s;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .input:focus,
@@ -145,21 +194,17 @@
     box-shadow: 0 0 0 2px rgba(253, 222, 137, 0.1);
 }
 
-/* Media/Branding */
 .mediaGrid {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 2rem;
-    flex-wrap: wrap;
 }
 
-.mediaUploadCard {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    padding: 1.5rem;
-    border-radius: 16px;
-    text-align: center;
-    flex: 1;
-    min-width: 250px;
+@media (max-width: 768px) {
+    .mediaGrid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
 }
 
 .mediaTitle {

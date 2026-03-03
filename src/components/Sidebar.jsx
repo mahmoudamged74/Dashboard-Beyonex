@@ -51,7 +51,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     { path: '/about',    icon: <MdInfo />,      label: 'about',           permKey: 'about_page.view' },
     { path: '/services', icon: <MdDesignServices />, label: 'services',   permKey: 'services.view' },
     { path: '/why-us',   icon: <MdRecommend />, label: 'why_us',          permKey: 'why_us.view' },
-    { path: '/footer',   icon: <MdViewAgenda />, label: 'footer_manager', permKey: 'settings.view' },
+    // { path: '/footer',   icon: <MdViewAgenda />, label: 'footer_manager', permKey: 'settings.view' },
     // { path: '/contact',  icon: <MdContactMail />, label: 'contact',       permKey: null },
     { path: '/roles',    icon: <MdSecurity />,  label: 'roles_manager',   permKey: 'roles.view' },
     { path: '/admins',   icon: <MdPerson />,    label: 'admins_manager',  permKey: 'admins.view' },

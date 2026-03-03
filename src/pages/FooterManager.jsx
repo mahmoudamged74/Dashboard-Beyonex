@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import { 
   MdEdit, 
   MdSave, 
@@ -152,14 +153,6 @@ const FooterManager = () => {
              <label className={styles.infoLabel}>{t('description')} (AR)</label>
              <div className={styles.infoValue}>{mainInfo.descAr}</div>
           </div>
-          <div className={styles.infoItem}>
-             <label className={styles.infoLabel}>{t('copyright')} (EN)</label>
-             <div className={styles.infoValue}>{mainInfo.copyrightEn}</div>
-          </div>
-           <div className={styles.infoItem}>
-             <label className={styles.infoLabel}>{t('copyright')} (AR)</label>
-             <div className={styles.infoValue}>{mainInfo.copyrightAr}</div>
-          </div>
         </div>
       </div>
 
@@ -291,14 +284,6 @@ const FooterManager = () => {
                                  <div className={styles.formGroup}>
                                     <label className={styles.label}>{t('description')} (AR)</label>
                                     <textarea className={styles.textarea} name="descAr" value={formData.descAr || ''} onChange={handleChange} dir="rtl" rows="3"/>
-                                </div>
-                                <div className={styles.formGroup}>
-                                    <label className={styles.label}>{t('copyright')} (EN)</label>
-                                    <input className={styles.input} name="copyrightEn" value={formData.copyrightEn || ''} onChange={handleChange} />
-                                </div>
-                                 <div className={styles.formGroup}>
-                                    <label className={styles.label}>{t('copyright')} (AR)</label>
-                                    <input className={styles.input} name="copyrightAr" value={formData.copyrightAr || ''} onChange={handleChange} dir="rtl"/>
                                 </div>
                             </>
                         )}

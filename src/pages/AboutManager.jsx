@@ -128,26 +128,31 @@ const handleAchievementAction = async (action, id = null, data = null) => {
 };
 
 const handleAboutUpdate = async (newData) => {
-        try {
-            // Check if newData is FormData (for image upload) or plain object
-            const isFormData = newData instanceof FormData;
-            const res = await axiosInstance.post('/admin/about-page', newData, {
-                headers: {
-                    'Content-Type': isFormData ? 'multipart/form-data' : 'application/json'
-                }
+    try {
+        const isFormData = newData instanceof FormData;
+        let res;
+        
+        if (isFormData) {
+            // Laravel-style PUT for FormData via POST + _method
+            newData.append('_method', 'PUT');
+            res = await axiosInstance.post('/admin/about-page', newData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
-
-            if (res.status === 200 || res.status === 201) {
-                toast.success(t('update_success'));
-                // Refresh data
-                const aboutRes = await axiosInstance.get('/admin/about-page');
-                setAboutData(aboutRes.data.data);
-            }
-        } catch (err) {
-            console.error('Error updating about data:', err);
-            toast.error(t('update_error'));
+        } else {
+            res = await axiosInstance.put('/admin/about-page', newData);
         }
-    };
+
+        if (res.status === 200 || res.status === 201) {
+            toast.success(t('update_success'));
+            // Refresh data
+            const aboutRes = await axiosInstance.get('/admin/about-page');
+            setAboutData(aboutRes.data.data);
+        }
+    } catch (err) {
+        console.error('Error updating about data:', err);
+        toast.error(t('update_error'));
+    }
+};
 
     const handleFeatureAction = async (action, id = null, data = null) => {
         try {
