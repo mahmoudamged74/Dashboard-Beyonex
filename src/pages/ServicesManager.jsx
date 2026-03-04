@@ -42,7 +42,7 @@ const ServicesManager = () => {
     display_order: '0',
     status: '1',
     technologies: [''],
-    features: ['']
+    features: [{ ar: '', en: '' }]
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -109,7 +109,7 @@ const ServicesManager = () => {
       display_order: '0',
       status: '1',
       technologies: [''],
-      features: ['']
+      features: [{ ar: '', en: '' }]
     });
     setImageFile(null);
     setImagePreview(null);
@@ -129,7 +129,9 @@ const ServicesManager = () => {
       display_order: service.display_order?.toString() || '0',
       status: service.status ? '1' : '0',
       technologies: service.technologies && service.technologies.length > 0 ? service.technologies : [''],
-      features: service.features && service.features.length > 0 ? service.features.map(f => typeof f === 'object' ? (f.en || '') : f) : ['']
+      features: service.features && service.features.length > 0 
+        ? service.features.map(f => typeof f === 'object' ? { ar: f.ar || '', en: f.en || '' } : { ar: f || '', en: f || '' }) 
+        : [{ ar: '', en: '' }]
     });
     setSelectedService(service);
     setImagePreview(service.image);
@@ -180,10 +182,19 @@ const ServicesManager = () => {
       
       // Basic Fields
       Object.keys(formData).forEach(key => {
-        if (key === 'technologies' || key === 'features') {
+        if (key === 'technologies') {
           formData[key].forEach((item, index) => {
             if (item && item.trim()) {
               data.append(`${key}[${index}]`, item);
+            }
+          });
+        } else if (key === 'features') {
+          formData[key].forEach((item, index) => {
+            if (item.ar && item.ar.trim()) {
+              data.append(`features[ar][${index}]`, item.ar);
+            }
+            if (item.en && item.en.trim()) {
+              data.append(`features[en][${index}]`, item.en);
             }
           });
         } else {
@@ -241,19 +252,25 @@ const ServicesManager = () => {
     }
   };
 
-  const handleArrayChange = (index, value, type) => {
+  const handleArrayChange = (index, value, type, lang = null) => {
     const updated = [...formData[type]];
-    updated[index] = value;
+    if (lang) {
+      updated[index] = { ...updated[index], [lang]: value };
+    } else {
+      updated[index] = value;
+    }
     setFormData({ ...formData, [type]: updated });
   };
 
   const addArrayItem = (type) => {
-    setFormData({ ...formData, [type]: [...formData[type], ''] });
+    const newItem = type === 'features' ? { ar: '', en: '' } : '';
+    setFormData({ ...formData, [type]: [...formData[type], newItem] });
   };
 
   const removeArrayItem = (index, type) => {
     const updated = formData[type].filter((_, i) => i !== index);
-    setFormData({ ...formData, [type]: updated.length > 0 ? updated : [''] });
+    const defaultValue = type === 'features' ? { ar: '', en: '' } : '';
+    setFormData({ ...formData, [type]: updated.length > 0 ? updated : [defaultValue] });
   };
 
   const truncate = (text, length = 100) => {
@@ -517,9 +534,27 @@ const ServicesManager = () => {
                     <div className={styles.dynamicList}>
                       <label className={styles.label}><MdList /> {t('features')}</label>
                       {formData.features.map((item, idx) => (
-                        <div key={idx} className={styles.arrayItem}>
-                          <input type="text" value={item} onChange={(e) => handleArrayChange(idx, e.target.value, 'features')} className={styles.input} placeholder={`Feature ${idx + 1}`} />
-                          <button type="button" onClick={() => removeArrayItem(idx, 'features')} className={styles.removeBtn}><MdClose /></button>
+                        <div key={idx} className={styles.arrayItemColumn}>
+                          <div className={styles.arrayItem}>
+                            <input 
+                              type="text" 
+                              value={item.en || ''} 
+                              onChange={(e) => handleArrayChange(idx, e.target.value, 'features', 'en')} 
+                              className={styles.input} 
+                              placeholder={`${t('feature')} ${idx + 1} (EN)`} 
+                            />
+                            <button type="button" onClick={() => removeArrayItem(idx, 'features')} className={styles.removeBtn}><MdClose /></button>
+                          </div>
+                          <div className={styles.arrayItem}>
+                            <input 
+                              type="text" 
+                              value={item.ar || ''} 
+                              onChange={(e) => handleArrayChange(idx, e.target.value, 'features', 'ar')} 
+                              className={styles.input} 
+                              dir="rtl"
+                              placeholder={`${t('feature')} ${idx + 1} (AR)`} 
+                            />
+                          </div>
                         </div>
                       ))}
                       <button type="button" onClick={() => addArrayItem('features')} className={styles.addArrayBtn}><MdAdd /> {t('add_new')}</button>

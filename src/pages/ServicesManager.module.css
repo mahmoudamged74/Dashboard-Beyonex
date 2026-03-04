@@ -758,6 +758,16 @@
     align-items: center;
 }
 
+.arrayItemColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.03);
+}
+
 .removeBtn {
     background: rgba(239, 68, 68, 0.1);
     color: #ef4444;
