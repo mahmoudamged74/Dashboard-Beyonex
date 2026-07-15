@@ -1,19 +1,41 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-    MdEdit, 
-    MdSave, 
+import {
+    MdEdit,
+    MdSave,
     MdClose,
     MdAdd,
     MdDelete,
-    MdSearch,
-    MdImage
+    MdImage,
+    MdEmojiEvents,
+    MdStar,
 } from 'react-icons/md';
 import styles from './AchievementsSection.module.css';
-import { iconMap } from '../../../utils/iconMap';
-import usePermission from '../../../hooks/usePermission';
+import { usePermission, useResolvedMediaUrl } from '../../../hooks';
+import { isMediaPath } from '../../../utils/mediaUrl';
+import MediaImage from '../../Media/MediaImage';
+import DynamicIcon from '../../Icon/DynamicIcon';
+import IconPicker from '../../Icon/IconPicker/IconPicker';
 
-const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction }) => {
+const SectionCard = ({ icon: Icon, title, description, children, actions }) => (
+    <section className={styles.card}>
+        <div className={styles.cardHeader}>
+            <div className={styles.cardHeaderMain}>
+                <div className={styles.cardHeaderIcon}>
+                    <Icon size={20} />
+                </div>
+                <div className={styles.cardHeaderText}>
+                    <h3 className={styles.cardTitle}>{title}</h3>
+                    {description && <p className={styles.cardDesc}>{description}</p>}
+                </div>
+            </div>
+            {actions && <div className={styles.cardHeaderActions}>{actions}</div>}
+        </div>
+        <div className={styles.cardBody}>{children}</div>
+    </section>
+);
+
+const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction, mediaVersion }) => {
     const { t, i18n } = useTranslation();
     const { can } = usePermission();
     const isRtl = i18n.dir() === 'rtl';
@@ -24,27 +46,60 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
         'title[en]': '',
         'title[ar]': '',
         icon: 'rocketLaunch',
-        display_order: '0'
+        display_order: '0',
     });
     const [editingId, setEditingId] = useState(null);
     const [iconSearch, setIconSearch] = useState('');
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
 
-    // Filter icons
-    const filteredIcons = Object.keys(iconMap).filter(name => 
-        name.toLowerCase().includes(iconSearch.toLowerCase())
+    const resolvedEditImage = useResolvedMediaUrl(
+        imagePreview && !imagePreview.startsWith('blob:') ? imagePreview : null,
+        mediaVersion
+    );
+    const modalImageSrc = imagePreview?.startsWith('blob:')
+        ? imagePreview
+        : resolvedEditImage || imagePreview;
+
+    const sectionTitle = isRtl ? data.achievement_title?.ar : data.achievement_title?.en;
+    const sectionDescription = isRtl
+        ? data.achievement_subtitle?.ar
+        : data.achievement_subtitle?.en;
+
+    const getIcon = (iconName) => (
+        <DynamicIcon name={iconName} size={22} fallback={MdStar} />
     );
 
+    const renderIconOrImage = (icon) => {
+        if (!icon) return getIcon(null);
+        if (isMediaPath(icon)) {
+            return (
+                <MediaImage
+                    value={icon}
+                    cacheBust={mediaVersion}
+                    alt=""
+                    className={styles.achievementMedia}
+                />
+            );
+        }
+        return getIcon(icon);
+    };
 
-    // Achievement Modal Handlers
+    const closeAchievementModal = () => {
+        setIsAchievementModalOpen(false);
+        setImageFile(null);
+        setImagePreview(null);
+        setIconSearch('');
+        setEditingId(null);
+    };
+
     const handleAddAchievement = () => {
         setAchievementFormData({
             value: '',
             'title[en]': '',
             'title[ar]': '',
             icon: 'rocketLaunch',
-            display_order: '0'
+            display_order: '0',
         });
         setEditingId(null);
         setImageFile(null);
@@ -59,11 +114,11 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
             'title[en]': item.title?.en || '',
             'title[ar]': item.title?.ar || '',
             icon: item.icon || 'rocketLaunch',
-            display_order: item.display_order || '0'
+            display_order: item.display_order || '0',
         });
         setEditingId(item.id);
         setImageFile(null);
-        setImagePreview(item.icon && item.icon.startsWith('http') ? item.icon : null);
+        setImagePreview(item.icon && isMediaPath(item.icon) ? item.icon : null);
         setIconSearch('');
         setIsAchievementModalOpen(true);
     };
@@ -75,6 +130,7 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
             setImagePreview(URL.createObjectURL(file));
             setAchievementFormData({ ...achievementFormData, icon: '' });
         }
+        e.target.value = '';
     };
 
     const handleAchievementSubmit = (e) => {
@@ -84,7 +140,7 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
         submitData.append('title[en]', achievementFormData['title[en]']);
         submitData.append('title[ar]', achievementFormData['title[ar]']);
         submitData.append('display_order', achievementFormData.display_order);
-        
+
         if (imageFile) {
             submitData.append('icon', imageFile);
         } else {
@@ -92,184 +148,224 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
         }
 
         onAchievementAction(editingId ? 'edit' : 'add', editingId, submitData);
-        setIsAchievementModalOpen(false);
-    };
-
-    const renderIconOrImage = (icon) => {
-        if (!icon) return null;
-        if (icon.startsWith('http')) {
-            return <img src={icon} alt="icon" style={{width: '30px', height: '30px', objectFit: 'contain'}} />;
-        }
-        const IconComp = iconMap[icon] || iconMap['rocketLaunch'];
-        return <IconComp />;
+        closeAchievementModal();
     };
 
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
-                <div className={styles.achievementsHeader}>
-                    {can('about_achievements.create') && (
-                        <button className={styles.addAchievementBtn} onClick={handleAddAchievement}>
-                            <MdAdd size={20} /> {t('add_achievement') || 'Add Achievement'}
+            <SectionCard
+                icon={MdEmojiEvents}
+                title={sectionTitle}
+                description={sectionDescription}
+                actions={
+                    can('about_achievements.create') ? (
+                        <button
+                            type="button"
+                            className={styles.addBtn}
+                            onClick={handleAddAchievement}
+                        >
+                            <MdAdd size={18} />
+                            {t('add_achievement')}
                         </button>
-                    )}
-                </div>
-                
-                <div className={styles.titleWrapper}>
-                    <h2 className={styles.title}>
-                        {isRtl ? data.achievement_title?.ar : data.achievement_title?.en}
-                    </h2>
-                    <p className={styles.subtitle}>
-                        {isRtl ? data.achievement_subtitle?.ar : data.achievement_subtitle?.en}
-                    </p>
-                </div>
-            </div>
-
-            <div className={styles.grid}>
-                {achievements.map((item) => (
-                    <div className={styles.card} key={item.id}>
-                        <div className={styles.iconWrapper}>
-                            {renderIconOrImage(item.icon)}
-                        </div>
-                        <div className={styles.number} dir="ltr">{item.value}</div>
-                        <div className={styles.label}>
-                            {isRtl ? item.title?.ar : item.title?.en}
-                        </div>
-                        <div className={styles.cardActions}>
-                            {can('about_achievements.update') && (
-                                <button className={styles.miniBtn} onClick={() => handleEditAchievement(item)} title={t('edit')}>
-                                    <MdEdit />
-                                </button>
-                            )}
-                            {can('about_achievements.delete') && (
-                                <button className={`${styles.miniBtn} ${styles.deleteBtn}`} onClick={() => onAchievementAction('delete', item.id)} title={t('delete')}>
-                                    <MdDelete />
-                                </button>
-                            )}
-                        </div>
+                    ) : null
+                }
+            >
+                {achievements.length === 0 ? (
+                    <div className={styles.emptyState}>
+                        <MdEmojiEvents size={32} />
+                        <p>{t('no_data_found')}</p>
                     </div>
-                ))}
-            </div>
+                ) : (
+                    <div className={styles.achievementsGrid}>
+                        {achievements.map((item) => (
+                            <article key={item.id} className={styles.achievementCard}>
+                                <div className={styles.achievementActions}>
+                                    {can('about_achievements.update') && (
+                                        <button
+                                            type="button"
+                                            className={styles.actionBtn}
+                                            onClick={() => handleEditAchievement(item)}
+                                            title={t('edit')}
+                                            aria-label={t('edit')}
+                                        >
+                                            <MdEdit size={15} />
+                                        </button>
+                                    )}
+                                    {can('about_achievements.delete') && (
+                                        <button
+                                            type="button"
+                                            className={`${styles.actionBtn} ${styles.actionDelete}`}
+                                            onClick={() => onAchievementAction('delete', item.id)}
+                                            title={t('delete')}
+                                            aria-label={t('delete')}
+                                        >
+                                            <MdDelete size={15} />
+                                        </button>
+                                    )}
+                                </div>
 
+                                <div className={styles.achievementContent}>
+                                    <div className={styles.achievementLeft}>
+                                        <div className={styles.achievementIconWrap}>
+                                            {renderIconOrImage(item.icon)}
+                                        </div>
+                                        <h4 className={styles.achievementTitle}>
+                                            {isRtl ? item.title?.ar : item.title?.en}
+                                        </h4>
+                                    </div>
+                                    <div className={styles.achievementValue} dir="ltr">
+                                        {item.value}
+                                    </div>
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                )}
+            </SectionCard>
 
-            {/* Achievement Item Modal */}
             {isAchievementModalOpen && (
-                <div className={styles.modalOverlay} onClick={() => setIsAchievementModalOpen(false)}>
-                    <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+                <div className={styles.modalOverlay} onClick={closeAchievementModal}>
+                    <div
+                        className={styles.modalContent}
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <div className={styles.modalHeader}>
                             <h3 className={styles.modalTitle}>
                                 {editingId ? t('edit_achievement') : t('add_achievement')}
                             </h3>
-                            <button className={styles.closeBtn} onClick={() => setIsAchievementModalOpen(false)}>
-                                <MdClose />
+                            <button
+                                type="button"
+                                className={styles.modalClose}
+                                onClick={closeAchievementModal}
+                            >
+                                <MdClose size={20} />
                             </button>
                         </div>
 
                         <form className={styles.modalForm} onSubmit={handleAchievementSubmit}>
                             <div className={styles.modalBody}>
-                                <div className={styles.formGroup}>
-                                    <label className={styles.label}>{t('value')} (e.g. +50)</label>
-                                    <input 
+                                <div className={styles.langField}>
+                                    <label className={styles.label} htmlFor="achievement-value">
+                                        {t('value')} ({t('value_example')})
+                                    </label>
+                                    <input
+                                        id="achievement-value"
                                         type="text"
                                         className={styles.input}
                                         value={achievementFormData.value}
-                                        onChange={(e) => setAchievementFormData({...achievementFormData, value: e.target.value})}
+                                        onChange={(e) =>
+                                            setAchievementFormData({
+                                                ...achievementFormData,
+                                                value: e.target.value,
+                                            })
+                                        }
                                         required
                                     />
                                 </div>
-                                <div className={styles.formGrid}>
-                                    <div className={styles.formGroup}>
-                                        <label className={styles.label}>{t('title')} (EN)</label>
-                                        <input 
+
+                                <div className={styles.bilingualInputs}>
+                                    <div className={styles.langField}>
+                                        <label className={styles.label} htmlFor="achievement-title-en">
+                                            {t('about_page.title_en')}
+                                        </label>
+                                        <input
+                                            id="achievement-title-en"
                                             type="text"
                                             className={styles.input}
                                             value={achievementFormData['title[en]']}
-                                            onChange={(e) => setAchievementFormData({...achievementFormData, 'title[en]': e.target.value})}
+                                            onChange={(e) =>
+                                                setAchievementFormData({
+                                                    ...achievementFormData,
+                                                    'title[en]': e.target.value,
+                                                })
+                                            }
                                             required
                                         />
                                     </div>
-                                    <div className={styles.formGroup}>
-                                        <label className={styles.label}>{t('title')} (AR)</label>
-                                        <input 
+                                    <div className={styles.langField}>
+                                        <label className={styles.label} htmlFor="achievement-title-ar">
+                                            {t('about_page.title_ar')}
+                                        </label>
+                                        <input
+                                            id="achievement-title-ar"
                                             type="text"
                                             className={styles.input}
                                             value={achievementFormData['title[ar]']}
-                                            onChange={(e) => setAchievementFormData({...achievementFormData, 'title[ar]': e.target.value})}
-                                            required
+                                            onChange={(e) =>
+                                                setAchievementFormData({
+                                                    ...achievementFormData,
+                                                    'title[ar]': e.target.value,
+                                                })
+                                            }
                                             dir="rtl"
+                                            required
                                         />
                                     </div>
                                 </div>
 
-                                <div className={styles.formGroup}>
-                                    <label className={styles.label}>{t('icon')} / {t('image')}</label>
-                                    <div className={styles.iconSelectorContainer}>
-                                        <div className={styles.searchBox}>
-                                            <MdSearch />
-                                            <input 
-                                                type="text" 
-                                                placeholder={t('search_icons')} 
-                                                value={iconSearch} 
-                                                onChange={(e) => setIconSearch(e.target.value)}
-                                                className={styles.searchInput}
-                                            />
+                                <div className={styles.fieldBlock}>
+                                    <label className={styles.label}>
+                                        {t('icon')} / {t('image')}
+                                    </label>
+                                    <IconPicker
+                                        value={achievementFormData.icon}
+                                        onChange={(icon) => {
+                                            setAchievementFormData({ ...achievementFormData, icon });
+                                            setImageFile(null);
+                                            setImagePreview(null);
+                                        }}
+                                        search={iconSearch}
+                                        onSearchChange={setIconSearch}
+                                        searchPlaceholder={t('search_icons')}
+                                        selectedLabel={t('selected')}
+                                    />
+                                    <label className={styles.uploadLabel}>
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                            hidden
+                                        />
+                                        <MdImage size={20} />
+                                        <span>{t('upload_custom_icon')}</span>
+                                    </label>
+                                    {modalImageSrc && (
+                                        <div className={styles.previewThumb}>
+                                            <img src={modalImageSrc} alt="" loading="lazy" decoding="async" />
                                         </div>
-                                        <div className={styles.iconGrid}>
-                                            {filteredIcons.map(iconName => {
-                                                const IconComp = iconMap[iconName];
-                                                return (
-                                                    <button 
-                                                        key={iconName}
-                                                        type="button" 
-                                                        className={`${styles.iconItem} ${achievementFormData.icon === iconName ? styles.selectedIcon : ''}`}
-                                                        onClick={() => {
-                                                            setAchievementFormData({...achievementFormData, icon: iconName});
-                                                            setImageFile(null);
-                                                            setImagePreview(null);
-                                                        }}
-                                                        title={iconName}
-                                                    >
-                                                        <IconComp />
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-                                        <div className={styles.selectedIconName}>
-                                            {t('selected')}: <strong>{achievementFormData.icon || 'rocketLaunch'}</strong>
-                                        </div>
-                                    </div>
-
-                                    <div className={styles.uploadBox}>
-                                        <label className={styles.uploadLabel}>
-                                            <input type="file" accept="image/*" onChange={handleFileChange} style={{display:'none'}} />
-                                            <MdImage size={24} />
-                                            <span>{t('upload_custom_icon')}</span>
-                                        </label>
-                                        {imagePreview && (
-                                            <div className={styles.previewContainer} style={{textAlign: 'center'}}>
-                                                <img src={imagePreview} alt="Preview" style={{width: '60px', height: '60px', borderRadius: '50%', objectFit: 'cover'}} />
-                                            </div>
-                                        )}
-                                    </div>
+                                    )}
                                 </div>
 
-                                <div className={styles.formGroup}>
-                                    <label className={styles.label}>{t('display_order')}</label>
-                                    <input 
+                                <div className={styles.langField}>
+                                    <label className={styles.label} htmlFor="achievement-display-order">
+                                        {t('display_order')}
+                                    </label>
+                                    <input
+                                        id="achievement-display-order"
                                         type="number"
                                         className={styles.input}
                                         value={achievementFormData.display_order}
-                                        onChange={(e) => setAchievementFormData({...achievementFormData, display_order: e.target.value})}
+                                        onChange={(e) =>
+                                            setAchievementFormData({
+                                                ...achievementFormData,
+                                                display_order: e.target.value,
+                                            })
+                                        }
                                     />
                                 </div>
                             </div>
 
                             <div className={styles.modalFooter}>
-                                <button type="button" className={styles.cancelBtn} onClick={() => setIsAchievementModalOpen(false)}>
+                                <button
+                                    type="button"
+                                    className={styles.cancelBtn}
+                                    onClick={closeAchievementModal}
+                                >
                                     {t('cancel')}
                                 </button>
                                 <button type="submit" className={styles.saveBtn}>
-                                    <MdSave /> {editingId ? t('save') : t('add_new')}
+                                    <MdSave size={16} />
+                                    {editingId ? t('save') : t('add_new')}
                                 </button>
                             </div>
                         </form>

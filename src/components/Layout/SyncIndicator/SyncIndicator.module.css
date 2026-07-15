@@ -1,0 +1,48 @@
+.bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 10050;
+  pointer-events: none;
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition:
+    opacity 0.25s ease,
+    transform 0.35s ease;
+  background: linear-gradient(
+    90deg,
+    var(--brand-400) 0%,
+    var(--primary) 45%,
+    var(--brand-100) 100%
+  );
+  box-shadow: 0 0 12px rgba(var(--primary-rgb), 0.45);
+}
+
+.bar.active {
+  opacity: 1;
+  animation: syncPulse 1.1s ease-in-out infinite;
+}
+
+@keyframes syncPulse {
+  0% {
+    transform: scaleX(0.12);
+  }
+
+  50% {
+    transform: scaleX(0.72);
+  }
+
+  100% {
+    transform: scaleX(0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar.active {
+    animation: none;
+    transform: scaleX(1);
+  }
+}

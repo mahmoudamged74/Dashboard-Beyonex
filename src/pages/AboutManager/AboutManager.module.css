@@ -1,0 +1,145 @@
+/* ══════════════════════════════════════════════════════════
+   About Manager — Professional Layout
+   ══════════════════════════════════════════════════════════ */
+
+.page {
+    composes: page from '../../Styles/PageLayout.module.css';
+}
+
+.center {
+    composes: center from '../../Styles/PageLayout.module.css';
+    min-height: 40vh;
+    margin-bottom: 1rem;
+}
+
+.pageHeader {
+    composes: pageHeader from '../../Styles/PageLayout.module.css';
+}
+
+.pageTitle {
+    composes: pageTitle from '../../Styles/PageLayout.module.css';
+}
+
+.pageSubtitle {
+    composes: pageSubtitle from '../../Styles/PageLayout.module.css';
+}
+
+.error {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--color-danger);
+    font-size: 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--danger-red-alpha-20);
+    border-radius: 14px;
+}
+
+/* ── Stats Row ── */
+.statsRow {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.statChip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--overlay-white-05);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: start;
+    font-family: inherit;
+    color: inherit;
+    min-width: 0;
+}
+
+.statChip:hover {
+    border-color: var(--primary-alpha-20);
+    background: var(--overlay-white-03);
+}
+
+.statChipActive {
+    border-color: var(--primary-alpha-30);
+    background: var(--primary-alpha-08);
+    box-shadow: var(--shadow-focus-primary);
+}
+
+.statChipStart {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 0;
+    flex: 1;
+}
+
+.statChipIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: var(--primary-alpha-10);
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.statChipActive .statChipIcon {
+    background: var(--primary-alpha-20);
+}
+
+.statChipValue {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-main);
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.statChipLabel {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Content ── */
+.content {
+    min-width: 0;
+}
+
+.sectionPanel {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+    .statsRow {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .statsRow {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 400px) {
+    .statsRow {
+        grid-template-columns: 1fr;
+    }
+}

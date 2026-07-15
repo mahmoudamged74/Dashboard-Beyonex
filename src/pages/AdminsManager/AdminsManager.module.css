@@ -1,0 +1,1021 @@
+/* ══════════════════════════════════════════════════════════
+   Admins Manager — Professional Layout
+   ══════════════════════════════════════════════════════════ */
+
+.page {
+  composes: page from '../../Styles/PageLayout.module.css';
+}
+
+.pageHeader {
+  composes: pageHeader from '../../Styles/PageLayout.module.css';
+}
+
+.pageTitle {
+  composes: pageTitle from '../../Styles/PageLayout.module.css';
+}
+
+.pageSubtitle {
+  composes: pageSubtitle from '../../Styles/PageLayout.module.css';
+}
+
+/* ── Section Card ── */
+.sectionCard {
+  background: var(--bg-card);
+  border: 1px solid var(--overlay-white-05);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.5rem;
+  border-bottom: 1px solid var(--overlay-white-05);
+  background: var(--overlay-white-02);
+  flex-wrap: wrap;
+}
+
+.sectionHeaderMain {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.sectionHeaderIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--primary-alpha-10);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0 0 0.2rem;
+}
+
+.sectionDesc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.sectionHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.sectionBody {
+  padding: 1.5rem;
+}
+
+/* ── Buttons ── */
+.addBtn,
+.saveBtn,
+.cancelBtn,
+.deleteConfirmBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.addBtn {
+  background: var(--primary);
+  color: var(--color-black);
+  border: none;
+}
+
+.addBtn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-focus-primary);
+}
+
+.saveBtn {
+  background: var(--gradient-primary);
+  color: var(--color-black);
+  border: none;
+  box-shadow: var(--shadow-primary-sm);
+}
+
+.saveBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary-btn);
+}
+
+.cancelBtn {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--overlay-white-10);
+}
+
+.cancelBtn:hover:not(:disabled) {
+  background: var(--overlay-white-05);
+  color: var(--text-main);
+}
+
+.deleteConfirmBtn {
+  background: var(--color-danger);
+  color: var(--color-white);
+  border: none;
+}
+
+.saveBtn:disabled,
+.cancelBtn:disabled,
+.deleteConfirmBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Admins Grid ── */
+.adminsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.adminCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  background: var(--overlay-white-03);
+  border: 1px solid var(--overlay-white-05);
+  border-radius: 14px;
+  padding: 1.15rem;
+  min-height: 180px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.adminCard:hover {
+  border-color: var(--primary-alpha-25);
+  box-shadow: var(--shadow-focus-primary);
+  transform: translateY(-2px);
+}
+
+.adminCardInactive {
+  opacity: 0.72;
+}
+
+.adminTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.adminIdentity {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.avatarRing {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(
+    135deg,
+    var(--primary),
+    var(--primary-alpha-30)
+  );
+  flex-shrink: 0;
+}
+
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  border: 2px solid var(--bg-card);
+}
+
+.avatarFallback {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-alpha-10);
+  color: var(--primary);
+  border: 2px solid var(--bg-card);
+}
+
+.indexBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 0.4rem;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-black);
+  background: var(--primary);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.adminNames {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.adminName {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adminEmail {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  min-width: 0;
+}
+
+.adminEmail span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adminBadges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.roleTag {
+  display: inline-flex;
+  align-items: center;
+  background: var(--primary-alpha-10);
+  color: var(--primary);
+  border: 1px solid var(--primary-alpha-20);
+  border-radius: 8px;
+  padding: 0.28rem 0.65rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.28rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.statusActive {
+  color: var(--primary);
+  background: var(--primary-alpha-10);
+  border: 1px solid var(--primary-alpha-20);
+}
+
+.statusInactive {
+  color: var(--text-muted);
+  background: var(--overlay-white-05);
+  border: 1px solid var(--overlay-white-08);
+}
+
+.adminMeta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--overlay-white-05);
+}
+
+.adminActions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--overlay-white-08);
+  border-radius: 8px;
+  background: var(--overlay-white-05);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionBtn:hover {
+  background: var(--primary-alpha-15);
+  border-color: var(--primary-alpha-30);
+  color: var(--primary);
+}
+
+.actionDelete:hover {
+  background: var(--danger-red-alpha-20);
+  border-color: var(--danger-red-alpha-20);
+  color: var(--color-danger);
+}
+
+.actionStatusOn {
+  color: var(--primary);
+  border-color: var(--primary-alpha-25);
+}
+
+.actionStatusOff {
+  color: var(--text-muted);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 2.5rem 1rem;
+  color: var(--text-muted);
+  border: 1px dashed var(--overlay-white-10);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.emptyState p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ── Modal ── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-black-80);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modalContent {
+  background: var(--bg-card);
+  border: 1px solid var(--overlay-white-10);
+  border-radius: 14px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-modal-md);
+}
+
+.modalForm {
+  max-width: 520px;
+}
+
+.modalNarrow {
+  max-width: 440px;
+}
+
+.modalHeader {
+  padding: 1.15rem 1.35rem;
+  border-bottom: 1px solid var(--overlay-white-05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.modalTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.modalTitleDanger {
+  color: var(--color-danger);
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  padding: 0.25rem;
+  border-radius: 8px;
+}
+
+.closeBtn:hover {
+  color: var(--color-danger);
+  background: var(--overlay-white-05);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.modalBody {
+  padding: 1.35rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+}
+
+.modalFooter {
+  padding: 1rem 1.35rem;
+  border-top: 1px solid var(--overlay-white-05);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
+.deleteConfirm {
+  text-align: center;
+  padding: 0.5rem 0.25rem;
+  color: var(--text-main);
+  line-height: 1.6;
+}
+
+.deleteConfirm p {
+  margin: 0;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.input {
+  width: 100%;
+  background: var(--overlay-black-20);
+  border: 1px solid var(--overlay-white-08);
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: var(--shadow-focus-input);
+}
+
+select.input {
+  cursor: pointer;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+    linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 12px) calc(50% - 3px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-inline-end: 2rem;
+}
+
+[dir="rtl"] select.input {
+  background-position:
+    12px calc(50% - 3px),
+    18px calc(50% - 3px);
+}
+
+/* ── Professional Role Select ── */
+.roleSelect {
+  position: relative;
+  width: 100%;
+}
+
+.roleSelectTrigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  min-height: 46px;
+  padding: 0.65rem 0.85rem;
+  background: var(--overlay-black-20);
+  border: 1px solid var(--overlay-white-08);
+  border-radius: 10px;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  box-sizing: border-box;
+  text-align: start;
+}
+
+.roleSelectTrigger:hover {
+  border-color: var(--overlay-white-15);
+  background: var(--overlay-white-03);
+}
+
+.roleSelectOpen {
+  border-color: var(--primary) !important;
+  box-shadow: var(--shadow-focus-input);
+}
+
+.roleSelectPlaceholder {
+  color: var(--text-muted);
+}
+
+.roleSelectValue {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.roleSelectValue > span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roleSelectIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--primary-alpha-10);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.roleSelectChevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.roleSelectChevronOpen {
+  transform: rotate(180deg);
+  color: var(--primary);
+}
+
+.roleSelectMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  inset-inline: 0;
+  z-index: 20;
+  background: var(--bg-card);
+  border: 1px solid var(--overlay-white-10);
+  border-radius: 12px;
+  box-shadow: var(--shadow-modal-md);
+  padding: 0.4rem;
+  max-height: 220px;
+  overflow-y: auto;
+  animation: roleMenuIn 0.16s ease-out;
+}
+
+@keyframes roleMenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.roleSelectEmpty {
+  padding: 0.85rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.roleSelectOption {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem;
+  padding: 0.55rem 0.65rem;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-main);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: start;
+  transition: background 0.15s ease;
+}
+
+.roleSelectOption:hover {
+  background: var(--overlay-white-05);
+}
+
+.roleSelectOptionActive {
+  background: var(--primary-alpha-10);
+}
+
+.roleSelectOptionMain {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.roleSelectOptionText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.roleSelectOptionName {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roleSelectOptionSub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.roleSelectCheck {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.passwordGroup {
+  position: relative;
+}
+
+.passwordGroup .input {
+  padding-inline-end: 2.75rem;
+}
+
+.togglePass {
+  position: absolute;
+  inset-inline-end: 0.85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  padding: 0.2rem;
+  border-radius: 6px;
+}
+
+.togglePass:hover {
+  color: var(--primary);
+}
+
+.helpText {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.toggleContainer {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.toggleBtn {
+  flex: 1;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--overlay-white-08);
+  background: var(--overlay-white-03);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+
+.toggleBtn.active {
+  background: var(--primary-alpha-10);
+  border-color: var(--primary-alpha-30);
+  color: var(--primary);
+}
+
+.toggleBtn.inactive {
+  background: var(--danger-red-alpha-20);
+  border-color: var(--danger-red-alpha-20);
+  color: var(--color-danger);
+}
+
+/* ── Professional Status Switch ── */
+.statusSwitch {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 64px;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--overlay-white-08);
+  background: var(--overlay-black-20);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: start;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.statusSwitch:hover {
+  border-color: var(--overlay-white-15);
+}
+
+.statusSwitchOn {
+  border-color: var(--primary-alpha-30);
+  background: var(--primary-alpha-08);
+}
+
+.statusSwitchOff {
+  border-color: var(--danger-red-alpha-20);
+  background: rgba(248, 113, 113, 0.06);
+}
+
+.statusSwitchInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.statusSwitchIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.statusSwitchOn .statusSwitchIcon {
+  background: var(--primary-alpha-15);
+  color: var(--primary);
+}
+
+.statusSwitchOff .statusSwitchIcon {
+  background: var(--danger-red-alpha-20);
+  color: var(--color-danger);
+}
+
+.statusSwitchText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.statusSwitchTitle {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.statusSwitchOn .statusSwitchTitle {
+  color: var(--primary);
+}
+
+.statusSwitchOff .statusSwitchTitle {
+  color: var(--color-danger);
+}
+
+.statusSwitchHint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.switchTrack {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  transition: background 0.2s ease;
+}
+
+.statusSwitchOn .switchTrack {
+  background: var(--primary);
+}
+
+.statusSwitchOff .switchTrack {
+  background: var(--overlay-white-15);
+}
+
+.switchThumb {
+  position: absolute;
+  top: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-white);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: inset-inline-start 0.2s ease, left 0.2s ease, right 0.2s ease;
+}
+
+.statusSwitchOn .switchThumb {
+  inset-inline-start: 23px;
+}
+
+.statusSwitchOff .switchThumb {
+  inset-inline-start: 3px;
+}
+
+/* Image Upload */
+.imageUpload {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  margin: 0 auto 0.35rem;
+  cursor: pointer;
+}
+
+.uploadPreview {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary);
+  background: var(--overlay-black-20);
+  display: block;
+}
+
+.uploadPlaceholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px dashed var(--overlay-white-20);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  gap: 0.35rem;
+  transition: var(--transition);
+  text-align: center;
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+
+.uploadPlaceholder span {
+  font-size: 0.68rem;
+  line-height: 1.3;
+}
+
+.uploadPlaceholder:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.uploadIcon {
+  position: absolute;
+  bottom: 4px;
+  inset-inline-end: 4px;
+  background: var(--primary);
+  color: var(--color-black);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-card);
+}
+
+.hiddenInput {
+  display: none;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .adminsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .sectionBody {
+    padding: 1.15rem;
+  }
+
+  .sectionHeaderActions {
+    width: 100%;
+  }
+
+  .sectionHeaderActions .addBtn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .adminsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .modalFooter {
+    flex-direction: column-reverse;
+  }
+
+  .modalFooter .saveBtn,
+  .modalFooter .cancelBtn,
+  .modalFooter .deleteConfirmBtn {
+    width: 100%;
+    justify-content: center;
+  }
+}

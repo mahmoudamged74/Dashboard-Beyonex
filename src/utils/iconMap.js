@@ -49,7 +49,6 @@ import { HiOutlineLightBulb, HiOutlineDatabase, HiOutlineCloud } from 'react-ico
 import { MdOutlineDeveloperMode, MdOutlineSecurity, MdOutlineAnalytics } from 'react-icons/md';
 
 export const iconMap = {
-  // Font Awesome Icons
   facebook: FaFacebookF,
   twitter: FaTwitter,
   linkedin: FaLinkedinIn,
@@ -173,8 +172,6 @@ export const iconMap = {
   globeAmericas: FaGlobeAmericas,
   globeEurope: FaGlobeEurope,
   globeAsia: FaGlobeAsia,
-
-  // Simple Icons (Tech Stacks)
   react: SiReact,
   javascript: SiJavascript,
   nodejs: SiNodedotjs,
@@ -221,8 +218,6 @@ export const iconMap = {
   jquery: SiJquery,
   redux: SiRedux,
   graphql: SiGraphql,
-
-  // Bootstrap Icons
   codeSlash: BsCodeSlash,
   shieldCheck: BsShieldCheck,
   headset: BsHeadset,
@@ -255,21 +250,28 @@ export const iconMap = {
   graphUp: BsGraphUp,
   graphDown: BsGraphDown,
   wallet: BsWalletFill,
-
-  // Ionicons 5
   closeCircle: IoCloseCircleOutline,
   settings: IoSettingsOutline,
   notifications: IoNotificationsOutline,
   searchOutline: IoSearchOutline,
   menu: IoMenuOutline,
-
-  // Hero Icons
   ideaOutline: HiOutlineLightBulb,
   dbOutline: HiOutlineDatabase,
   cloudOutline: HiOutlineCloud,
-
-  // Material Design Icons
   devMode: MdOutlineDeveloperMode,
   security: MdOutlineSecurity,
-  analytics: MdOutlineAnalytics
+  analytics: MdOutlineAnalytics,
+};
+
+export const iconNames = Object.keys(iconMap);
+
+const ICON_ALIASES = {
+  rocketLaunch: 'launch',
+  visibility: 'eye',
+};
+
+export const resolveIconName = (name) => {
+  if (!name) return null;
+  if (iconMap[name]) return name;
+  return ICON_ALIASES[name] || null;
 };

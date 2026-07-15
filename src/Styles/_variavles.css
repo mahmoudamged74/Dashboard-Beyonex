@@ -1,0 +1,200 @@
+:root {
+  /* ══════════════════════════════════════════════════════════
+     Beyonex IT — Brand Identity Palette
+     Primary Dark #0D1A26 | Navy #123E59 | Tech #2180A6
+     Accent Cyan #32C8D9 | Light #EAF3F8
+     ══════════════════════════════════════════════════════════ */
+
+  /* ── Brand Scale ── */
+  --brand-900: #0A141E;
+  --brand-800: #0D1A26;
+  --brand-700: #101F2E;
+  --brand-600: #123E59;
+  --brand-500: #1A5572;
+  --brand-400: #2180A6;
+  --brand-300: #2BA3C4;
+  --brand-200: #32C8D9;
+  --brand-100: #7DD9E6;
+  --brand-50:  #EAF3F8;
+
+  /* ── Dashboard Primary (aliases) ── */
+  --primary: var(--brand-200);
+  --primary-hover: var(--brand-400);
+  --primary-dark: var(--brand-600);
+  --primary-alt: var(--brand-300);
+  --primary-rgb: 50, 200, 217;
+  --primary-light-rgb: 125, 217, 230;
+
+  /* ── Backgrounds ── */
+  --bg-dark: var(--brand-800);
+  --bg-sidebar: var(--brand-900);
+  --bg-card: #152A3D;
+  --bg-card-fallback: var(--brand-700);
+  --bg-deep: var(--brand-900);
+  --bg-glass: rgba(21, 42, 61, 0.65);
+  --bg-glass-sidebar: rgba(10, 20, 30, 0.85);
+
+  /* ── Text ── */
+  --text-main: var(--brand-50);
+  --text-muted: #8BA8BC;
+  --text-muted-gray: #7A9BB0;
+
+  /* ── Neutrals ── */
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* ── Accent (Journey / highlights) ── */
+  --color-gold: var(--brand-200);
+
+  /* ── Status ── */
+  --color-success: #2ECC9A;
+  --color-success-emerald: #2ECC9A;
+  --color-success-green: #3DBEA7;
+  --color-danger: #E85D6C;
+  --color-danger-red: #E85D6C;
+  --color-danger-light: #F0808C;
+  --color-info-blue: var(--brand-300);
+  --color-info-blue-bright: var(--brand-400);
+  --color-info-blue-light: var(--brand-100);
+
+  /* ── White overlays (dark UI surfaces) ── */
+  --overlay-white-02: rgba(255, 255, 255, 0.02);
+  --overlay-white-03: rgba(255, 255, 255, 0.03);
+  --overlay-white-04: rgba(255, 255, 255, 0.04);
+  --overlay-white-05: rgba(255, 255, 255, 0.05);
+  --overlay-white-06: rgba(255, 255, 255, 0.06);
+  --overlay-white-08: rgba(255, 255, 255, 0.08);
+  --overlay-white-10: rgba(255, 255, 255, 0.1);
+  --overlay-white-12: rgba(255, 255, 255, 0.12);
+  --overlay-white-15: rgba(255, 255, 255, 0.15);
+  --overlay-white-18: rgba(255, 255, 255, 0.18);
+  --overlay-white-20: rgba(255, 255, 255, 0.2);
+  --overlay-white-35: rgba(255, 255, 255, 0.35);
+  --overlay-white-45: rgba(255, 255, 255, 0.45);
+  --overlay-white-50: rgba(255, 255, 255, 0.5);
+  --overlay-white-60: rgba(255, 255, 255, 0.6);
+  --overlay-white-70: rgba(255, 255, 255, 0.7);
+  --overlay-white-75: rgba(255, 255, 255, 0.75);
+  --overlay-white-80: rgba(255, 255, 255, 0.8);
+
+  /* ── Black / dark overlays ── */
+  --overlay-black-10: rgba(10, 20, 30, 0.15);
+  --overlay-black-20: rgba(10, 20, 30, 0.28);
+  --overlay-black-22: rgba(10, 20, 30, 0.32);
+  --overlay-black-30: rgba(10, 20, 30, 0.42);
+  --overlay-black-40: rgba(10, 20, 30, 0.55);
+  --overlay-black-50: rgba(10, 20, 30, 0.68);
+  --overlay-black-70: rgba(10, 20, 30, 0.78);
+  --overlay-black-80: rgba(10, 20, 30, 0.88);
+
+  /* ── Primary (cyan) alpha ── */
+  --primary-alpha-02: rgba(var(--primary-rgb), 0.02);
+  --primary-alpha-03: rgba(var(--primary-rgb), 0.03);
+  --primary-alpha-05: rgba(var(--primary-rgb), 0.05);
+  --primary-alpha-08: rgba(var(--primary-rgb), 0.08);
+  --primary-alpha-10: rgba(var(--primary-rgb), 0.1);
+  --primary-alpha-15: rgba(var(--primary-rgb), 0.15);
+  --primary-alpha-20: rgba(var(--primary-rgb), 0.2);
+  --primary-alpha-25: rgba(var(--primary-rgb), 0.25);
+  --primary-alpha-30: rgba(var(--primary-rgb), 0.3);
+  --primary-alpha-40: rgba(var(--primary-rgb), 0.4);
+  --primary-alpha-50: rgba(var(--primary-rgb), 0.5);
+
+  /* ── Primary light alpha ── */
+  --primary-light-alpha-05: rgba(var(--primary-light-rgb), 0.05);
+  --primary-light-alpha-10: rgba(var(--primary-light-rgb), 0.1);
+
+  /* ── Accent highlight alpha (Journey section) ── */
+  --gold-alpha-10: rgba(var(--primary-rgb), 0.1);
+  --gold-alpha-20: rgba(var(--primary-rgb), 0.2);
+  --gold-alpha-30: rgba(var(--primary-rgb), 0.3);
+  --gold-alpha-50: rgba(var(--primary-rgb), 0.5);
+
+  /* ── Danger alpha ── */
+  --danger-alpha-10: rgba(232, 93, 108, 0.1);
+  --danger-alpha-15: rgba(232, 93, 108, 0.15);
+  --danger-alpha-20: rgba(232, 93, 108, 0.2);
+  --danger-alpha-30: rgba(232, 93, 108, 0.3);
+  --danger-alpha-50: rgba(232, 93, 108, 0.5);
+
+  /* ── Danger red alpha ── */
+  --danger-red-alpha-10: rgba(232, 93, 108, 0.1);
+  --danger-red-alpha-15: rgba(232, 93, 108, 0.15);
+  --danger-red-alpha-20: rgba(232, 93, 108, 0.2);
+
+  /* ── Danger light alpha ── */
+  --danger-light-alpha-12: rgba(240, 128, 140, 0.12);
+  --danger-light-alpha-30: rgba(240, 128, 140, 0.3);
+
+  /* ── Success alpha ── */
+  --success-alpha-15: rgba(46, 204, 154, 0.15);
+  --success-emerald-alpha-15: rgba(46, 204, 154, 0.15);
+  --success-emerald-alpha-20: rgba(46, 204, 154, 0.2);
+  --success-green-alpha-10: rgba(61, 190, 167, 0.1);
+
+  /* ── Info / Tech blue alpha ── */
+  --info-blue-alpha-10: rgba(43, 163, 196, 0.1);
+  --blue-alpha-05: rgba(33, 128, 166, 0.05);
+  --blue-alpha-10: rgba(33, 128, 166, 0.1);
+  --blue-alpha-45: rgba(33, 128, 166, 0.45);
+  --blue-alpha-55: rgba(33, 128, 166, 0.55);
+  --blue-focus-alpha-18: rgba(var(--primary-rgb), 0.18);
+  --blue-focus-alpha-70: rgba(33, 128, 166, 0.7);
+  --link-blue-alpha-85: rgba(125, 217, 230, 0.85);
+
+  /* ── Login overlay ── */
+  --login-overlay-start: rgba(10, 20, 30, 0.78);
+  --login-overlay-end: rgba(18, 62, 89, 0.62);
+
+  /* ── Shadows ── */
+  --shadow-primary-sm: 0 4px 15px rgba(var(--primary-rgb), 0.2);
+  --shadow-primary-md: 0 6px 20px rgba(var(--primary-rgb), 0.28);
+  --shadow-primary-glow: 0 0 15px rgba(var(--primary-rgb), 0.3);
+  --shadow-primary-btn: 0 4px 15px rgba(var(--primary-rgb), 0.32);
+  --shadow-card: 0 10px 30px rgba(10, 20, 30, 0.35);
+  --shadow-card-lg: 0 10px 30px rgba(10, 20, 30, 0.45);
+  --shadow-modal: 0 25px 50px rgba(10, 20, 30, 0.55);
+  --shadow-modal-md: 0 20px 50px rgba(10, 20, 30, 0.55);
+  --shadow-modal-sm: 0 20px 40px rgba(10, 20, 30, 0.48);
+  --shadow-panel: 0 4px 24px rgba(10, 20, 30, 0.32);
+  --shadow-icon: 0 4px 10px rgba(10, 20, 30, 0.4);
+  --shadow-success: 0 4px 12px rgba(46, 204, 154, 0.22);
+  --shadow-danger: 0 4px 12px rgba(232, 93, 108, 0.22);
+  --shadow-blue-btn: 0 4px 20px rgba(33, 128, 166, 0.42);
+  --shadow-blue-btn-hover: 0 8px 28px rgba(33, 128, 166, 0.52);
+  --shadow-dashboard: 0 10px 30px rgba(10, 20, 30, 0.55);
+  --shadow-focus-primary: 0 0 0 2px rgba(var(--primary-rgb), 0.12);
+  --shadow-focus-input: 0 0 0 3px rgba(var(--primary-rgb), 0.18);
+  --shadow-gold-glow: 0 0 20px rgba(var(--primary-rgb), 0.28);
+  --shadow-gold-card: 0 10px 30px rgba(10, 20, 30, 0.4), 0 0 15px rgba(var(--primary-rgb), 0.1);
+  --shadow-gold-dot: 0 0 10px rgba(var(--primary-rgb), 0.3);
+  --shadow-login: 0 25px 50px rgba(10, 20, 30, 0.5);
+  --shadow-logo: 0 4px 16px rgba(10, 20, 30, 0.45);
+
+  /* ── Gradients ── */
+  --gradient-primary: linear-gradient(135deg, var(--brand-400) 0%, var(--brand-200) 100%);
+  --gradient-dashboard-title: linear-gradient(135deg, var(--brand-50), var(--brand-100));
+  --gradient-journey: linear-gradient(135deg, var(--brand-700) 0%, var(--brand-900) 100%);
+
+  /* ── Layout ── */
+  --transition: all 0.3s ease;
+  --sidebar-width: 320px;
+  --sidebar-width-collapsed: 80px;
+
+  /* ── Typography Scale (base: 18px via html) ── */
+  --font-size-xs: 0.8125rem;   /* ~14.6px */
+  --font-size-sm: 0.9375rem;   /* ~16.9px */
+  --font-size-base: 1rem;      /* 18px */
+  --font-size-md: 1.0625rem;   /* ~19.1px */
+  --font-size-lg: 1.125rem;    /* ~20.3px */
+  --font-size-xl: 1.25rem;     /* 22.5px */
+  --font-size-2xl: 1.5rem;     /* 27px */
+  --font-size-3xl: 1.75rem;    /* 31.5px */
+  --font-size-4xl: 2rem;       /* 36px */
+  --line-height-tight: 1.3;
+  --line-height-normal: 1.55;
+  --line-height-relaxed: 1.7;
+  --letter-spacing-tight: -0.01em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.04em;
+}

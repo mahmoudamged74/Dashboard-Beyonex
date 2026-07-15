@@ -1,0 +1,60 @@
+/* ── Professional scrollbar (global) ── */
+html {
+  scrollbar-gutter: stable;
+  scrollbar-color: rgba(var(--primary-rgb), 0.55) rgba(10, 20, 30, 0.9);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--primary-rgb), 0.5) rgba(10, 20, 30, 0.85);
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(10, 20, 30, 0.75);
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(var(--primary-rgb), 0.72) 0%,
+    rgba(33, 128, 166, 0.82) 100%
+  );
+  border-radius: 100px;
+  border: 2px solid rgba(10, 20, 30, 0.4);
+  background-clip: padding-box;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(125, 217, 230, 0.92) 0%,
+    rgba(var(--primary-rgb), 0.95) 100%
+  );
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--primary);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::-webkit-scrollbar-thumb {
+    transition: none;
+  }
+}

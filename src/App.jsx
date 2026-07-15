@@ -1,49 +1,47 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './Styles/toast.css';
 
-import { AuthProvider } from './context/AuthContext';
-import Layout from './components/Layout';
-import ProtectedRoute from './components/ProtectedRoute';
-import PermissionRoute from './components/PermissionRoute';
+import Layout from './components/Layout/Layout';
+import ProtectedRoute from './components/Routing/ProtectedRoute';
+import PermissionRoute from './components/Routing/PermissionRoute';
+import { RouteFallback, SectionSkeleton } from './components/Loading';
+import AppToastContainer from './components/Toast/AppToastContainer';
+import DocumentFavicon from './components/DocumentFavicon/DocumentFavicon';
+import { isInitialLoad } from './utils/appShell';
 
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import HomeManager from './pages/HomeManager';
-import ServicesManager from './pages/ServicesManager';
-import WhyUsManager from './pages/WhyUsManager';
-import FooterManager from './pages/FooterManager';
-import AboutManager from './pages/AboutManager';
-import Profile from './pages/Profile';
-import RolesManager from './pages/RolesManager';
-import Settings from './pages/Settings';
-import MessagesManager from './pages/MessagesManager';
-import AdminsManager from './pages/AdminsManager';
+const Login = lazy(() => import('./pages/Login/Login'));
+const Dashboard = lazy(() => import('./pages/Dashboard/Dashboard'));
 
-function App() {
+const HomeManager = lazy(() => import('./pages/HomeManager/HomeManager'));
+const ServicesManager = lazy(() => import('./pages/ServicesManager/ServicesManager'));
+const WhyUsManager = lazy(() => import('./pages/WhyUsManager/WhyUsManager'));
+const AboutManager = lazy(() => import('./pages/AboutManager/AboutManager'));
+const Profile = lazy(() => import('./pages/Profile/Profile'));
+const RolesManager = lazy(() => import('./pages/RolesManager/RolesManager'));
+const Settings = lazy(() => import('./pages/Settings/Settings'));
+const MessagesManager = lazy(() => import('./pages/MessagesManager/MessagesManager'));
+const AdminsManager = lazy(() => import('./pages/AdminsManager/AdminsManager'));
+
+function LazyPage({ children, fallback = <RouteFallback /> }) {
+  const suspenseFallback = isInitialLoad() ? null : fallback;
+  return <Suspense fallback={suspenseFallback}>{children}</Suspense>;
+}
+
+function AppRoutes() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        {/* Global toast notifications */}
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
+    <>
+      <DocumentFavicon />
+      <AppToastContainer />
 
-        <Routes>
-          {/* Public routes */}
-          <Route path="/login" element={<Login />} />
+      <Routes>
+          <Route path="/login" element={
+            <LazyPage>
+              <Login />
+            </LazyPage>
+          } />
 
-          {/* Protected routes — require token */}
           <Route
             path="/"
             element={
@@ -52,102 +50,123 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Dashboard />} />
+            <Route index element={
+              <LazyPage>
+                <Dashboard />
+              </LazyPage>
+            } />
 
             <Route
               path="home"
               element={
-                <PermissionRoute permKey="hero_section.view">
-                  <HomeManager />
-                </PermissionRoute>
+                <LazyPage>
+                  <PermissionRoute permKey="hero_section.view">
+                    <HomeManager />
+                  </PermissionRoute>
+                </LazyPage>
               }
             />
 
             <Route
               path="about"
               element={
-                <PermissionRoute permKey="about_page.view">
-                  <AboutManager />
-                </PermissionRoute>
+                <LazyPage fallback={<SectionSkeleton count={3} />}>
+                  <PermissionRoute permKey="about_page.view">
+                    <AboutManager />
+                  </PermissionRoute>
+                </LazyPage>
               }
             />
 
             <Route
               path="services"
               element={
-                <PermissionRoute permKey="services.view">
-                  <ServicesManager />
-                </PermissionRoute>
+                <LazyPage>
+                  <PermissionRoute permKey="services.view">
+                    <ServicesManager />
+                  </PermissionRoute>
+                </LazyPage>
               }
             />
 
             <Route
               path="why-us"
               element={
-                <PermissionRoute permKey="why_us.view">
-                  <WhyUsManager />
-                </PermissionRoute>
-              }
-            />
-
-            <Route
-              path="footer"
-              element={
-                <FooterManager />
+                <LazyPage>
+                  <PermissionRoute permKey="why_us.view">
+                    <WhyUsManager />
+                  </PermissionRoute>
+                </LazyPage>
               }
             />
 
             <Route
               path="profile"
               element={
-                <PermissionRoute permKey="profile.view">
-                  <Profile />
-                </PermissionRoute>
+                <LazyPage>
+                  <PermissionRoute permKey="profile.view">
+                    <Profile />
+                  </PermissionRoute>
+                </LazyPage>
               }
             />
 
             <Route
               path="roles"
               element={
-                <PermissionRoute permKey="roles.view">
-                  <RolesManager />
-                </PermissionRoute>
+                <LazyPage>
+                  <PermissionRoute permKey="roles.view">
+                    <RolesManager />
+                  </PermissionRoute>
+                </LazyPage>
               }
             />
 
             <Route
               path="admins"
               element={
-                <PermissionRoute permKey="admins.view">
-                  <AdminsManager />
-                </PermissionRoute>
+                <LazyPage>
+                  <PermissionRoute permKey="admins.view">
+                    <AdminsManager />
+                  </PermissionRoute>
+                </LazyPage>
               }
             />
 
             <Route
               path="settings"
               element={
-                <PermissionRoute permKey="settings.view">
-                  <Settings />
-                </PermissionRoute>
+                <LazyPage>
+                  <PermissionRoute permKey="settings.view">
+                    <Settings />
+                  </PermissionRoute>
+                </LazyPage>
               }
             />
 
             <Route
               path="messages"
               element={
-                <PermissionRoute permKey="messages.view">
-                  <MessagesManager />
-                </PermissionRoute>
+                <LazyPage>
+                  <PermissionRoute permKey="messages.view">
+                    <MessagesManager />
+                  </PermissionRoute>
+                </LazyPage>
               }
             />
           </Route>
 
-          {/* Fallback: any unknown path → dashboard */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
   );
 }
 

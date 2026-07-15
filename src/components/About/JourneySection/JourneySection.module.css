@@ -1,563 +1,685 @@
+/* ══════════════════════════════════════════════════════════
+   About Journey Section — Professional Layout
+   ══════════════════════════════════════════════════════════ */
+
 .container {
-    background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
-    border: 1px solid rgba(255, 215, 0, 0.1);
-    /* Gold tint border */
-    border-radius: 16px;
-    padding: 3rem 2rem;
-    margin-bottom: 2rem;
-    position: relative;
-    overflow: hidden;
-    color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  min-width: 0;
 }
 
-.header {
-    text-align: center;
-    margin-bottom: 4rem;
-}
-
-.mainTitle {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #ffd700;
-    /* Gold */
-    margin-bottom: 1rem;
-    text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-}
-
-.mainDesc {
-    color: rgba(255, 255, 255, 0.7);
-    max-width: 600px;
-    margin: 0 auto;
-    line-height: 1.6;
-}
-
-/* Cards Section */
-.cardsGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-bottom: 4rem;
-}
-
-.card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 215, 0, 0.2);
-    border-radius: 12px;
-    padding: 2rem;
-    text-align: center;
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 15px rgba(255, 215, 0, 0.1);
-    border-color: rgba(255, 215, 0, 0.5);
-}
-
-.cardIcon {
-    font-size: 3rem;
-    color: #ffd700;
-    margin-bottom: 1.5rem;
-    display: inline-block;
-    padding: 1rem;
-    background: rgba(255, 215, 0, 0.1);
-    border-radius: 50%;
-}
-
-.cardTitle {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #ffd700;
-    margin-bottom: 1rem;
-}
-
-.cardDesc {
-    color: rgba(255, 255, 255, 0.8);
-    line-height: 1.6;
-}
-
-/* Timeline Section */
-.timeline {
-    position: relative;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem 0;
-}
-
-/* Vertical Line */
-.timeline::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 2px;
-    background: linear-gradient(180deg,
-            transparent 0%,
-            rgba(255, 215, 0, 0.5) 15%,
-            rgba(255, 215, 0, 0.5) 85%,
-            transparent 100%);
-    transform: translateX(-50%);
-}
-
-.timelineItem {
-    position: relative;
-    margin-bottom: 3rem;
-    width: 50%;
-}
-
-.timelineItem:last-child {
-    margin-bottom: 0;
-}
-
-/* Alternating Sides */
-.timelineItem:nth-child(odd) {
-    left: 0;
-    padding-right: 3rem;
-    text-align: right;
-}
-
-.timelineItem:nth-child(even) {
-    left: 50%;
-    padding-left: 3rem;
-    text-align: left;
-}
-
-/* Use dir="rtl" logic for Arabic if needed, but handled via React usually.
-   For simplicity in CSS, we'll assume LTR structure and let RTL flip it via CSS mirroring or flex direction globally.
-   However, absolute positioning needs care. 
-*/
-
-[dir="rtl"] .timelineItem:nth-child(odd) {
-    right: 0;
-    left: auto;
-    padding-left: 3rem;
-    padding-right: 0;
-    text-align: left;
-}
-
-[dir="rtl"] .timelineItem:nth-child(even) {
-    right: 50%;
-    left: auto;
-    padding-right: 3rem;
-    padding-left: 0;
-    text-align: right;
-}
-
-/* Dot on Line */
-.timelineDot {
-    position: absolute;
-    top: 0;
-    width: 40px;
-    height: 40px;
-    background: #0d0d0d;
-    border: 2px solid #ffd700;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #ffd700;
-    z-index: 2;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-}
-
-.timelineItem:nth-child(odd) .timelineDot {
-    right: -20px;
-}
-
-.timelineItem:nth-child(even) .timelineDot {
-    left: -20px;
-}
-
-[dir="rtl"] .timelineItem:nth-child(odd) .timelineDot {
-    left: -20px;
-    right: auto;
-}
-
-[dir="rtl"] .timelineItem:nth-child(even) .timelineDot {
-    right: -20px;
-    left: auto;
-}
-
-.year {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #ffd700;
-    margin-bottom: 0.5rem;
-    display: block;
-}
-
-.itemTitle {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 0.5rem;
-}
-
-.itemDesc {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.9rem;
-    line-height: 1.5;
-}
-
-/* Edit Controls */
-.controls {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    display: flex;
-    gap: 0.5rem;
-    z-index: 10;
-}
-
-[dir="rtl"] .controls {
-    right: auto;
-    left: 1rem;
-}
-
+/* ── Buttons ── */
 .editBtn {
-    background: rgba(255, 255, 255, 0.1);
-    border: none;
-    color: #fff;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.2s;
+  background: var(--overlay-white-05);
+  border: 1px solid var(--primary-alpha-25);
+  color: var(--primary);
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .editBtn:hover {
-    background: rgba(255, 215, 0, 0.2);
-    color: #ffd700;
+  background: var(--primary-alpha-10);
+  border-color: var(--primary);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .container {
-        padding: 2rem 1rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .header {
-        width: 100%;
-        text-align: center;
-    }
-
-    .cardsGrid {
-        width: 100%;
-        grid-template-columns: 1fr;
-        justify-items: center;
-    }
-
-    .card {
-        width: 100%;
-        max-width: 400px;
-    }
-
-    .timeline {
-        width: 100%;
-    }
-
-    .timeline::before {
-        left: 20px;
-    }
-
-    [dir="rtl"] .timeline::before {
-        right: 20px;
-        left: auto;
-    }
-
-    .timelineItem {
-        width: 100%;
-        margin-bottom: 2.5rem;
-    }
-
-    .timelineItem:nth-child(odd),
-    .timelineItem:nth-child(even) {
-        left: 0;
-        padding-left: 60px;
-        padding-right: 1.5rem;
-        text-align: left;
-    }
-
-    [dir="rtl"] .timelineItem:nth-child(odd),
-    [dir="rtl"] .timelineItem:nth-child(even) {
-        right: 0;
-        left: auto;
-        padding-right: 60px;
-        padding-left: 1.5rem;
-        text-align: right;
-    }
-
-    .timelineItem:nth-child(odd) .timelineDot,
-    .timelineItem:nth-child(even) .timelineDot {
-        left: 0;
-        right: auto;
-    }
-
-    [dir="rtl"] .timelineItem:nth-child(odd) .timelineDot,
-    [dir="rtl"] .timelineItem:nth-child(even) .timelineDot {
-        right: 0;
-        left: auto;
-    }
+.saveBtn,
+.cancelBtn,
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: inherit;
+  white-space: nowrap;
 }
 
-/* Modal Styles Reuse/Adapt */
-.modalForm {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    overflow: hidden;
-    min-height: 0;
+.saveBtn {
+  background: var(--gradient-primary);
+  color: var(--color-black);
+  border: none;
+  box-shadow: var(--shadow-primary-sm);
 }
 
-.modalBody {
-    padding: 1.5rem;
-    overflow-y: auto;
-    /* Scroll ONLY the body */
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    flex: 1;
-    /* Take all available space in form */
+.saveBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-primary-btn);
 }
 
-.formSectionTitle {
-    color: #ffd700;
-    /* Gold for section headers in modal */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 0.5rem;
-    margin-top: 1rem;
-    font-size: 1.1rem;
+.saveBtn:disabled,
+.cancelBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
 }
 
-/* Add Item Button in Modal */
-.addTimelineBtn {
-    background: transparent;
-    border: 1px dashed rgba(255, 255, 255, 0.2);
-    color: var(--primary);
-    padding: 0.8rem;
-    border-radius: 8px;
-    width: 100%;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.2s;
+.cancelBtn {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--overlay-white-10);
 }
 
-.addTimelineBtn:hover {
-    background: rgba(var(--primary-rgb), 0.05);
-    border-color: var(--primary);
+.cancelBtn:hover:not(:disabled) {
+  background: var(--overlay-white-05);
+  color: var(--text-main);
 }
 
-.timelineItemEditor {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 1rem;
-    border-radius: 8px;
-    position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+.addBtn {
+  background: var(--primary);
+  color: var(--color-black);
+  border: none;
 }
 
-.removeTimelineBtn {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    /* Or left based on dir, check later */
-    background: transparent;
-    border: none;
-    color: #ff4d4d;
-    cursor: pointer;
+.addBtn:hover {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-focus-primary);
 }
 
-[dir="rtl"] .removeTimelineBtn {
-    left: 0.5rem;
-    right: auto;
+/* ── Section Card ── */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--overlay-white-05);
+  border-radius: 16px;
+  overflow: hidden;
 }
 
-/* Milestones Management Header */
-.milestonesHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    padding: 0 1rem;
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.15rem 1.5rem;
+  border-bottom: 1px solid var(--overlay-white-05);
+  background: var(--overlay-white-02);
+  flex-wrap: wrap;
 }
 
-.milestonesTitle {
-    font-size: 1.5rem;
-    color: #ffd700;
-    margin: 0;
+.cardHeaderMain {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+  flex: 1;
 }
 
-.addMilestoneBtn {
-    background: rgba(255, 215, 0, 0.1);
-    border: 1px solid rgba(255, 215, 0, 0.3);
-    color: #ffd700;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    transition: all 0.2s;
+.cardHeaderIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--primary-alpha-10);
+  color: var(--primary);
+  flex-shrink: 0;
 }
 
-.addMilestoneBtn:hover {
-    background: rgba(255, 215, 0, 0.2);
-    border-color: #ffd700;
+.cardHeaderText {
+  min-width: 0;
 }
 
-/* Milestone Actions */
-.milestoneActions {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    justify-content: flex-end;
+.cardHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
-.miniBtn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: #fff;
-    padding: 0.4rem;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0 0 0.2rem;
 }
 
-.miniBtn:hover {
-    background: rgba(255, 215, 0, 0.2);
-    color: #ffd700;
-    border-color: rgba(255, 215, 0, 0.5);
+.cardDesc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
 }
 
-.deleteBtn:hover {
-    background: rgba(255, 77, 77, 0.2);
-    color: #ff4d4d;
-    border-color: rgba(255, 77, 77, 0.5);
+.cardBody {
+  padding: 1.5rem;
 }
 
-.noData {
-    text-align: center;
-    color: rgba(255, 255, 255, 0.5);
-    padding: 2rem;
-    font-style: italic;
+/* ── Fields ── */
+.fieldsStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
 }
 
-/* Image Upload in Modal */
-.uploadBox {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px dashed rgba(255, 255, 255, 0.1);
-    padding: 1rem;
-    border-radius: 8px;
-    text-align: center;
+.bilingualInputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.uploadLabel {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    color: #ffd700;
-    font-size: 0.9rem;
+.bilingualRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+  align-items: start;
 }
 
-.previewContainer {
-    margin-top: 1rem;
+.langField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
 }
 
-.previewContainer img {
-    border: 1px solid rgba(255, 215, 0, 0.3);
+.fieldBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
 }
 
-/* Icon Selector Consistency with Services/WhyUs */
-.iconSelectorContainer {
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 1rem;
-    margin-top: 0.5rem;
+.label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.input,
+.textarea {
+  width: 100%;
+  background: var(--overlay-black-20);
+  border: 1px solid var(--overlay-white-08);
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.9rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 90px;
+  line-height: 1.5;
+}
+
+.input:focus,
+.textarea:focus {
+  border-color: var(--primary);
+  outline: none;
+  box-shadow: var(--shadow-focus-input);
+}
+
+.input:disabled,
+.textarea:disabled,
+.input:read-only,
+.textarea:read-only {
+  opacity: 0.92;
+  cursor: default;
+  background: var(--overlay-white-02);
+  border-color: var(--overlay-white-05);
+}
+
+.input:disabled:focus,
+.textarea:disabled:focus {
+  border-color: var(--overlay-white-05);
+  box-shadow: none;
+}
+
+/* ── Mission / Vision grid ── */
+.mvGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.mvCard {
+  background: var(--bg-card);
+  border: 1px solid var(--overlay-white-05);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.previewBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.previewHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.previewIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--primary-alpha-10);
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.previewTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.35;
+  min-width: 0;
+}
+
+.previewText {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+/* ── Icon picker ── */
+.iconPicker {
+  background: var(--overlay-black-20);
+  border: 1px solid var(--overlay-white-08);
+  border-radius: 12px;
+  padding: 0.9rem;
 }
 
 .searchBox {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-}
-
-.searchBox svg {
-    color: rgba(255, 255, 255, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--overlay-white-05);
+  padding: 0.5rem 0.85rem;
+  border-radius: 8px;
+  margin-bottom: 0.85rem;
+  color: var(--text-muted);
 }
 
 .searchInput {
-    background: transparent;
-    border: none;
-    color: #fff;
-    width: 100%;
-    outline: none;
-    font-size: 0.9rem;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  width: 100%;
+  outline: none;
+  font-size: 0.88rem;
+  font-family: inherit;
 }
 
 .iconGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-    gap: 0.5rem;
-    max-height: 200px;
-    overflow-y: auto;
-    padding-right: 5px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 0.45rem;
+  max-height: 180px;
+  overflow-y: auto;
 }
 
 .iconItem {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid transparent;
-    border-radius: 8px;
-    color: rgba(255, 255, 255, 0.6);
-    cursor: pointer;
-    transition: all 0.2s;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--overlay-white-05);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
 .iconItem:hover {
-    background: rgba(255, 215, 0, 0.1);
-    color: #ffd700;
+  background: var(--primary-alpha-10);
+  color: var(--primary);
 }
 
-.selectedIcon {
-    background: #ffd700 !important;
-    color: #000 !important;
-    border-color: #ffd700;
+.iconItemSelected {
+  background: var(--primary) !important;
+  color: var(--color-black) !important;
+  border-color: var(--primary);
 }
 
 .selectedIconName {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.5);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    padding-top: 0.5rem;
-    margin-top: 1rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--overlay-white-05);
+  padding-top: 0.55rem;
+  margin: 0.85rem 0 0;
 }
 
-.formDivider {
-    border: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    margin: 1.5rem 0;
+/* ── Milestones ── */
+.milestonesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.milestoneCard {
+  background: var(--overlay-white-03);
+  border: 1px solid var(--overlay-white-05);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.milestoneCard:hover {
+  border-color: var(--primary-alpha-25);
+  box-shadow: var(--shadow-focus-primary);
+  transform: translateY(-2px);
+}
+
+.milestoneTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.milestoneIconWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: var(--primary-alpha-10);
+  color: var(--primary);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.milestoneMedia {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.milestoneActions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--overlay-white-08);
+  border-radius: 8px;
+  background: var(--overlay-white-05);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.actionBtn:hover {
+  background: var(--primary-alpha-15);
+  border-color: var(--primary-alpha-30);
+  color: var(--primary);
+}
+
+.actionDelete:hover {
+  background: var(--danger-red-alpha-20);
+  border-color: var(--danger-red-alpha-20);
+  color: var(--color-danger);
+}
+
+.milestoneMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.milestoneOrder {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--primary);
+  background: var(--primary-alpha-10);
+  border: 1px solid var(--primary-alpha-20);
+}
+
+.milestoneYear {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.milestoneTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-main);
+  line-height: 1.35;
+}
+
+.milestoneDesc {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 2.5rem 1rem;
+  color: var(--text-muted);
+  border: 1px dashed var(--overlay-white-10);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.emptyState p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ── Modal ── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-black-80);
+  backdrop-filter: blur(5px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modalContent {
+  background: var(--bg-card);
+  border: 1px solid var(--overlay-white-10);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 720px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-modal-md);
+}
+
+.modalHeader {
+  padding: 1.15rem 1.35rem;
+  border-bottom: 1px solid var(--overlay-white-05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.modalTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
+}
+
+.modalClose {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  padding: 0.25rem;
+  border-radius: 8px;
+  transition: color 0.2s, background 0.2s;
+}
+
+.modalClose:hover {
+  color: var(--color-danger);
+  background: var(--overlay-white-05);
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.modalBody {
+  padding: 1.35rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  flex: 1;
+}
+
+.modalFooter {
+  padding: 1rem 1.35rem;
+  border-top: 1px solid var(--overlay-white-05);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
+.uploadLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: 1px dashed var(--primary-alpha-30);
+  background: var(--primary-alpha-05);
+  color: var(--primary);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  width: fit-content;
+  transition: all 0.2s;
+}
+
+.uploadLabel:hover {
+  border-color: var(--primary);
+  background: var(--primary-alpha-10);
+}
+
+.previewThumb {
+  margin-top: 0.35rem;
+}
+
+.previewThumb img {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid var(--overlay-white-10);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .milestonesGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .mvGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .bilingualRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .cardBody {
+    padding: 1.15rem;
+  }
+
+  .cardHeaderActions {
+    width: 100%;
+  }
+
+  .cardHeaderActions .editBtn,
+  .cardHeaderActions .saveBtn,
+  .cardHeaderActions .cancelBtn,
+  .cardHeaderActions .addBtn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .milestonesGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .modalFooter {
+    flex-direction: column-reverse;
+  }
+
+  .modalFooter .saveBtn,
+  .modalFooter .cancelBtn {
+    width: 100%;
+    justify-content: center;
+  }
 }

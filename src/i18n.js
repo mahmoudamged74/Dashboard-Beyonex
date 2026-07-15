@@ -1,46 +1,82 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import Backend from 'i18next-http-backend';
 
-// Get saved language from localStorage or default to Arabic
+const normalizeLanguage = (lng) => (String(lng).startsWith('ar') ? 'ar' : 'en');
+
 const getSavedLanguage = () => {
   const savedLang = localStorage.getItem('i18nextLng');
-  if (savedLang && (savedLang === 'ar' || savedLang === 'en')) {
-    return savedLang;
+  if (savedLang) {
+    return normalizeLanguage(savedLang);
   }
-  // Default to Arabic
   localStorage.setItem('i18nextLng', 'ar');
   return 'ar';
 };
 
+const applyDocumentDirection = (lng) => {
+  const normalized = normalizeLanguage(lng);
+  document.documentElement.dir = normalized === 'ar' ? 'rtl' : 'ltr';
+  document.documentElement.lang = normalized;
+};
+
+const loadTranslation = async (lang) => {
+  const normalized = normalizeLanguage(lang);
+  if (normalized === 'ar') {
+    const mod = await import('../public/locales/ar/translation.json');
+    return mod.default;
+  }
+  const mod = await import('../public/locales/en/translation.json');
+  return mod.default;
+};
+
+const savedLang = getSavedLanguage();
+const initialTranslation = await loadTranslation(savedLang);
+
 i18n
-  .use(Backend)
   .use(initReactI18next)
   .init({
-    fallbackLng: 'ar',
-    lng: getSavedLanguage(),
-    debug: false,
-    
-    interpolation: {
-      escapeValue: false, // React already escapes values
+    resources: {
+      [savedLang]: { translation: initialTranslation },
     },
-    
-    backend: {
-      loadPath: '/locales/{{lng}}/{{ns}}.json',
+    fallbackLng: 'ar',
+    lng: savedLang,
+    supportedLngs: ['ar', 'en'],
+    nonExplicitSupportedLngs: true,
+    load: 'languageOnly',
+    debug: false,
+    react: {
+      useSuspense: false,
+    },
+    interpolation: {
+      escapeValue: false,
     },
   });
 
-// Save language changes to localStorage and update document direction
-i18n.on('languageChanged', (lng) => {
-  localStorage.setItem('i18nextLng', lng);
-  // Update document direction for RTL support
-  document.documentElement.dir = lng === 'ar' ? 'rtl' : 'ltr';
-  document.documentElement.lang = lng;
+i18n.on('languageChanged', async (lng) => {
+  const normalized = normalizeLanguage(lng);
+  localStorage.setItem('i18nextLng', normalized);
+  applyDocumentDirection(normalized);
+
+  if (!i18n.hasResourceBundle(normalized, 'translation')) {
+    const translation = await loadTranslation(normalized);
+    i18n.addResourceBundle(normalized, 'translation', translation, true, true);
+  }
 });
 
-// Set initial direction
-const initialLang = getSavedLanguage();
-document.documentElement.dir = initialLang === 'ar' ? 'rtl' : 'ltr';
-document.documentElement.lang = initialLang;
+applyDocumentDirection(savedLang);
+
+export const getAppLanguage = (lng = i18n.language) => normalizeLanguage(lng);
+
+export const setAppLanguage = (lang) => {
+  const normalized = normalizeLanguage(lang);
+  localStorage.setItem('i18nextLng', normalized);
+  window.location.reload();
+};
+
+export const toggleAppLanguage = () => {
+  const current = getAppLanguage();
+  setAppLanguage(current === 'ar' ? 'en' : 'ar');
+};
+
+export { normalizeLanguage };
 
 export default i18n;
