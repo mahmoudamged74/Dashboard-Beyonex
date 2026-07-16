@@ -30,6 +30,7 @@ import {
 import { REQUEST_STATUS } from "../../redux/types";
 import { POLL_INTERVAL_MS } from "../../redux/cache";
 import { CardGridSkeleton } from "../../components/Loading";
+import { ModalPortal } from "../../components/Modal";
 import { getAppLanguage } from "../../i18n";
 import styles from "./MessagesManager.module.css";
 
@@ -422,6 +423,7 @@ const MessagesManager = () => {
       </SectionCard>
 
       {selectedMessage && (
+        <ModalPortal>
         <div
           className={styles.modalOverlay}
           onClick={() => setSelectedMessage(null)}
@@ -536,9 +538,11 @@ const MessagesManager = () => {
             </div>
           </div>
         </div>
+        </ModalPortal>
       )}
 
       {deleteTarget && (
+        <ModalPortal>
         <div
           className={styles.modalOverlay}
           onClick={() => !deleting && setDeleteTarget(null)}
@@ -590,6 +594,7 @@ const MessagesManager = () => {
             </div>
           </div>
         </div>
+        </ModalPortal>
       )}
     </div>
   );

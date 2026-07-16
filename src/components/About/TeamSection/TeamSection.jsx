@@ -14,6 +14,7 @@ import {
 import styles from "./TeamSection.module.css";
 import { usePermission, useResolvedMediaUrl } from "../../../hooks";
 import MediaImage from "../../Media/MediaImage";
+import { ModalPortal } from "../../Modal";
 
 const SectionCard = ({ icon: Icon, title, description, children, actions }) => (
   <section className={styles.card}>
@@ -221,6 +222,7 @@ const TeamSection = ({ teamMembers, onAction, mediaVersion }) => {
       </SectionCard>
 
       {isModalOpen && (
+        <ModalPortal>
         <div className={styles.modalOverlay} onClick={closeModal}>
           <div
             className={styles.modalContent}
@@ -381,6 +383,7 @@ const TeamSection = ({ teamMembers, onAction, mediaVersion }) => {
             </form>
           </div>
         </div>
+        </ModalPortal>
       )}
     </div>
   );

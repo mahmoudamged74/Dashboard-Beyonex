@@ -16,6 +16,7 @@ import { isMediaPath } from '../../../utils/mediaUrl';
 import MediaImage from '../../Media/MediaImage';
 import DynamicIcon from '../../Icon/DynamicIcon';
 import IconPicker from '../../Icon/IconPicker/IconPicker';
+import { ModalPortal } from '../../Modal';
 
 const SectionCard = ({ icon: Icon, title, description, children, actions }) => (
     <section className={styles.card}>
@@ -224,6 +225,7 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
             </SectionCard>
 
             {isAchievementModalOpen && (
+                <ModalPortal>
                 <div className={styles.modalOverlay} onClick={closeAchievementModal}>
                     <div
                         className={styles.modalContent}
@@ -371,6 +373,7 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
                         </form>
                     </div>
                 </div>
+                </ModalPortal>
             )}
         </div>
     );

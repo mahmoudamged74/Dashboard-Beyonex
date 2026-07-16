@@ -19,6 +19,7 @@ import { fetchProfile, updateProfile } from '../../redux/actions/profileActions'
 import { selectProfile } from '../../redux/reducers/profileReducer';
 import { REQUEST_STATUS } from '../../redux/types';
 import { getAppLanguage } from '../../i18n';
+import { ModalPortal } from '../../components/Modal';
 import styles from './Profile.module.css';
 
 const getGroupKey = (key) => String(key).split('.')[0];
@@ -358,6 +359,7 @@ const Profile = () => {
       )}
 
       {isModalOpen && (
+        <ModalPortal>
         <div className={styles.modalOverlay} onClick={closeModal} role="presentation">
           <div
             className={styles.modalContent}
@@ -520,6 +522,7 @@ const Profile = () => {
             </form>
           </div>
         </div>
+        </ModalPortal>
       )}
     </div>
   );

@@ -30,6 +30,7 @@ import { CardGridSkeleton } from "../../components/Loading";
 import { getAppLanguage } from "../../i18n";
 import DynamicIcon from "../../components/Icon/DynamicIcon";
 import IconPicker from "../../components/Icon/IconPicker/IconPicker";
+import { ModalPortal } from "../../components/Modal";
 
 const ReactQuill = lazy(() => import("react-quill"));
 
@@ -560,6 +561,7 @@ const ServicesManager = () => {
       </SectionCard>
 
       {isModalOpen && (
+        <ModalPortal>
         <div className={styles.modalOverlay} onClick={closeModal}>
           <div
             className={styles.modalContent}
@@ -935,6 +937,7 @@ const ServicesManager = () => {
             </form>
           </div>
         </div>
+        </ModalPortal>
       )}
     </div>
   );

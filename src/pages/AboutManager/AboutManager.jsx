@@ -21,6 +21,7 @@ import { selectAbout, mergeAboutPage } from '../../redux/reducers/aboutReducer';
 import { REQUEST_STATUS } from '../../redux/types';
 import { getAppLanguage } from '../../i18n';
 import toast, { getActionMessageKey } from '../../utils/toast';
+import { SectionSkeleton } from '../../components/Loading';
 import styles from './AboutManager.module.css';
 
 const HeroSection = lazy(() => import('../../components/About/HeroSection/HeroSection'));

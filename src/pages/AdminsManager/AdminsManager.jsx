@@ -29,6 +29,7 @@ import {
 import { selectAdmins } from "../../redux/reducers/adminsReducer";
 import { REQUEST_STATUS } from "../../redux/types";
 import { CardGridSkeleton } from "../../components/Loading";
+import { ModalPortal } from "../../components/Modal";
 import { getAppLanguage } from "../../i18n";
 import styles from "./AdminsManager.module.css";
 
@@ -411,6 +412,7 @@ const AdminsManager = () => {
       </SectionCard>
 
       {(modal === "create" || modal === "edit") && (
+        <ModalPortal>
         <div className={styles.modalOverlay} onClick={closeModal}>
           <div
             className={`${styles.modalContent} ${styles.modalForm}`}
@@ -687,9 +689,11 @@ const AdminsManager = () => {
             </form>
           </div>
         </div>
+        </ModalPortal>
       )}
 
       {modal === "delete" && (
+        <ModalPortal>
         <div className={styles.modalOverlay} onClick={closeModal}>
           <div
             className={`${styles.modalContent} ${styles.modalNarrow}`}
@@ -737,6 +741,7 @@ const AdminsManager = () => {
             </div>
           </div>
         </div>
+        </ModalPortal>
       )}
     </div>
   );

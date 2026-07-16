@@ -18,6 +18,7 @@ import { isMediaPath } from "../../../utils/mediaUrl";
 import MediaImage from "../../Media/MediaImage";
 import DynamicIcon from "../../Icon/DynamicIcon";
 import IconPicker from "../../Icon/IconPicker/IconPicker";
+import { ModalPortal } from "../../Modal";
 
 const mapDataToForm = (data) => ({
   journey_title: {
@@ -506,6 +507,7 @@ const JourneySection = ({
       </SectionCard>
 
       {isMilestoneModalOpen && (
+        <ModalPortal>
         <div className={styles.modalOverlay} onClick={closeMilestoneModal}>
           <div
             className={styles.modalContent}
@@ -691,6 +693,7 @@ const JourneySection = ({
             </form>
           </div>
         </div>
+        </ModalPortal>
       )}
     </div>
   );

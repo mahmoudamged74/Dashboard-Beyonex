@@ -15,6 +15,7 @@ import { isMediaPath } from "../../../utils/mediaUrl";
 import MediaImage from "../../Media/MediaImage";
 import DynamicIcon from "../../Icon/DynamicIcon";
 import IconPicker from "../../Icon/IconPicker/IconPicker";
+import { ModalPortal } from "../../Modal";
 
 const SectionCard = ({ icon: Icon, title, description, children, actions }) => (
   <section className={styles.card}>
@@ -221,6 +222,7 @@ const CoreValuesSection = ({ coreValues, onAction, mediaVersion }) => {
       </SectionCard>
 
       {isModalOpen && (
+        <ModalPortal>
         <div className={styles.modalOverlay} onClick={closeModal}>
           <div
             className={styles.modalContent}
@@ -382,6 +384,7 @@ const CoreValuesSection = ({ coreValues, onAction, mediaVersion }) => {
             </form>
           </div>
         </div>
+        </ModalPortal>
       )}
     </div>
   );

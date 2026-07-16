@@ -22,6 +22,7 @@ import {
 import { selectRoles } from "../../redux/reducers/rolesReducer";
 import { REQUEST_STATUS } from "../../redux/types";
 import { CardGridSkeleton } from "../../components/Loading";
+import { ModalPortal } from "../../components/Modal";
 import { getAppLanguage } from "../../i18n";
 import styles from "./RolesManager.module.css";
 
@@ -181,6 +182,7 @@ const RoleFormModal = ({
   isAr,
   actionMeta,
 }) => (
+  <ModalPortal>
   <div className={styles.modalOverlay} onClick={closeModal}>
     <div
       className={`${styles.modalContent} ${styles.modalWide}`}
@@ -272,6 +274,7 @@ const RoleFormModal = ({
       </form>
     </div>
   </div>
+  </ModalPortal>
 );
 
 const DeleteModal = ({
@@ -282,6 +285,7 @@ const DeleteModal = ({
   saving,
   t,
 }) => (
+  <ModalPortal>
   <div className={styles.modalOverlay} onClick={closeModal}>
     <div
       className={`${styles.modalContent} ${styles.modalNarrow}`}
@@ -333,6 +337,7 @@ const DeleteModal = ({
       </div>
     </div>
   </div>
+  </ModalPortal>
 );
 
 const RolesManager = () => {

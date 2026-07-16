@@ -22,6 +22,7 @@ import {
 import { selectWhyUs } from "../../redux/reducers/whyUsReducer";
 import { REQUEST_STATUS } from "../../redux/types";
 import { CardGridSkeleton } from "../../components/Loading";
+import { ModalPortal } from "../../components/Modal";
 import { getAppLanguage } from "../../i18n";
 import DynamicIcon from "../../components/Icon/DynamicIcon";
 import IconPicker from "../../components/Icon/IconPicker/IconPicker";
@@ -313,6 +314,7 @@ const WhyUsManager = () => {
       </SectionCard>
 
       {isModalOpen && (
+        <ModalPortal>
         <div className={styles.modalOverlay} onClick={closeModal}>
           <div
             className={styles.modalContent}
@@ -492,6 +494,7 @@ const WhyUsManager = () => {
             </form>
           </div>
         </div>
+        </ModalPortal>
       )}
     </div>
   );
