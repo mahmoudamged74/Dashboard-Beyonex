@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   MdEdit,
@@ -6,7 +6,7 @@ import {
   MdClose,
   MdAdd,
   MdDelete,
-  MdImage,
+  MdCloudUpload,
   MdEmail,
   MdPerson,
   MdGroups,
@@ -34,12 +34,13 @@ const SectionCard = ({ icon: Icon, title, description, children, actions }) => (
   </section>
 );
 
-const TeamSection = ({ teamMembers, onAction, mediaVersion }) => {
+const TeamSection = ({ teamMembers, onAction, onToggleAllStatus, mediaVersion }) => {
   const { t, i18n } = useTranslation();
   const { can } = usePermission();
   const isRtl = i18n.dir() === "rtl";
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isTogglingAll, setIsTogglingAll] = useState(null);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
     "name[en]": "",
@@ -52,6 +53,8 @@ const TeamSection = ({ teamMembers, onAction, mediaVersion }) => {
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [imageRemoved, setImageRemoved] = useState(false);
+  const fileInputRef = useRef(null);
 
   const resolvedEditImage = useResolvedMediaUrl(
     imagePreview && !imagePreview.startsWith("blob:") ? imagePreview : null,
@@ -88,6 +91,7 @@ const TeamSection = ({ teamMembers, onAction, mediaVersion }) => {
       setImagePreview(null);
     }
     setImageFile(null);
+    setImageRemoved(false);
     setIsModalOpen(true);
   };
 
@@ -95,6 +99,7 @@ const TeamSection = ({ teamMembers, onAction, mediaVersion }) => {
     setIsModalOpen(false);
     setImageFile(null);
     setImagePreview(null);
+    setImageRemoved(false);
     setEditingId(null);
   };
 
@@ -103,8 +108,20 @@ const TeamSection = ({ teamMembers, onAction, mediaVersion }) => {
     if (file) {
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
+      setImageRemoved(false);
     }
     e.target.value = "";
+  };
+
+  const handleRemoveImage = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (imagePreview?.startsWith("blob:")) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImageFile(null);
+    setImagePreview(null);
+    setImageRemoved(true);
   };
 
   const handleSubmit = (e) => {
@@ -117,11 +134,99 @@ const TeamSection = ({ teamMembers, onAction, mediaVersion }) => {
 
     if (imageFile) {
       submitData.append("image", imageFile);
+    } else if (imageRemoved) {
+      submitData.append("remove_image", "1");
     }
 
     onAction(editingId ? "edit" : "add", editingId, submitData);
     closeModal();
   };
+
+  const inactiveCount = teamMembers.filter((member) => !member.status).length;
+  const activeCount = teamMembers.length - inactiveCount;
+  const showActivateAll = inactiveCount > 0;
+  const showDeactivateAll = activeCount > 0;
+
+  const handleBulkStatus = async (targetStatus) => {
+    if (
+      !can("team_members.update") ||
+      teamMembers.length === 0 ||
+      isTogglingAll
+    ) {
+      return;
+    }
+
+    setIsTogglingAll(targetStatus);
+    try {
+      await onToggleAllStatus(teamMembers, targetStatus);
+    } finally {
+      setIsTogglingAll(null);
+    }
+  };
+
+  const renderBulkStatusButton = (mode, label, meta, targetStatus) => {
+    const isLoading = isTogglingAll === targetStatus;
+    const isActivate = mode === "activate";
+
+    return (
+      <button
+        key={mode}
+        type="button"
+        className={`${styles.toggleAllBtn} ${
+          isActivate ? styles.toggleAllBtnActivate : styles.toggleAllBtnDeactivate
+        } ${isLoading ? styles.toggleAllBtnLoading : ""}`}
+        onClick={() => handleBulkStatus(targetStatus)}
+        disabled={Boolean(isTogglingAll)}
+        aria-pressed={isActivate}
+        title={label}
+      >
+        <span className={styles.toggleAllContent}>
+          <span className={styles.toggleAllLabel}>
+            {isLoading ? t("saving") : label}
+          </span>
+          {!isLoading && <span className={styles.toggleAllMeta}>{meta}</span>}
+        </span>
+        <span className={styles.toggleAllSwitch} aria-hidden="true">
+          <span className={styles.toggleAllTrack}>
+            <span className={styles.toggleAllThumb} />
+          </span>
+        </span>
+      </button>
+    );
+  };
+
+  const headerActions = (
+    <>
+      {can("team_members.update") && teamMembers.length > 0 && (
+        <div className={styles.toggleAllGroup}>
+          {showActivateAll &&
+            renderBulkStatusButton(
+              "activate",
+              t("activate_all"),
+              `${inactiveCount} ${t("inactive")}`,
+              "1"
+            )}
+          {showDeactivateAll &&
+            renderBulkStatusButton(
+              "deactivate",
+              t("deactivate_all"),
+              `${activeCount} ${t("active")}`,
+              "0"
+            )}
+        </div>
+      )}
+      {can("team_members.create") && (
+        <button
+          type="button"
+          className={styles.addBtn}
+          onClick={() => handleOpenModal()}
+        >
+          <MdAdd size={18} />
+          {t("add_team_member")}
+        </button>
+      )}
+    </>
+  );
 
   return (
     <div className={styles.container}>
@@ -132,16 +237,9 @@ const TeamSection = ({ teamMembers, onAction, mediaVersion }) => {
           count: teamMembers.length,
         })}
         actions={
-          can("team_members.create") ? (
-            <button
-              type="button"
-              className={styles.addBtn}
-              onClick={() => handleOpenModal()}
-            >
-              <MdAdd size={18} />
-              {t("add_team_member")}
-            </button>
-          ) : null
+          can("team_members.create") || can("team_members.update")
+            ? headerActions
+            : null
         }
       >
         {teamMembers.length === 0 ? (
@@ -156,7 +254,12 @@ const TeamSection = ({ teamMembers, onAction, mediaVersion }) => {
               const title = isRtl ? item.title?.ar : item.title?.en;
 
               return (
-                <article key={item.id} className={styles.memberCard}>
+                <article
+                  key={item.id}
+                  className={`${styles.memberCard} ${
+                    !item.status ? styles.memberCardInactive : ""
+                  }`}
+                >
                   <div className={styles.memberActions}>
                     {can("team_members.update") && (
                       <button
@@ -199,6 +302,15 @@ const TeamSection = ({ teamMembers, onAction, mediaVersion }) => {
                   </div>
 
                   <div className={styles.memberInfo}>
+                    <span
+                      className={`${styles.statusBadge} ${
+                        item.status
+                          ? styles.statusActive
+                          : styles.statusInactive
+                      }`}
+                    >
+                      {item.status ? t("active") : t("inactive")}
+                    </span>
                     <h4 className={styles.memberName}>{name}</h4>
                     {title && (
                       <span className={styles.memberRole}>{title}</span>
@@ -243,6 +355,63 @@ const TeamSection = ({ teamMembers, onAction, mediaVersion }) => {
 
             <form className={styles.modalForm} onSubmit={handleSubmit}>
               <div className={styles.modalBody}>
+                <div className={styles.fieldBlock}>
+                  <label className={styles.label}>{t("member_image")}</label>
+                  <div className={styles.avatarUploadWrap}>
+                    <div
+                      className={`${styles.avatarUpload} ${
+                        modalImageSrc ? styles.avatarUploadHasImage : ""
+                      }`}
+                    >
+                      {modalImageSrc ? (
+                        <>
+                          <img
+                            src={modalImageSrc}
+                            alt=""
+                            className={styles.avatarPreview}
+                            loading="lazy"
+                            decoding="async"
+                          />
+                          <div className={styles.avatarOverlay}>
+                            <button
+                              type="button"
+                              className={styles.avatarOverlayBtn}
+                              onClick={() => fileInputRef.current?.click()}
+                            >
+                              <MdEdit size={14} />
+                              <span>{t("change_image")}</span>
+                            </button>
+                            <button
+                              type="button"
+                              className={`${styles.avatarOverlayBtn} ${styles.avatarOverlayBtnDanger}`}
+                              onClick={handleRemoveImage}
+                            >
+                              <MdDelete size={14} />
+                              <span>{t("delete")}</span>
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <button
+                          type="button"
+                          className={styles.avatarPlaceholder}
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <MdCloudUpload size={28} />
+                          <span>{t("click_to_upload")}</span>
+                        </button>
+                      )}
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        hidden
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div className={styles.bilingualInputs}>
                   <div className={styles.langField}>
                     <label className={styles.label}>
@@ -319,51 +488,61 @@ const TeamSection = ({ teamMembers, onAction, mediaVersion }) => {
                   </div>
                 </div>
 
-                <div className={styles.langField}>
-                  <label className={styles.label}>{t("member_email")}</label>
-                  <input
-                    type="email"
-                    className={styles.input}
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-
-                <div className={styles.fieldBlock}>
-                  <label className={styles.label}>{t("member_image")}</label>
-                  <label className={styles.uploadLabel}>
+                <div className={styles.emailOrderRow}>
+                  <div className={styles.langField}>
+                    <label className={styles.label}>{t("member_email")}</label>
                     <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      hidden
+                      type="email"
+                      className={styles.input}
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                      required
                     />
-                    <MdImage size={20} />
-                    <span>{t("member_image")}</span>
-                  </label>
-                  {modalImageSrc && (
-                    <div className={styles.previewThumb}>
-                      <img src={modalImageSrc} alt="" loading="lazy" decoding="async" />
-                    </div>
-                  )}
+                  </div>
+                  <div className={styles.langField}>
+                    <label className={styles.label}>{t("display_order")}</label>
+                    <input
+                      type="number"
+                      className={styles.input}
+                      value={formData.display_order}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          display_order: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
                 </div>
 
                 <div className={styles.langField}>
-                  <label className={styles.label}>{t("display_order")}</label>
-                  <input
-                    type="number"
-                    className={styles.input}
-                    value={formData.display_order}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        display_order: e.target.value,
-                      })
-                    }
-                  />
+                  <label className={styles.label}>{t("status")}</label>
+                  <div className={styles.toggleContainer}>
+                    <button
+                      type="button"
+                      className={`${styles.toggleBtn} ${
+                        formData.status === "1" ? styles.active : ""
+                      }`}
+                      onClick={() =>
+                        setFormData({ ...formData, status: "1" })
+                      }
+                    >
+                      {t("active")}
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.toggleBtn} ${
+                        formData.status === "0" ? styles.inactive : ""
+                      }`}
+                      onClick={() =>
+                        setFormData({ ...formData, status: "0" })
+                      }
+                    >
+                      {t("inactive")}
+                    </button>
+                  </div>
                 </div>
               </div>
 

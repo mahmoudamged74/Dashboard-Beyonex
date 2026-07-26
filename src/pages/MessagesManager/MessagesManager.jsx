@@ -4,18 +4,16 @@ import toast, { getActionMessageKey } from "../../utils/toast";
 import {
   MdSearch,
   MdDelete,
-  MdEmail,
   MdVisibility,
   MdClose,
-  MdPhone,
-  MdBusiness,
   MdAccessTime,
   MdNavigateBefore,
   MdNavigateNext,
   MdMessage,
   MdPerson,
-  MdMarkEmailUnread,
   MdMarkEmailRead,
+  MdMarkEmailUnread,
+  MdOutlineTopic,
 } from "react-icons/md";
 import { useAppDispatch, useAppSelector, usePolling, usePermission, useAppReady } from "../../hooks";
 import {
@@ -34,23 +32,31 @@ import { ModalPortal } from "../../components/Modal";
 import { getAppLanguage } from "../../i18n";
 import styles from "./MessagesManager.module.css";
 
-const SectionCard = ({ icon: Icon, title, description, actions, children }) => (
-  <section className={styles.sectionCard}>
-    <div className={styles.sectionHeader}>
-      <div className={styles.sectionHeaderMain}>
-        <div className={styles.sectionHeaderIcon}>
-          <Icon size={20} />
-        </div>
-        <div>
-          <h2 className={styles.sectionTitle}>{title}</h2>
-          {description && <p className={styles.sectionDesc}>{description}</p>}
-        </div>
-      </div>
-      {actions && <div className={styles.sectionHeaderActions}>{actions}</div>}
-    </div>
-    <div className={styles.sectionBody}>{children}</div>
-  </section>
-);
+const SUBJECT_AR_TO_KEY = {
+  "استفسار عام": "general_inquiry",
+  "تطوير المواقع": "web_development",
+  "تطبيقات الموبايل": "mobile_applications",
+  "أنظمة ERP": "erp_systems",
+  "دعم فني": "technical_support",
+  "الدعم الفني": "technical_support",
+  توظيف: "hiring",
+  أخرى: "other",
+};
+
+const SUBJECT_KEYS = [
+  "general_inquiry",
+  "web_development",
+  "mobile_applications",
+  "erp_systems",
+  "technical_support",
+  "hiring",
+  "other",
+];
+
+const normalizeSubjectKey = (subject) => {
+  if (!subject) return "";
+  return SUBJECT_AR_TO_KEY[subject] || subject;
+};
 
 const MessagesManager = () => {
   const { t, i18n } = useTranslation();
@@ -64,6 +70,7 @@ const MessagesManager = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all"); // all | read | unread
+  const [subjectFilter, setSubjectFilter] = useState("all");
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
@@ -94,14 +101,7 @@ const MessagesManager = () => {
   const translateSubject = (subject) => {
     if (!subject) return "—";
 
-    const arabicToKey = {
-      "استفسار عام": "general_inquiry",
-      "دعم فني": "technical_support",
-      "توظيف": "hiring",
-      "أخرى": "other",
-    };
-
-    const normalized = arabicToKey[subject] || subject;
+    const normalized = normalizeSubjectKey(subject);
     const key = `messages_page.subjects.${normalized}`;
     const translated = t(key, { defaultValue: "" });
     if (translated) return translated;
@@ -111,6 +111,52 @@ const MessagesManager = () => {
 
     return subject;
   };
+
+  const subjectOptions = (() => {
+    const fromMessages = messages
+      .map((msg) => normalizeSubjectKey(msg.subject))
+      .filter(Boolean);
+
+    const keys = [...new Set([...SUBJECT_KEYS, ...fromMessages])];
+
+    return keys.map((key) => ({
+      value: key,
+      label: translateSubject(key),
+    }));
+  })();
+
+  const filteredMessages = messages
+    .filter((msg) => {
+      if (statusFilter === "read" && !msg.read) return false;
+      if (statusFilter === "unread" && msg.read) return false;
+
+      if (subjectFilter !== "all") {
+        if (normalizeSubjectKey(msg.subject) !== subjectFilter) return false;
+      }
+
+      const term = searchTerm.toLowerCase().trim();
+      if (!term) return true;
+
+      return (
+        msg.full_name?.toLowerCase().includes(term) ||
+        msg.name?.toLowerCase().includes(term) ||
+        msg.email?.toLowerCase().includes(term) ||
+        msg.phone?.toLowerCase().includes(term) ||
+        msg.company_name?.toLowerCase().includes(term) ||
+        msg.subject?.toLowerCase().includes(term) ||
+        translateSubject(msg.subject).toLowerCase().includes(term)
+      );
+    })
+    .slice()
+    .sort((a, b) => {
+      const aUnread = !a.read ? 1 : 0;
+      const bUnread = !b.read ? 1 : 0;
+      if (aUnread !== bUnread) return bUnread - aUnread;
+
+      const aTime = new Date(a.created_at || a.createdAt || 0).getTime();
+      const bTime = new Date(b.created_at || b.createdAt || 0).getTime();
+      return bTime - aTime;
+    });
 
   useEffect(() => {
     if (!inboxData) return;
@@ -139,10 +185,12 @@ const MessagesManager = () => {
       const subjectLabel = newest ? translateSubject(newest.subject) : "";
 
       toast.inbox(
-        <div className="app-toast-content">
-          <span className="app-toast-eyebrow">
-            {t("messages_page.new_message_eyebrow")}
-          </span>
+        <div className="app-toast-inbox">
+          <div className="app-toast-inbox-head">
+            <span className="app-toast-eyebrow">
+              {t("messages_page.new_message_eyebrow")}
+            </span>
+          </div>
           <strong className="app-toast-title">
             {newest
               ? t("messages_page.new_message_title", {
@@ -150,14 +198,14 @@ const MessagesManager = () => {
                 })
               : t("messages_page.new_message_generic_title")}
           </strong>
-          <span className="app-toast-text">
+          <p className="app-toast-text">
             {newest
               ? t("messages_page.new_message_body")
               : t("messages_page.new_message_generic_body")}
-          </span>
-          {subjectLabel && subjectLabel !== "—" && (
+          </p>
+          {subjectLabel && subjectLabel !== "—" ? (
             <span className="app-toast-meta">{subjectLabel}</span>
-          )}
+          ) : null}
         </div>
       );
     }
@@ -165,14 +213,21 @@ const MessagesManager = () => {
     inboxSnapshotRef.current = { ids: new Set(ids), total };
   }, [inboxData, currentPage, t, isAr]);
 
-  const handleMarkAsRead = async (id) => {
+  const handleSetReadStatus = async (id, read, { silent = false } = {}) => {
     try {
-      await dispatch(markMessageRead({ id, read: true })).unwrap();
-      if (selectedMessage && selectedMessage.id === id) {
-        setSelectedMessage((prev) => ({ ...prev, read: true }));
+      await dispatch(markMessageRead({ id, read })).unwrap();
+      setSelectedMessage((prev) =>
+        prev && prev.id === id ? { ...prev, read } : prev
+      );
+      if (!silent) {
+        toast.success(
+          t(read ? "messages_page.marked_read" : "messages_page.marked_unread")
+        );
       }
     } catch (err) {
-      toast.error(err || t("update_error") || t("error_generic"));
+      if (!silent) {
+        toast.error(err || t("update_error") || t("error_generic"));
+      }
     }
   };
 
@@ -198,24 +253,9 @@ const MessagesManager = () => {
   const openMessage = (msg) => {
     setSelectedMessage(msg);
     if (!msg.read) {
-      handleMarkAsRead(msg.id);
+      handleSetReadStatus(msg.id, true, { silent: true });
     }
   };
-
-  const filteredMessages = messages.filter((msg) => {
-    if (statusFilter === "read" && !msg.read) return false;
-    if (statusFilter === "unread" && msg.read) return false;
-
-    const term = searchTerm.toLowerCase().trim();
-    if (!term) return true;
-
-    return (
-      msg.full_name?.toLowerCase().includes(term) ||
-      msg.email?.toLowerCase().includes(term) ||
-      msg.subject?.toLowerCase().includes(term) ||
-      translateSubject(msg.subject).toLowerCase().includes(term)
-    );
-  });
 
   const unreadCount = messages.filter((msg) => !msg.read).length;
   const readCount = messages.filter((msg) => msg.read).length;
@@ -251,39 +291,73 @@ const MessagesManager = () => {
 
   return (
     <div className={styles.page} dir={isAr ? "rtl" : "ltr"}>
-      <header className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>{t("messages_manager")}</h1>
-        <p className={styles.pageSubtitle}>{t("messages_page.subtitle")}</p>
-      </header>
+      <section className={styles.inboxPanel} aria-label={t("messages_page.list_title")}>
+        <div className={styles.sectionHead}>
+          <h2 className={styles.sectionTitle}>
+            <span className={styles.sectionTitleBar} aria-hidden="true" />
+            {t("messages_page.list_title")}
+          </h2>
+          {unreadCount > 0 ? (
+            <span
+              className={styles.unreadCount}
+              aria-label={t("dashboard_page.stat_unread", { count: unreadCount })}
+            >
+              {unreadCount}
+            </span>
+          ) : null}
+          <span className={styles.sectionHeadRule} aria-hidden="true" />
+          <div className={styles.inboxStats}>
+            <span className={styles.inboxStat}>
+              {t("messages_page.filter_all")}: {allCount}
+            </span>
+            <span className={styles.inboxStatDivider} aria-hidden="true" />
+            <span className={`${styles.inboxStat} ${unreadCount > 0 ? styles.inboxStatUnread : ""}`}>
+              {t("unread")}: {unreadCount}
+            </span>
+          </div>
+        </div>
 
-      <SectionCard
-        icon={MdMessage}
-        title={t("messages_page.list_title")}
-        description={t("messages_page.list_desc", {
-          total: pagination.total || messages.length,
-          unread: unreadCount,
-        })}
-        actions={
-          <div className={styles.headerTools}>
-            <div className={styles.filterGroup} role="tablist">
-              {statusFilters.map((filter) => (
-                <button
-                  key={filter.key}
-                  type="button"
-                  role="tab"
-                  aria-selected={statusFilter === filter.key}
-                  className={`${styles.filterChip} ${
-                    statusFilter === filter.key ? styles.filterChipActive : ""
-                  } ${
-                    filter.key === "unread" ? styles.filterChipUnread : ""
-                  } ${filter.key === "read" ? styles.filterChipRead : ""}`}
-                  onClick={() => setStatusFilter(filter.key)}
-                >
-                  <span>{filter.label}</span>
-                  <span className={styles.filterCount}>{filter.count}</span>
-                </button>
-              ))}
+        <div className={styles.toolbar}>
+          <div className={styles.filterGroup} role="tablist">
+            {statusFilters.map((filter) => (
+              <button
+                key={filter.key}
+                type="button"
+                role="tab"
+                aria-selected={statusFilter === filter.key}
+                className={`${styles.filterChip} ${
+                  statusFilter === filter.key ? styles.filterChipActive : ""
+                } ${
+                  filter.key === "unread" ? styles.filterChipUnread : ""
+                } ${filter.key === "read" ? styles.filterChipRead : ""}`}
+                onClick={() => setStatusFilter(filter.key)}
+              >
+                <span>{filter.label}</span>
+                <span className={styles.filterCount}>{filter.count}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className={styles.toolbarEnd}>
+            <div className={styles.subjectSelectWrap}>
+              <MdOutlineTopic className={styles.subjectSelectIcon} size={17} aria-hidden="true" />
+              <select
+                className={`${styles.subjectSelect} ${
+                  subjectFilter !== "all" ? styles.subjectSelectActive : ""
+                }`}
+                value={subjectFilter}
+                onChange={(e) => setSubjectFilter(e.target.value)}
+                aria-label={t("messages_page.filter_subject")}
+              >
+                <option value="all">{t("messages_page.filter_subject_all")}</option>
+                {subjectOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
             </div>
+
             <div className={styles.searchWrapper}>
               <MdSearch className={styles.searchIcon} size={18} />
               <input
@@ -295,8 +369,8 @@ const MessagesManager = () => {
               />
             </div>
           </div>
-        }
-      >
+        </div>
+
         {loading ? (
           <div className={styles.sectionBodyPad}>
             <CardGridSkeleton count={4} />
@@ -307,88 +381,146 @@ const MessagesManager = () => {
             <p>{t("messages_page.no_messages")}</p>
           </div>
         ) : (
-          <div className={styles.messagesGrid}>
-            {filteredMessages.map((msg, index) => (
-              <article
-                key={msg.id}
-                className={`${styles.messageCard} ${
-                  !msg.read ? styles.messageCardUnread : ""
-                }`}
-                onClick={() => openMessage(msg)}
-              >
-                <div className={styles.cardTop}>
-                  <div className={styles.cardIdentity}>
-                    <div className={styles.avatar}>
-                      <MdPerson size={20} />
-                      {!msg.read && <span className={styles.unreadDot} />}
-                    </div>
-                    <div className={styles.nameMeta}>
-                      <h3 className={styles.nameText}>{msg.full_name}</h3>
-                      <p className={styles.emailText}>
-                        <MdEmail size={12} />
-                        <span>{msg.email}</span>
-                      </p>
-                    </div>
-                  </div>
-                  <span className={styles.indexBadge}>{index + 1}</span>
-                </div>
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <colgroup>
+                <col className={styles.colName} />
+                <col className={styles.colEmail} />
+                <col className={styles.colSubject} />
+                <col className={styles.colPhone} />
+                <col className={styles.colCompany} />
+                <col className={styles.colStatus} />
+                <col className={styles.colActions} />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th scope="col">{t("messages_page.col_name")}</th>
+                  <th scope="col">{t("messages_page.col_email")}</th>
+                  <th scope="col">{t("messages_page.col_subject")}</th>
+                  <th scope="col">{t("messages_page.col_phone")}</th>
+                  <th scope="col">{t("messages_page.col_company")}</th>
+                  <th scope="col" className={styles.thCenter}>
+                    {t("messages_page.col_status")}
+                  </th>
+                  <th scope="col" className={styles.thCenter}>
+                    {t("messages_page.col_actions")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredMessages.map((msg) => {
+                  const name =
+                    msg.full_name || msg.name || t("messages_page.unknown_sender");
+                  const email = msg.email || "";
+                  const phone = msg.phone || "";
+                  const company = msg.company_name || "";
 
-                <div className={styles.cardBadges}>
-                  <span className={styles.subjectText}>
-                    {translateSubject(msg.subject)}
-                  </span>
-                  <span
-                    className={`${styles.statusBadge} ${
-                      msg.read ? styles.readBadge : styles.unreadBadge
-                    }`}
-                  >
-                    {msg.read ? (
-                      <MdMarkEmailRead size={14} />
-                    ) : (
-                      <MdMarkEmailUnread size={14} />
-                    )}
-                    {msg.read ? t("read") : t("unread")}
-                  </span>
-                </div>
-
-                {msg.message && (
-                  <p className={styles.messagePreview}>{msg.message}</p>
-                )}
-
-                <div className={styles.cardMeta}>
-                  <span className={styles.dateText}>
-                    <MdAccessTime size={13} />
-                    {formatDate(msg.created_at)}
-                  </span>
-
-                  <div
-                    className={styles.actions}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      type="button"
-                      className={styles.actionBtn}
+                  return (
+                    <tr
+                      key={msg.id}
+                      className={!msg.read ? styles.rowUnread : undefined}
                       onClick={() => openMessage(msg)}
-                      title={t("view")}
-                      aria-label={t("view")}
                     >
-                      <MdVisibility size={15} />
-                    </button>
-                    {can("messages.delete") && (
-                      <button
-                        type="button"
-                        className={`${styles.actionBtn} ${styles.deleteBtn}`}
-                        onClick={() => setDeleteTarget(msg)}
-                        title={t("delete")}
-                        aria-label={t("delete")}
-                      >
-                        <MdDelete size={15} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </article>
-            ))}
+                      <td>
+                        <span className={styles.cellPrimary} title={name}>
+                          {name}
+                        </span>
+                      </td>
+                      <td>
+                        {email ? (
+                          <span className={styles.cellSecondary} title={email} dir="ltr">
+                            {email}
+                          </span>
+                        ) : (
+                          <span className={styles.cellEmpty}>—</span>
+                        )}
+                      </td>
+                      <td>
+                        <span className={styles.subjectChip}>
+                          {translateSubject(msg.subject)}
+                        </span>
+                      </td>
+                      <td>
+                        {phone ? (
+                          <span className={styles.cellPhone} dir="ltr">
+                            {phone}
+                          </span>
+                        ) : (
+                          <span className={styles.cellEmpty}>
+                            {t("messages_page.na")}
+                          </span>
+                        )}
+                      </td>
+                      <td>
+                        {company ? (
+                          <span className={styles.cellSecondary} title={company}>
+                            {company}
+                          </span>
+                        ) : (
+                          <span className={styles.cellEmpty}>
+                            {t("messages_page.na")}
+                          </span>
+                        )}
+                      </td>
+                      <td className={styles.tdCenter}>
+                        <span
+                          className={`${styles.statusBadge} ${
+                            msg.read ? styles.readBadge : styles.unreadBadge
+                          }`}
+                          role="button"
+                          tabIndex={0}
+                          title={
+                            msg.read
+                              ? t("messages_page.mark_unread")
+                              : t("messages_page.mark_read")
+                          }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSetReadStatus(msg.id, !msg.read);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              handleSetReadStatus(msg.id, !msg.read);
+                            }
+                          }}
+                        >
+                          {msg.read ? t("read") : t("unread")}
+                        </span>
+                      </td>
+                      <td className={styles.tdCenter}>
+                        <div
+                          className={styles.actions}
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <button
+                            type="button"
+                            className={`${styles.actionBtn} ${styles.viewBtn}`}
+                            onClick={() => openMessage(msg)}
+                            title={t("view")}
+                            aria-label={t("view")}
+                          >
+                            <MdVisibility size={16} />
+                          </button>
+                          {can("messages.delete") && (
+                            <button
+                              type="button"
+                              className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                              onClick={() => setDeleteTarget(msg)}
+                              title={t("delete")}
+                              aria-label={t("delete")}
+                            >
+                              <MdDelete size={16} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         )}
 
@@ -420,7 +552,7 @@ const MessagesManager = () => {
             </button>
           </div>
         )}
-      </SectionCard>
+      </section>
 
       {selectedMessage && (
         <ModalPortal>
@@ -433,108 +565,131 @@ const MessagesManager = () => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className={styles.modalHeader}>
-              <div>
-                <h3 className={styles.modalTitle}>
-                  {t("message_details")}
-                </h3>
-                <p className={styles.modalSubject}>
-                  {translateSubject(selectedMessage.subject)}
-                </p>
-              </div>
+              <h3 className={styles.modalTitle}>{t("message_details")}</h3>
               <button
                 type="button"
                 className={styles.closeBtn}
                 onClick={() => setSelectedMessage(null)}
                 aria-label={t("close")}
               >
-                <MdClose size={20} />
+                <MdClose size={18} />
               </button>
             </div>
 
             <div className={styles.modalBody}>
               <div className={styles.senderCard}>
-                <div className={styles.senderAvatar}>
-                  <MdPerson size={22} />
+                <div className={styles.senderAvatar} aria-hidden="true">
+                  <MdPerson size={20} />
                 </div>
-                <div>
+                <div className={styles.senderInfo}>
                   <p className={styles.senderName}>
-                    {selectedMessage.full_name}
+                    {selectedMessage.full_name ||
+                      selectedMessage.name ||
+                      t("messages_page.unknown_sender")}
                   </p>
                   <p className={styles.senderEmail}>{selectedMessage.email}</p>
                 </div>
+              </div>
+
+              <div className={styles.subjectBlock}>
+                <span className={styles.metaLabel}>{t("subject")}</span>
+                <span className={styles.subjectChip}>
+                  {translateSubject(selectedMessage.subject)}
+                </span>
+              </div>
+
+              <div className={styles.metaList}>
+                <div className={styles.metaItem}>
+                  <span className={styles.metaLabel}>{t("phone")}</span>
+                  <span className={styles.metaValue} dir="ltr">
+                    {selectedMessage.phone || t("messages_page.na")}
+                  </span>
+                </div>
+                <div className={styles.metaItem}>
+                  <span className={styles.metaLabel}>{t("company_name")}</span>
+                  <span className={styles.metaValue}>
+                    {selectedMessage.company_name || t("messages_page.na")}
+                  </span>
+                </div>
+              </div>
+
+              <div className={styles.messageBlock}>
+                <span className={styles.messageLabel}>
+                  {t("message_content")}
+                </span>
+                <div className={styles.contentBox}>
+                  {selectedMessage.message || "—"}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.modalFooter}>
+              <div className={styles.modalFooterStart}>
                 <span
                   className={`${styles.statusBadge} ${
                     selectedMessage.read
                       ? styles.readBadge
                       : styles.unreadBadge
                   }`}
+                  role="button"
+                  tabIndex={0}
+                  title={
+                    selectedMessage.read
+                      ? t("messages_page.mark_unread")
+                      : t("messages_page.mark_read")
+                  }
+                  onClick={() =>
+                    handleSetReadStatus(
+                      selectedMessage.id,
+                      !selectedMessage.read
+                    )
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      handleSetReadStatus(
+                        selectedMessage.id,
+                        !selectedMessage.read
+                      );
+                    }
+                  }}
                 >
+                  {selectedMessage.read ? (
+                    <MdMarkEmailRead size={14} />
+                  ) : (
+                    <MdMarkEmailUnread size={14} />
+                  )}
                   {selectedMessage.read ? t("read") : t("unread")}
+                </span>
+
+                <span className={styles.footerDate}>
+                  <MdAccessTime size={14} />
+                  {formatDate(selectedMessage.created_at)}
                 </span>
               </div>
 
-              <div className={styles.detailGrid}>
-                <div className={styles.detailItem}>
-                  <MdEmail className={styles.detailIcon} size={18} />
-                  <div>
-                    <label>{t("email")}</label>
-                    <p>{selectedMessage.email}</p>
-                  </div>
-                </div>
-                <div className={styles.detailItem}>
-                  <MdPhone className={styles.detailIcon} size={18} />
-                  <div>
-                    <label>{t("phone")}</label>
-                    <p>{selectedMessage.phone || t("messages_page.na")}</p>
-                  </div>
-                </div>
-                <div className={styles.detailItem}>
-                  <MdBusiness className={styles.detailIcon} size={18} />
-                  <div>
-                    <label>{t("company_name")}</label>
-                    <p>
-                      {selectedMessage.company_name || t("messages_page.na")}
-                    </p>
-                  </div>
-                </div>
-                <div className={styles.detailItem}>
-                  <MdAccessTime className={styles.detailIcon} size={18} />
-                  <div>
-                    <label>{t("date")}</label>
-                    <p>{formatDate(selectedMessage.created_at)}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.messageContent}>
-                <label>{t("message_content")}</label>
-                <div className={styles.contentBox}>
-                  {selectedMessage.message}
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.modalFooter}>
-              {can("messages.delete") && (
+              <div className={styles.modalFooterActions}>
+                {can("messages.delete") && (
+                  <button
+                    type="button"
+                    className={styles.deleteOutlineBtn}
+                    onClick={() => {
+                      setDeleteTarget(selectedMessage);
+                      setSelectedMessage(null);
+                    }}
+                  >
+                    <MdDelete size={16} />
+                    {t("delete")}
+                  </button>
+                )}
                 <button
                   type="button"
-                  className={styles.deleteConfirmBtn}
-                  onClick={() => {
-                    setDeleteTarget(selectedMessage);
-                    setSelectedMessage(null);
-                  }}
+                  className={styles.closeModalBtn}
+                  onClick={() => setSelectedMessage(null)}
                 >
-                  <MdDelete size={16} />
-                  {t("delete")}
+                  {t("close")}
                 </button>
-              )}
-              <button
-                type="button"
-                className={styles.closeModalBtn}
-                onClick={() => setSelectedMessage(null)}
-              >
-                {t("close")}
-              </button>
+              </div>
             </div>
           </div>
         </div>

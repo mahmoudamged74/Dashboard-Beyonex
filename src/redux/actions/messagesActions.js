@@ -29,7 +29,8 @@ export const markMessageRead = createAsyncThunk(
   `${SLICE.MESSAGES}/markRead`,
   async ({ id, read = true }, { rejectWithValue }) => {
     try {
-      return await crudUpdate(`${ENDPOINTS.MESSAGES}/${id}`, { read });
+      await crudUpdate(`${ENDPOINTS.MESSAGES}/${id}`, { read });
+      return { id, read: Boolean(read) };
     } catch (error) {
       return rejectWithValue(error.message);
     }

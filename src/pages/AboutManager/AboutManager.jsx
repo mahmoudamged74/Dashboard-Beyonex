@@ -156,6 +156,73 @@ const AboutManager = () => {
     }
   };
 
+  const handleToggleAllTeamStatus = async (members, targetStatus) => {
+    const newStatus = targetStatus === '1' ? '1' : '0';
+    const toUpdate = members.filter(
+      (member) => Boolean(member.status) !== (newStatus === '1')
+    );
+
+    if (toUpdate.length === 0) return;
+
+    try {
+      await Promise.all(
+        toUpdate.map((member) => {
+          const formData = new FormData();
+          formData.append('_method', 'PUT');
+          formData.append('name[en]', member.name?.en || '');
+          formData.append('name[ar]', member.name?.ar || '');
+          formData.append('title[en]', member.title?.en || '');
+          formData.append('title[ar]', member.title?.ar || '');
+          formData.append('email', member.email || '');
+          formData.append('display_order', String(member.display_order ?? 0));
+          formData.append('status', newStatus);
+
+          return dispatch(
+            aboutTeamAction({ action: 'edit', id: member.id, formData })
+          ).unwrap();
+        })
+      );
+      toast.success(t(getActionMessageKey('update')));
+      await refreshAbout(false);
+    } catch (err) {
+      console.error('Error toggling all team member statuses:', err);
+      toast.error(t(getActionMessageKey('update', 'error')));
+    }
+  };
+
+  const handleToggleAllAchievementStatus = async (items, targetStatus) => {
+    const newStatus = targetStatus === '1' ? '1' : '0';
+    const toUpdate = items.filter(
+      (item) => Boolean(item.status) !== (newStatus === '1')
+    );
+
+    if (toUpdate.length === 0) return;
+
+    try {
+      await Promise.all(
+        toUpdate.map((item) => {
+          const formData = new FormData();
+          formData.append('_method', 'PUT');
+          formData.append('value', item.value || '');
+          formData.append('title[en]', item.title?.en || '');
+          formData.append('title[ar]', item.title?.ar || '');
+          formData.append('icon', item.icon || '');
+          formData.append('display_order', String(item.display_order ?? 0));
+          formData.append('status', newStatus);
+
+          return dispatch(
+            aboutAchievementAction({ action: 'edit', id: item.id, formData })
+          ).unwrap();
+        })
+      );
+      toast.success(t(getActionMessageKey('update')));
+      await refreshAbout(false);
+    } catch (err) {
+      console.error('Error toggling all achievement statuses:', err);
+      toast.error(t(getActionMessageKey('update', 'error')));
+    }
+  };
+
   const renderActiveSection = () => {
     if (!data?.aboutData) return null;
     const { aboutData, heroFeatures, milestones, achievements, coreValues, teamMembers } = data;
@@ -188,6 +255,7 @@ const AboutManager = () => {
             achievements={achievements}
             onUpdate={handleAboutUpdate}
             onAchievementAction={handleAchievementAction}
+            onToggleAllStatus={handleToggleAllAchievementStatus}
             mediaVersion={mediaVersion}
           />
         );
@@ -204,6 +272,7 @@ const AboutManager = () => {
           <TeamSection
             teamMembers={teamMembers}
             onAction={handleTeamAction}
+            onToggleAllStatus={handleToggleAllTeamStatus}
             mediaVersion={mediaVersion}
           />
         );

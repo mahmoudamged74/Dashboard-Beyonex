@@ -9,9 +9,9 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.12));
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: var(--bg-input, rgba(255, 255, 255, 0.04));
+  background: var(--bg-input);
 }
 
 .searchInput {
@@ -40,20 +40,20 @@
   height: 40px;
   border: 1px solid transparent;
   border-radius: 8px;
-  background: var(--bg-card, rgba(255, 255, 255, 0.04));
+  background: var(--bg-card);
   color: inherit;
   cursor: pointer;
   transition: border-color 0.2s, background 0.2s;
 }
 
 .iconItem:hover {
-  border-color: var(--primary, #4f8cff);
-  background: rgba(79, 140, 255, 0.08);
+  border-color: var(--primary);
+  background: var(--primary-alpha-08);
 }
 
 .iconItemSelected {
-  border-color: var(--primary, #4f8cff);
-  background: rgba(79, 140, 255, 0.15);
+  border-color: var(--primary);
+  background: var(--primary-alpha-15);
 }
 
 .selectedIconName {

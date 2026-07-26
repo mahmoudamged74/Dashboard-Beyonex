@@ -6,8 +6,8 @@ const CACHE_TTL = 5 * 60 * 1000;
 /** Shorter TTL for polled resources on dashboard */
 const POLL_CACHE_TTL = 30 * 1000;
 
-/** Optional background sync — set VITE_API_POLLING_MS to enable (e.g. 60000). */
-export const POLL_INTERVAL_MS = Number(import.meta.env.VITE_API_POLLING_MS) || 0;
+/** Background sync interval for inbox / dashboard (default 10s). Override with VITE_API_POLLING_MS. */
+export const POLL_INTERVAL_MS = Number(import.meta.env.VITE_API_POLLING_MS) || 10_000;
 
 export const isSamePayload = (a, b) => {
   if (a === b) return true;

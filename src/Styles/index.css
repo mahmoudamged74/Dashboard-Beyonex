@@ -6,7 +6,15 @@ html {
   font-size: 18px;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
   color-scheme: dark;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
 }
 
 @media (max-width: 768px) {
@@ -25,6 +33,7 @@ html {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  user-select: none;
 }
 
 body {

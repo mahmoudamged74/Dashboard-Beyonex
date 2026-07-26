@@ -7,6 +7,7 @@ import {
   MdClose,
   MdSave,
   MdImage,
+  MdCloudUpload,
   MdSettings,
   MdList,
   MdExtension,
@@ -18,6 +19,7 @@ import toast, { getActionMessageKey } from "../../utils/toast";
 import { useAppDispatch, useAppSelector, usePermission, useAppReady } from "../../hooks";
 import {
   fetchServices,
+  fetchServiceById,
   createService,
   updateService,
   deleteService,
@@ -50,6 +52,95 @@ const autoResizeTextarea = (el) => {
   el.style.height = "auto";
   el.style.height = `${el.scrollHeight}px`;
 };
+
+const toFeatureValues = (value) => {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => {
+        if (typeof item === "string") return item.trim();
+        if (item && typeof item === "object") {
+          return String(item.ar || item.en || item.value || "").trim();
+        }
+        return String(item || "").trim();
+      })
+      .filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) return [];
+
+    if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
+      try {
+        return toFeatureValues(JSON.parse(trimmed));
+      } catch {
+        // fall through to plain-text parsing
+      }
+    }
+
+    return trimmed
+      .split(/\.\s+|\n+/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+};
+
+const normalizeFeaturesForForm = (features) => {
+  if (!features) return [{ ar: "", en: "" }];
+
+  let parsed = features;
+  if (typeof features === "string") {
+    try {
+      parsed = JSON.parse(features);
+    } catch {
+      const values = toFeatureValues(features);
+      if (values.length === 0) return [{ ar: "", en: "" }];
+      return values.map((item) => ({ ar: item, en: item }));
+    }
+  }
+
+  if (parsed?.ar || parsed?.en) {
+    const arList = toFeatureValues(parsed.ar);
+    const enList = toFeatureValues(parsed.en);
+    const count = Math.max(arList.length, enList.length);
+
+    if (count === 0) return [{ ar: "", en: "" }];
+
+    return Array.from({ length: count }, (_, index) => ({
+      ar: arList[index] || "",
+      en: enList[index] || "",
+    }));
+  }
+
+  if (Array.isArray(parsed) && parsed.length > 0) {
+    return parsed.map((feature) =>
+      typeof feature === "object"
+        ? { ar: feature.ar || "", en: feature.en || "" }
+        : { ar: feature || "", en: feature || "" },
+    );
+  }
+
+  return [{ ar: "", en: "" }];
+};
+
+const buildServiceFormData = (service) => ({
+  "title[ar]": service.title?.ar || "",
+  "title[en]": service.title?.en || "",
+  "short_description[ar]": service.short_description?.ar || "",
+  "short_description[en]": service.short_description?.en || "",
+  "long_description[ar]": service.long_description?.ar || "",
+  "long_description[en]": service.long_description?.en || "",
+  icon: service.icon || "codeSlash",
+  display_order: service.display_order?.toString() || "0",
+  status: service.status ? "1" : "0",
+  technologies:
+    service.technologies && service.technologies.length > 0
+      ? service.technologies
+      : [""],
+  features: normalizeFeaturesForForm(service.features),
+});
 
 const SectionCard = ({ icon: Icon, title, description, actions, children }) => (
   <section className={styles.sectionCard}>
@@ -87,6 +178,7 @@ const ServicesManager = () => {
   }, [dispatch]);
 
   const [saving, setSaving] = useState(false);
+  const [loadingServiceDetails, setLoadingServiceDetails] = useState(false);
   const [savingIntro, setSavingIntro] = useState(false);
   const [isEditingIntro, setIsEditingIntro] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -136,9 +228,11 @@ const ServicesManager = () => {
 
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [imageRemoved, setImageRemoved] = useState(false);
   const [iconSearch, setIconSearch] = useState("");
   const introEnRef = useRef(null);
   const introArRef = useRef(null);
+  const imageInputRef = useRef(null);
 
   useEffect(() => {
     if (!isEditingIntro) return;
@@ -207,38 +301,33 @@ const ServicesManager = () => {
     });
     setImageFile(null);
     setImagePreview(null);
+    setImageRemoved(false);
     setModalType("addService");
     setIsModalOpen(true);
   };
 
-  const handleEditService = (service) => {
-    setFormData({
-      "title[ar]": service.title?.ar || "",
-      "title[en]": service.title?.en || "",
-      "short_description[ar]": service.short_description?.ar || "",
-      "short_description[en]": service.short_description?.en || "",
-      "long_description[ar]": service.long_description?.ar || "",
-      "long_description[en]": service.long_description?.en || "",
-      icon: service.icon || "codeSlash",
-      display_order: service.display_order?.toString() || "0",
-      status: service.status ? "1" : "0",
-      technologies:
-        service.technologies && service.technologies.length > 0
-          ? service.technologies
-          : [""],
-      features:
-        service.features && service.features.length > 0
-          ? service.features.map((f) =>
-              typeof f === "object"
-                ? { ar: f.ar || "", en: f.en || "" }
-                : { ar: f || "", en: f || "" },
-            )
-          : [{ ar: "", en: "" }],
-    });
-    setSelectedService(service);
-    setImagePreview(service.image);
-    setModalType("editService");
-    setIsModalOpen(true);
+  const handleEditService = async (service) => {
+    setLoadingServiceDetails(true);
+
+    try {
+      let serviceData = service;
+
+      try {
+        serviceData = await dispatch(fetchServiceById(service.id)).unwrap();
+      } catch {
+        // Fall back to the list payload when the detail request fails.
+      }
+
+      setFormData(buildServiceFormData(serviceData));
+      setSelectedService(serviceData);
+      setImageFile(null);
+      setImagePreview(serviceData.image);
+      setImageRemoved(false);
+      setModalType("editService");
+      setIsModalOpen(true);
+    } finally {
+      setLoadingServiceDetails(false);
+    }
   };
 
   const openDeleteModal = (service) => {
@@ -253,6 +342,7 @@ const ServicesManager = () => {
     setSelectedService(null);
     setImageFile(null);
     setImagePreview(null);
+    setImageRemoved(false);
     setIconSearch("");
   };
 
@@ -284,7 +374,11 @@ const ServicesManager = () => {
         }
       });
 
-      if (imageFile) data.append("image", imageFile);
+      if (imageFile) {
+        data.append("image", imageFile);
+      } else if (imageRemoved) {
+        data.append("remove_image", "1");
+      }
 
       if (modalType === "addService") {
         const result = await dispatch(createService(data)).unwrap();
@@ -325,7 +419,20 @@ const ServicesManager = () => {
     if (file && type === "image") {
       setImageFile(file);
       setImagePreview(URL.createObjectURL(file));
+      setImageRemoved(false);
     }
+    e.target.value = "";
+  };
+
+  const handleRemoveImage = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (imagePreview?.startsWith("blob:")) {
+      URL.revokeObjectURL(imagePreview);
+    }
+    setImageFile(null);
+    setImagePreview(null);
+    setImageRemoved(true);
   };
 
   const handleArrayChange = (index, value, type, lang = null) => {
@@ -535,6 +642,7 @@ const ServicesManager = () => {
                             onClick={() => handleEditService(service)}
                             title={t("edit")}
                             aria-label={t("edit")}
+                            disabled={loadingServiceDetails}
                           >
                             <MdEdit size={15} />
                           </button>
@@ -605,30 +713,61 @@ const ServicesManager = () => {
                   <>
                     <div className={styles.formGroup}>
                       <label className={styles.label}>{t("image")}</label>
-                      <div className={styles.uploadBox}>
+                      <div
+                        className={`${styles.serviceImageUpload} ${
+                          imagePreview ? styles.serviceImageUploadHasImage : ""
+                        }`}
+                      >
+                        {imagePreview ? (
+                          <>
+                            <img
+                              src={imagePreview}
+                              alt=""
+                              className={styles.serviceImagePreview}
+                              loading="lazy"
+                              decoding="async"
+                            />
+                            <div className={styles.serviceImageOverlay}>
+                              <button
+                                type="button"
+                                className={styles.serviceImageOverlayBtn}
+                                onClick={() => imageInputRef.current?.click()}
+                              >
+                                <MdEdit size={16} />
+                                <span>{t("change_image")}</span>
+                              </button>
+                              <button
+                                type="button"
+                                className={`${styles.serviceImageOverlayBtn} ${styles.serviceImageOverlayBtnDanger}`}
+                                onClick={handleRemoveImage}
+                              >
+                                <MdDelete size={16} />
+                                <span>{t("delete")}</span>
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <button
+                            type="button"
+                            className={styles.serviceImagePlaceholder}
+                            onClick={() => imageInputRef.current?.click()}
+                          >
+                            <MdCloudUpload size={34} />
+                            <span className={styles.serviceImagePlaceholderTitle}>
+                              {t("click_to_upload")}
+                            </span>
+                            <span className={styles.serviceImagePlaceholderHint}>
+                              {t("image")}
+                            </span>
+                          </button>
+                        )}
                         <input
+                          ref={imageInputRef}
                           type="file"
                           accept="image/*"
                           onChange={(e) => handleFileChange(e, "image")}
-                          id="imageUpload"
                           hidden
                         />
-                        <label
-                          htmlFor="imageUpload"
-                          className={styles.uploadLabel}
-                        >
-                          <MdImage size={20} />
-                          {t("change_image")}
-                        </label>
-                        {imagePreview && (
-                          <img
-                            src={imagePreview}
-                            alt=""
-                            className={styles.imgPreview}
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        )}
                       </div>
                     </div>
 

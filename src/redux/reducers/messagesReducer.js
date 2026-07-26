@@ -35,13 +35,19 @@ const messagesSlice = createSlice({
       },
       isMessagesPayloadUnchanged,
     );
-    bindMutation(builder, markMessageRead, (state, action) => {
-      const id = action.meta?.arg?.id;
-      if (id) {
-        Object.values(state.byPage).forEach((pageData) => {
-          const msg = pageData?.messages?.find((m) => m.id === id);
-          if (msg) msg.read = true;
-        });
+    bindMutation(builder, markMessageRead, (state, payload) => {
+      const id = payload?.id;
+      const read = Boolean(payload?.read);
+      if (id == null) return;
+
+      Object.values(state.byPage).forEach((pageData) => {
+        const msg = pageData?.messages?.find((m) => String(m.id) === String(id));
+        if (msg) msg.read = read;
+      });
+
+      if (state.data?.messages) {
+        const msg = state.data.messages.find((m) => String(m.id) === String(id));
+        if (msg) msg.read = read;
       }
     });
     bindMutation(builder, deleteMessage);

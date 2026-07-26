@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { useAppSelector } from './useRedux';
-import { selectSettings } from '../redux/reducers/settingsReducer';
-import { useResolvedMediaUrl } from './useResolvedMediaUrl';
-import { applyDocumentFavicon, fetchPublicFavicon } from '../utils/siteFavicon';
+import { useEffect, useState } from "react";
+import { useAppSelector } from "./useRedux";
+import { selectSettings } from "../redux/reducers/settingsReducer";
+import { useResolvedMediaUrl } from "./useResolvedMediaUrl";
+import { applyDocumentFavicon, fetchPublicFavicon } from "../utils/siteFavicon";
 
 export function useSiteFavicon({ applyToDocument = false } = {}) {
   const { data: settings, lastUpdated } = useAppSelector(selectSettings);
@@ -11,7 +11,7 @@ export function useSiteFavicon({ applyToDocument = false } = {}) {
   const faviconValue = settings?.favicon ?? publicFavicon ?? null;
   const src = useResolvedMediaUrl(
     faviconValue,
-    settings?.favicon ? lastUpdated : null
+    settings?.favicon ? lastUpdated : null,
   );
 
   useEffect(() => {

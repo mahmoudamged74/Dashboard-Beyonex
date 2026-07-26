@@ -107,7 +107,7 @@
 
 .statusDotActive {
     background: var(--color-success-emerald);
-    box-shadow: 0 0 8px rgba(46, 204, 154, 0.5);
+    box-shadow: var(--shadow-success-glow);
 }
 
 .statusDotInactive {

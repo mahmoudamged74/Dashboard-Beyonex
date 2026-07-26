@@ -9,6 +9,7 @@ import rolesReducer from './rolesReducer';
 import adminsReducer from './adminsReducer';
 import profileReducer from './profileReducer';
 import messagesReducer from './messagesReducer';
+import partnersReducer from './partnersReducer';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   admins: adminsReducer,
   profile: profileReducer,
   messages: messagesReducer,
+  partners: partnersReducer,
 });
 
 export default rootReducer;

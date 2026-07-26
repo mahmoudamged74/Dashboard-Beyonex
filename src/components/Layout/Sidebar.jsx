@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import toast from "../../utils/toast";
@@ -12,30 +12,57 @@ import {
   MdLanguage,
   MdKeyboardDoubleArrowLeft,
   MdRecommend,
+  MdHandshake,
   MdPerson,
   MdSecurity,
   MdMessage,
+  MdDarkMode,
+  MdLightMode,
 } from "react-icons/md";
 import {
   useAppDispatch,
+  useAppSelector,
   useCachedFetch,
   usePermission,
+  usePolling,
   useSiteFavicon,
+  useTheme,
 } from "../../hooks";
 import { logoutUser } from "../../redux/actions/authActions";
 import { fetchSettings } from "../../redux/actions/settingsActions";
+import { fetchMessages } from "../../redux/actions/messagesActions";
 import { selectSettings } from "../../redux/reducers/settingsReducer";
+import { selectMessages } from "../../redux/reducers/messagesReducer";
+import { POLL_INTERVAL_MS } from "../../redux/cache";
 import { toggleAppLanguage } from "../../i18n";
 import styles from "./Sidebar.module.css";
+
+const isMessageUnread = (msg) => {
+  const flag = msg?.read ?? msg?.is_read ?? msg?.isRead;
+  return !(flag === true || flag === 1 || flag === "1" || flag === "true");
+};
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { can } = usePermission();
+  const canViewMessages = can("messages.view");
 
   useCachedFetch(fetchSettings, selectSettings);
+  usePolling(fetchMessages, POLL_INTERVAL_MS, canViewMessages);
+
+  const messagesState = useAppSelector(selectMessages);
+  const unreadCount = useMemo(() => {
+    if (!canViewMessages) return 0;
+    const inbox = messagesState.byPage?.[1] || messagesState.data;
+    const list = inbox?.messages;
+    if (!Array.isArray(list) || list.length === 0) return 0;
+    return list.filter(isMessageUnread).length;
+  }, [canViewMessages, messagesState]);
+
   const faviconSrc = useSiteFavicon();
+  const { isDark, toggleTheme } = useTheme();
 
   const toggleLanguage = () => {
     toggleAppLanguage();
@@ -84,6 +111,12 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       permKey: "why_us.view",
     },
     {
+      path: "/partners",
+      icon: <MdHandshake />,
+      label: "partners",
+      permKey: "partners.view",
+    },
+    {
       path: "/roles",
       icon: <MdSecurity />,
       label: "roles_manager",
@@ -100,6 +133,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
       icon: <MdMessage />,
       label: "messages_manager",
       permKey: "messages.view",
+      badge: unreadCount,
     },
   ];
 
@@ -137,7 +171,18 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
               }
             >
               <span className={styles.icon}>{item.icon}</span>
-              <span>{t(item.label)}</span>
+              <span className={styles.navLabel}>{t(item.label)}</span>
+              {item.badge > 0 ? (
+                <span
+                  key={item.badge}
+                  className={styles.navBadge}
+                  aria-label={t("dashboard_page.stat_unread", {
+                    count: item.badge,
+                  })}
+                >
+                  {item.badge > 99 ? "99+" : item.badge}
+                </span>
+              ) : null}
             </NavLink>
           ))}
 
@@ -152,7 +197,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <span className={styles.icon}>
               <MdSettings />
             </span>
-            <span>{t("settings")}</span>
+            <span className={styles.navLabel}>{t("settings")}</span>
           </NavLink>
         )}
       </nav>
@@ -180,6 +225,16 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             aria-label={t("language")}
           >
             <MdLanguage size={20} />
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className={styles.footerAction}
+            title={isDark ? t("theme_light") : t("theme_dark")}
+            aria-label={isDark ? t("theme_light") : t("theme_dark")}
+          >
+            {isDark ? <MdLightMode size={20} /> : <MdDarkMode size={20} />}
           </button>
 
           <button

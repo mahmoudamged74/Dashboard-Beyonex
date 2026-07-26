@@ -18,6 +18,7 @@ export const SLICE = {
   ADMINS: 'admins',
   PROFILE: 'profile',
   MESSAGES: 'messages',
+  PARTNERS: 'partners',
 };
 
 /** API resource endpoints */
@@ -39,5 +40,6 @@ export const ENDPOINTS = {
   ADMINS: 'admin/admins',
   PROFILE: 'admin/profile',
   MESSAGES: 'admin/messages',
+  PARTNERS: 'admin/partners',
   PUBLIC_ABOUT: 'about',
 };

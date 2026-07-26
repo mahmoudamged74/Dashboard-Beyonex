@@ -39,6 +39,151 @@
   box-shadow: var(--shadow-focus-primary);
 }
 
+.toggleAllBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+  min-width: 190px;
+  padding: 0.62rem 0.85rem 0.62rem 1rem;
+  border-radius: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: start;
+  white-space: nowrap;
+  border: 1px solid var(--overlay-white-10);
+  background: var(--overlay-black-20);
+  color: var(--text-main);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.toggleAllBtnActivate {
+  border-color: var(--primary-alpha-30);
+  background: linear-gradient(
+    135deg,
+    var(--primary-alpha-08) 0%,
+    var(--overlay-black-20) 100%
+  );
+}
+
+.toggleAllBtnDeactivate {
+  border-color: var(--danger-red-alpha-20);
+  background: linear-gradient(
+    135deg,
+    var(--danger-alpha-08) 0%,
+    var(--overlay-black-20) 100%
+  );
+}
+
+.toggleAllGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.toggleAllBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-focus-primary);
+}
+
+.toggleAllBtnActivate:hover:not(:disabled) {
+  border-color: var(--primary-alpha-40);
+  background: var(--primary-alpha-10);
+}
+
+.toggleAllBtnDeactivate:hover:not(:disabled) {
+  border-color: var(--danger-red-alpha-20);
+  background: var(--danger-alpha-10);
+}
+
+.toggleAllBtn:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.toggleAllBtnLoading {
+  pointer-events: none;
+}
+
+.toggleAllContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.12rem;
+  min-width: 0;
+}
+
+.toggleAllLabel {
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text-main);
+}
+
+.toggleAllBtnActivate .toggleAllLabel {
+  color: var(--primary);
+}
+
+.toggleAllBtnDeactivate .toggleAllLabel {
+  color: var(--color-danger);
+}
+
+.toggleAllMeta {
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--text-muted);
+}
+
+.toggleAllSwitch {
+  flex-shrink: 0;
+}
+
+.toggleAllTrack {
+  position: relative;
+  display: block;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--overlay-white-15);
+  transition: background 0.22s ease;
+}
+
+.toggleAllBtnActivate .toggleAllTrack {
+  background: var(--primary);
+}
+
+.toggleAllBtnDeactivate .toggleAllTrack {
+  background: var(--overlay-white-15);
+}
+
+.toggleAllThumb {
+  position: absolute;
+  top: 3px;
+  inset-inline-start: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-white);
+  box-shadow: var(--shadow-black-28);
+  transition: inset-inline-start 0.22s ease;
+}
+
+.toggleAllBtnActivate .toggleAllThumb {
+  inset-inline-start: 21px;
+}
+
+.toggleAllBtnDeactivate .toggleAllThumb {
+  inset-inline-start: 3px;
+}
+
 .saveBtn {
   background: var(--gradient-primary);
   color: var(--color-black);
@@ -163,6 +308,36 @@
   background: var(--primary-alpha-05);
 }
 
+.memberCardInactive {
+  opacity: 0.72;
+}
+
+.memberCardInactive:hover {
+  opacity: 0.85;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.statusActive {
+  color: var(--primary);
+  background: var(--primary-alpha-10);
+  border: 1px solid var(--primary-alpha-20);
+}
+
+.statusInactive {
+  color: var(--color-danger);
+  background: var(--danger-red-alpha-20);
+  border: 1px solid var(--danger-red-alpha-20);
+}
+
 .memberActions {
   position: absolute;
   top: 0.75rem;
@@ -193,7 +368,7 @@
   color: var(--text-muted);
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-black-20);
 }
 
 .actionBtn:hover {
@@ -438,6 +613,13 @@
   align-items: start;
 }
 
+.emailOrderRow {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(90px, 1fr);
+  gap: 0.85rem;
+  align-items: start;
+}
+
 .langField {
   display: flex;
   flex-direction: column;
@@ -476,37 +658,151 @@
   box-shadow: var(--shadow-focus-input);
 }
 
-.uploadLabel {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.7rem 1rem;
-  border-radius: 10px;
-  border: 1px dashed var(--primary-alpha-30);
-  background: var(--primary-alpha-05);
-  color: var(--primary);
-  cursor: pointer;
-  font-size: 0.85rem;
-  font-weight: 500;
-  width: fit-content;
-  transition: all 0.2s;
+.avatarUploadWrap {
+  display: flex;
+  justify-content: center;
+  padding: 0.35rem 0 0.15rem;
 }
 
-.uploadLabel:hover {
-  border-color: var(--primary);
-  background: var(--primary-alpha-10);
+.avatarUpload {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
 }
 
-.previewThumb {
-  margin-top: 0.35rem;
+.avatarUploadHasImage {
+  padding: 3px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--primary) 0%,
+    var(--primary-alpha-30) 100%
+  );
 }
 
-.previewThumb img {
-  width: 64px;
-  height: 64px;
+.avatarPreview {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid var(--overlay-white-10);
+  border: 3px solid var(--bg-card);
+  display: block;
+  box-sizing: border-box;
+}
+
+.avatarPlaceholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px dashed var(--overlay-white-15);
+  background: var(--overlay-black-20);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0.75rem;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.avatarPlaceholder span {
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.avatarPlaceholder:hover {
+  border-color: var(--primary-alpha-30);
+  color: var(--primary);
+  background: var(--primary-alpha-05);
+}
+
+.avatarOverlay {
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--overlay-black-70);
+  backdrop-filter: blur(2px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  padding: 0.5rem;
+}
+
+.avatarUpload:hover .avatarOverlay,
+.avatarUpload:focus-within .avatarOverlay {
+  opacity: 1;
+}
+
+.avatarOverlayBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  min-width: 88px;
+  padding: 0.35rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--overlay-white-15);
+  background: var(--overlay-white-10);
+  color: var(--color-white);
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.avatarOverlayBtn:hover {
+  background: var(--primary-alpha-20);
+  border-color: var(--primary-alpha-30);
+  color: var(--primary);
+}
+
+.avatarOverlayBtnDanger:hover {
+  background: var(--danger-red-alpha-20);
+  border-color: var(--danger-red-alpha-20);
+  color: var(--color-danger);
+}
+
+.toggleContainer {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.toggleBtn {
+  flex: 1;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  border: 1px solid var(--overlay-white-08);
+  background: var(--overlay-white-03);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.toggleBtn.active {
+  background: var(--primary-alpha-10);
+  border-color: var(--primary-alpha-30);
+  color: var(--primary);
+}
+
+.toggleBtn.inactive {
+  background: var(--danger-red-alpha-20);
+  border-color: var(--danger-red-alpha-20);
+  color: var(--color-danger);
 }
 
 /* ── Responsive ── */
@@ -531,9 +827,19 @@
     width: 100%;
   }
 
-  .cardHeaderActions .addBtn {
+  .cardHeaderActions .addBtn,
+  .cardHeaderActions .toggleAllBtn {
     flex: 1;
     justify-content: center;
+  }
+
+  .toggleAllGroup {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .toggleAllGroup .toggleAllBtn {
+    width: 100%;
   }
 
   .membersGrid {
@@ -547,6 +853,14 @@
 
   .bilingualInputs {
     grid-template-columns: 1fr;
+  }
+
+  .emailOrderRow {
+    grid-template-columns: 1fr;
+  }
+
+  .avatarOverlay {
+    opacity: 1;
   }
 
   .modalFooter {

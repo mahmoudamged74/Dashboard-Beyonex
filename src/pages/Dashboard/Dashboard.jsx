@@ -25,19 +25,46 @@ import { getAppLanguage } from '../../i18n';
 import { POLL_INTERVAL_MS } from '../../redux/cache';
 import styles from './Dashboard.module.css';
 
+const SUBJECT_AR_TO_KEY = {
+  'استفسار عام': 'general_inquiry',
+  'تطوير المواقع': 'web_development',
+  'تطبيقات الموبايل': 'mobile_applications',
+  'أنظمة ERP': 'erp_systems',
+  'دعم فني': 'technical_support',
+  'الدعم الفني': 'technical_support',
+  توظيف: 'hiring',
+  أخرى: 'other',
+};
+
+const translateMessageSubject = (subject, t) => {
+  if (!subject) return '—';
+
+  const normalized = SUBJECT_AR_TO_KEY[subject] || subject;
+  const key = `messages_page.subjects.${normalized}`;
+  const translated = t(key, { defaultValue: '' });
+  if (translated) return translated;
+
+  const legacy = t(normalized, { defaultValue: '' });
+  if (legacy) return legacy;
+
+  return subject;
+};
+
 const StatCard = ({ icon: Icon, label, value, hint, accent }) => (
-  <div className={`${styles.statCard} ${accent ? styles[`statCard_${accent}`] : ''}`}>
-    <div className={styles.statStart}>
-      <div className={styles.statIcon}>
-        <Icon size={20} />
+  <article className={`${styles.statCard} ${accent ? styles[`statCard_${accent}`] : ''}`}>
+    <div className={styles.statRow}>
+      <div className={styles.statLead}>
+        <div className={styles.statIcon} aria-hidden="true">
+          <Icon size={18} />
+        </div>
+        <div className={styles.statCopy}>
+          <span className={styles.statLabel}>{label}</span>
+          {hint ? <span className={styles.statHint}>{hint}</span> : null}
+        </div>
       </div>
-      <div className={styles.statText}>
-        <span className={styles.statLabel}>{label}</span>
-        {hint && <span className={styles.statHint}>{hint}</span>}
-      </div>
+      <p className={styles.statValue}>{value}</p>
     </div>
-    <span className={styles.statValue}>{value}</span>
-  </div>
+  </article>
 );
 
 const Dashboard = () => {
@@ -80,25 +107,52 @@ const Dashboard = () => {
     return name;
   }, [settings, isAr, t]);
 
-  const roleName = useMemo(() => {
-    const role = profile?.role;
-    if (!role) return null;
-    return (isAr ? role.name_ar : role.name_en) || role.name;
-  }, [profile, isAr]);
+  const todayParts = useMemo(() => {
+    const now = new Date();
+    const locale = isAr ? 'ar-EG-u-nu-latn' : 'en-US';
+
+    try {
+      return {
+        weekday: new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(now),
+        day: new Intl.DateTimeFormat(locale, { day: 'numeric' }).format(now),
+        month: new Intl.DateTimeFormat(locale, { month: 'long' }).format(now),
+        year: new Intl.DateTimeFormat(locale, { year: 'numeric' }).format(now),
+        iso: now.toISOString().slice(0, 10),
+        full: new Intl.DateTimeFormat(locale, {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }).format(now),
+      };
+    } catch {
+      return {
+        weekday: '',
+        day: String(now.getDate()),
+        month: '',
+        year: String(now.getFullYear()),
+        iso: now.toISOString().slice(0, 10),
+        full: now.toLocaleDateString(),
+      };
+    }
+  }, [isAr]);
 
   const stats = useMemo(() => {
     const items = [];
 
     if (can('messages.view') && messagesData) {
       const total = messagesData.pagination?.total ?? messagesData.messages?.length ?? 0;
-      const unread = messagesData.messages?.filter((m) => !m.read).length ?? 0;
+      const unread = messagesData.messages?.filter((m) => {
+        const flag = m?.read ?? m?.is_read ?? m?.isRead;
+        return !(flag === true || flag === 1 || flag === '1' || flag === 'true');
+      }).length ?? 0;
       items.push({
         key: 'messages',
         icon: MdEmail,
         label: t('dashboard_page.stat_messages'),
         value: total,
         hint: unread > 0 ? t('dashboard_page.stat_unread', { count: unread }) : t('dashboard_page.no_unread'),
-        accent: unread > 0 ? 'warning' : 'default',
+        accent: unread > 0 ? 'danger' : 'default',
       });
     }
 
@@ -138,10 +192,26 @@ const Dashboard = () => {
     return items;
   }, [can, messagesData, services, adminsData, rolesData, t]);
 
-  const recentMessages = useMemo(() => {
-    if (!can('messages.view') || !messagesData?.messages) return [];
-    return messagesData.messages.slice(0, 4);
+  const unreadMessages = useMemo(() => {
+    if (!can('messages.view') || !messagesData?.messages?.length) return [];
+
+    const isUnread = (msg) => {
+      const flag = msg?.read ?? msg?.is_read ?? msg?.isRead;
+      if (flag === true || flag === 1 || flag === '1' || flag === 'true') return false;
+      return true;
+    };
+
+    return [...messagesData.messages]
+      .filter(isUnread)
+      .sort((a, b) => {
+        const aTime = new Date(a.created_at || a.createdAt || 0).getTime();
+        const bTime = new Date(b.created_at || b.createdAt || 0).getTime();
+        return bTime - aTime;
+      })
+      .slice(0, 6);
   }, [can, messagesData]);
+
+  const showMessagesSection = can('messages.view');
 
   useAppReady(!profileLoading);
 
@@ -156,34 +226,42 @@ const Dashboard = () => {
 
   return (
     <div className={styles.page} dir={isAr ? 'rtl' : 'ltr'}>
-      <header className={styles.pageHeader}>
-        <div className={styles.pageHeaderText}>
-          <h1 className={styles.pageTitle}>{t('dashboard')}</h1>
-          <p className={styles.pageSubtitle}>{t('dashboard_page.subtitle')}</p>
-        </div>
-      </header>
+      <section className={styles.heroCard} aria-label={t('dashboard')}>
+        <aside className={styles.dateWatermark} aria-label={t('dashboard_page.today')}>
+          <span className={styles.dateWeekday}>{todayParts.weekday}</span>
+          <span className={styles.dateDay}>{todayParts.day}</span>
+          <span className={styles.dateMeta}>
+            {todayParts.month}
+            <span className={styles.dateYear}>{todayParts.year}</span>
+          </span>
+          <time className={styles.dateSrOnly} dateTime={todayParts.iso}>
+            {todayParts.full}
+          </time>
+        </aside>
 
-      <section className={styles.welcomeCard} aria-label={greeting}>
-        <div className={styles.welcomeGlow} aria-hidden="true" />
-        <div className={styles.welcomePattern} aria-hidden="true" />
-        <div className={styles.welcomeBody}>
-          <div className={styles.welcomeText}>
-            <p className={styles.greeting}>{greeting}</p>
-            <h2 className={styles.welcomeTitle}>{siteName}</h2>
-            <p className={styles.welcomeDesc}>{t('software_company')}</p>
+        <div className={styles.heroTop}>
+          <span className={styles.heroEyebrow}>{t('dashboard')}</span>
+          <span className={styles.heroTopRule} aria-hidden="true" />
+        </div>
+
+        <div className={styles.heroBody}>
+          <div className={styles.heroCopy}>
+            <h1 className={styles.heroTitle}>{greeting}</h1>
+            <p className={styles.heroSite}>{siteName}</p>
+            <p className={styles.heroSubtitle}>{t('dashboard_page.subtitle')}</p>
           </div>
-          {roleName && (
-            <span className={styles.roleBadge}>
-              <MdShield size={15} />
-              {roleName}
-            </span>
-          )}
         </div>
       </section>
 
       {stats.length > 0 && (
         <section className={styles.statsSection} aria-label={t('dashboard_page.overview')}>
-          <h2 className={styles.sectionTitle}>{t('dashboard_page.overview')}</h2>
+          <div className={styles.sectionHead}>
+            <h2 className={styles.sectionTitle}>
+              <span className={styles.sectionTitleBar} aria-hidden="true" />
+              {t('dashboard_page.overview')}
+            </h2>
+            <span className={styles.sectionHeadRule} aria-hidden="true" />
+          </div>
           <div className={styles.statsGrid}>
             {stats.map((stat) => (
               <StatCard
@@ -199,39 +277,63 @@ const Dashboard = () => {
         </section>
       )}
 
-      {recentMessages.length > 0 && (
-        <section className={styles.recentSection}>
-          <div className={styles.recentHeader}>
-            <h2 className={styles.sectionTitle}>{t('dashboard_page.recent_messages')}</h2>
+      {showMessagesSection ? (
+        <section className={styles.recentSection} aria-label={t('dashboard_page.unread_messages')}>
+          <div className={styles.sectionHead}>
+            <h2 className={styles.sectionTitle}>
+              <span className={styles.sectionTitleBar} aria-hidden="true" />
+              {t('dashboard_page.unread_messages')}
+            </h2>
+            {unreadMessages.length > 0 ? (
+              <span
+                className={styles.unreadCount}
+                aria-label={t('dashboard_page.stat_unread', { count: unreadMessages.length })}
+              >
+                {unreadMessages.length}
+              </span>
+            ) : null}
+            <span className={styles.sectionHeadRule} aria-hidden="true" />
             <NavLink to="/messages" className={styles.viewAllLink}>
               {t('dashboard_page.view_all')}
-              <MdArrowForward size={16} />
+              <MdArrowForward size={15} />
             </NavLink>
           </div>
-          <div className={styles.recentGrid}>
-            {recentMessages.map((msg) => (
-              <NavLink
-                key={msg.id}
-                to="/messages"
-                className={`${styles.recentCard} ${!msg.read ? styles.recentCardUnread : ''}`}
-              >
-                <div className={styles.recentCardTop}>
-                  <span className={styles.recentCardIcon} aria-hidden="true">
-                    <MdEmail size={18} />
+
+          {unreadMessages.length > 0 ? (
+            <div className={styles.unreadList}>
+              {unreadMessages.map((msg) => (
+                <NavLink
+                  key={msg.id}
+                  to="/messages"
+                  className={styles.unreadCard}
+                >
+                  <div className={styles.unreadCardMain}>
+                    <span className={styles.unreadDot} aria-hidden="true" />
+                    <div className={styles.unreadCardBody}>
+                      <span className={styles.unreadCardName}>
+                        {msg.name || msg.full_name || msg.email}
+                      </span>
+                      <p className={styles.unreadCardSubject}>
+                        {translateMessageSubject(msg.subject, t)}
+                      </p>
+                      {msg.message ? (
+                        <p className={styles.unreadCardPreview}>
+                          {msg.message.replace(/\s+/g, ' ').trim()}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
+                  <span className={styles.unreadCardAction} aria-hidden="true">
+                    <MdArrowForward size={16} />
                   </span>
-                  {!msg.read && (
-                    <span className={styles.unreadDot} title={t('dashboard_page.stat_unread', { count: 1 })} />
-                  )}
-                </div>
-                <span className={styles.recentName}>{msg.name || msg.email}</span>
-                <span className={styles.recentSubject}>
-                  {msg.subject || msg.message?.slice(0, 60)}
-                </span>
-              </NavLink>
-            ))}
-          </div>
+                </NavLink>
+              ))}
+            </div>
+          ) : (
+            <p className={styles.emptyUnread}>{t('dashboard_page.no_unread')}</p>
+          )}
         </section>
-      )}
+      ) : null}
     </div>
   );
 };

@@ -1,28 +1,18 @@
+import { resolveMediaUrl } from './mediaUrl';
+
 export function applyDocumentFavicon(url) {
-  if (!url) return;
+  const href = resolveMediaUrl(url);
+  if (!href) return;
 
-  const specs = [
-    { rel: 'icon', sizes: '32x32' },
-    { rel: 'icon', sizes: '64x64' },
-    { rel: 'shortcut icon' },
-  ];
+  document
+    .querySelectorAll('link[rel="icon"], link[rel="alternate icon"], link[rel="shortcut icon"]')
+    .forEach((link) => link.remove());
 
-  specs.forEach(({ rel, sizes }) => {
-    const selector = sizes
-      ? `link[rel="${rel}"][sizes="${sizes}"]`
-      : `link[rel="${rel}"]:not([sizes])`;
-
-    let link = document.querySelector(selector);
-    if (!link) {
-      link = document.createElement('link');
-      link.rel = rel;
-      if (sizes) link.sizes = sizes;
-      document.head.appendChild(link);
-    }
-
-    link.type = 'image/png';
-    link.href = url;
-  });
+  const link = document.createElement('link');
+  link.rel = 'icon';
+  link.type = href.endsWith('.svg') ? 'image/svg+xml' : 'image/png';
+  link.href = href;
+  document.head.appendChild(link);
 }
 
 let publicFaviconCache;
@@ -38,7 +28,8 @@ export async function fetchPublicFavicon() {
     })
       .then((res) => (res.ok ? res.json() : null))
       .then((json) => {
-        publicFaviconCache = json?.data?.favicon ?? null;
+        const raw = json?.data?.favicon ?? null;
+        publicFaviconCache = resolveMediaUrl(raw);
         if (publicFaviconCache) applyDocumentFavicon(publicFaviconCache);
         return publicFaviconCache;
       })

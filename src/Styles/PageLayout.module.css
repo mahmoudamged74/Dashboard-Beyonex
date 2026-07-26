@@ -3,70 +3,73 @@
    ══════════════════════════════════════════════════════════ */
 
 .page {
-    padding: 0;
-    width: 100%;
-    box-sizing: border-box;
-    animation: pageFadeIn 0.45s ease-out;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+  animation: pageFadeIn 0.45s ease-out;
 }
 
 @keyframes pageFadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 60vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
 }
 
 .pageHeader {
-    margin-bottom: 1rem;
-    padding-bottom: 0.65rem;
-    border-bottom: 1px solid var(--overlay-white-05);
+  margin-bottom: 1rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--overlay-white-05);
 }
 
 .pageHeaderRow {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .pageHeaderText {
-    flex: 1;
-    min-width: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .pageTitle {
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin: 0 0 0.35rem;
-    background: var(--gradient-dashboard-title);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  color: var(--text-main);
 }
 
 .pageSubtitle {
-    font-size: 0.92rem;
-    color: var(--text-muted);
-    margin: 0;
-    line-height: 1.5;
-    max-width: 560px;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 560px;
 }
 
 @media (max-width: 768px) {
-    .pageHeaderRow {
-        flex-direction: column;
-        align-items: stretch;
-    }
+  .pageHeaderRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 @media (max-width: 480px) {
-    .pageTitle {
-        font-size: 1.4rem;
-    }
+  .pageTitle {
+    font-size: 1.4rem;
+  }
 }

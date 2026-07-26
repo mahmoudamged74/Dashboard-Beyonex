@@ -36,18 +36,27 @@ const SectionCard = ({ icon: Icon, title, description, children, actions }) => (
     </section>
 );
 
-const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction, mediaVersion }) => {
+const AchievementsSection = ({
+    data,
+    achievements,
+    onUpdate,
+    onAchievementAction,
+    onToggleAllStatus,
+    mediaVersion,
+}) => {
     const { t, i18n } = useTranslation();
     const { can } = usePermission();
     const isRtl = i18n.dir() === 'rtl';
 
     const [isAchievementModalOpen, setIsAchievementModalOpen] = useState(false);
+    const [isTogglingAll, setIsTogglingAll] = useState(null);
     const [achievementFormData, setAchievementFormData] = useState({
         value: '',
         'title[en]': '',
         'title[ar]': '',
         icon: 'rocketLaunch',
         display_order: '0',
+        status: '1',
     });
     const [editingId, setEditingId] = useState(null);
     const [iconSearch, setIconSearch] = useState('');
@@ -66,6 +75,11 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
     const sectionDescription = isRtl
         ? data.achievement_subtitle?.ar
         : data.achievement_subtitle?.en;
+
+    const inactiveCount = achievements.filter((item) => !item.status).length;
+    const activeCount = achievements.length - inactiveCount;
+    const showActivateAll = inactiveCount > 0;
+    const showDeactivateAll = activeCount > 0;
 
     const getIcon = (iconName) => (
         <DynamicIcon name={iconName} size={22} fallback={MdStar} />
@@ -101,6 +115,7 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
             'title[ar]': '',
             icon: 'rocketLaunch',
             display_order: '0',
+            status: '1',
         });
         setEditingId(null);
         setImageFile(null);
@@ -116,6 +131,7 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
             'title[ar]': item.title?.ar || '',
             icon: item.icon || 'rocketLaunch',
             display_order: item.display_order || '0',
+            status: item.status ? '1' : '0',
         });
         setEditingId(item.id);
         setImageFile(null);
@@ -141,6 +157,7 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
         submitData.append('title[en]', achievementFormData['title[en]']);
         submitData.append('title[ar]', achievementFormData['title[ar]']);
         submitData.append('display_order', achievementFormData.display_order);
+        submitData.append('status', achievementFormData.status);
 
         if (imageFile) {
             submitData.append('icon', imageFile);
@@ -152,6 +169,88 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
         closeAchievementModal();
     };
 
+    const handleBulkStatus = async (targetStatus) => {
+        if (
+            !can('about_achievements.update') ||
+            achievements.length === 0 ||
+            isTogglingAll ||
+            !onToggleAllStatus
+        ) {
+            return;
+        }
+
+        setIsTogglingAll(targetStatus);
+        try {
+            await onToggleAllStatus(achievements, targetStatus);
+        } finally {
+            setIsTogglingAll(null);
+        }
+    };
+
+    const renderBulkStatusButton = (mode, label, meta, targetStatus) => {
+        const isLoading = isTogglingAll === targetStatus;
+        const isActivate = mode === 'activate';
+
+        return (
+            <button
+                key={mode}
+                type="button"
+                className={`${styles.toggleAllBtn} ${
+                    isActivate ? styles.toggleAllBtnActivate : styles.toggleAllBtnDeactivate
+                } ${isLoading ? styles.toggleAllBtnLoading : ''}`}
+                onClick={() => handleBulkStatus(targetStatus)}
+                disabled={Boolean(isTogglingAll)}
+                aria-pressed={isActivate}
+                title={label}
+            >
+                <span className={styles.toggleAllContent}>
+                    <span className={styles.toggleAllLabel}>
+                        {isLoading ? t('saving') : label}
+                    </span>
+                    {!isLoading && <span className={styles.toggleAllMeta}>{meta}</span>}
+                </span>
+                <span className={styles.toggleAllSwitch} aria-hidden="true">
+                    <span className={styles.toggleAllTrack}>
+                        <span className={styles.toggleAllThumb} />
+                    </span>
+                </span>
+            </button>
+        );
+    };
+
+    const headerActions = (
+        <>
+            {can('about_achievements.update') && achievements.length > 0 && (
+                <div className={styles.toggleAllGroup}>
+                    {showActivateAll &&
+                        renderBulkStatusButton(
+                            'activate',
+                            t('activate_all'),
+                            `${inactiveCount} ${t('inactive')}`,
+                            '1'
+                        )}
+                    {showDeactivateAll &&
+                        renderBulkStatusButton(
+                            'deactivate',
+                            t('deactivate_all'),
+                            `${activeCount} ${t('active')}`,
+                            '0'
+                        )}
+                </div>
+            )}
+            {can('about_achievements.create') && (
+                <button
+                    type="button"
+                    className={styles.addBtn}
+                    onClick={handleAddAchievement}
+                >
+                    <MdAdd size={18} />
+                    {t('add_achievement')}
+                </button>
+            )}
+        </>
+    );
+
     return (
         <div className={styles.container}>
             <SectionCard
@@ -159,16 +258,9 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
                 title={sectionTitle}
                 description={sectionDescription}
                 actions={
-                    can('about_achievements.create') ? (
-                        <button
-                            type="button"
-                            className={styles.addBtn}
-                            onClick={handleAddAchievement}
-                        >
-                            <MdAdd size={18} />
-                            {t('add_achievement')}
-                        </button>
-                    ) : null
+                    can('about_achievements.create') || can('about_achievements.update')
+                        ? headerActions
+                        : null
                 }
             >
                 {achievements.length === 0 ? (
@@ -179,7 +271,12 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
                 ) : (
                     <div className={styles.achievementsGrid}>
                         {achievements.map((item) => (
-                            <article key={item.id} className={styles.achievementCard}>
+                            <article
+                                key={item.id}
+                                className={`${styles.achievementCard} ${
+                                    !item.status ? styles.achievementCardInactive : ''
+                                }`}
+                            >
                                 <div className={styles.achievementActions}>
                                     {can('about_achievements.update') && (
                                         <button
@@ -204,6 +301,16 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
                                         </button>
                                     )}
                                 </div>
+
+                                <span
+                                    className={`${styles.statusBadge} ${
+                                        item.status
+                                            ? styles.statusActive
+                                            : styles.statusInactive
+                                    }`}
+                                >
+                                    {item.status ? t('active') : t('inactive')}
+                                </span>
 
                                 <div className={styles.achievementContent}>
                                     <div className={styles.achievementLeft}>
@@ -354,6 +461,40 @@ const AchievementsSection = ({ data, achievements, onUpdate, onAchievementAction
                                             })
                                         }
                                     />
+                                </div>
+
+                                <div className={styles.langField}>
+                                    <label className={styles.label}>{t('status')}</label>
+                                    <div className={styles.toggleContainer}>
+                                        <button
+                                            type="button"
+                                            className={`${styles.toggleBtn} ${
+                                                achievementFormData.status === '1' ? styles.active : ''
+                                            }`}
+                                            onClick={() =>
+                                                setAchievementFormData({
+                                                    ...achievementFormData,
+                                                    status: '1',
+                                                })
+                                            }
+                                        >
+                                            {t('active')}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={`${styles.toggleBtn} ${
+                                                achievementFormData.status === '0' ? styles.inactive : ''
+                                            }`}
+                                            onClick={() =>
+                                                setAchievementFormData({
+                                                    ...achievementFormData,
+                                                    status: '0',
+                                                })
+                                            }
+                                        >
+                                            {t('inactive')}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 

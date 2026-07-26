@@ -1,16 +1,23 @@
-/* ===== LANGUAGE SWITCH ===== */
-.langSwitch {
+/* ===== TOP ACTIONS ===== */
+.topActions {
   position: absolute;
   top: 1.25rem;
   inset-inline-end: 1.25rem;
   z-index: 3;
   display: inline-flex;
   align-items: center;
+  gap: 0.55rem;
+}
+
+.langSwitch,
+.themeSwitch {
+  display: inline-flex;
+  align-items: center;
   gap: 0.5rem;
   padding: 0.55rem 1rem;
   border-radius: 100px;
-  border: 1px solid rgba(var(--primary-rgb), 0.2);
-  background: rgba(10, 20, 30, 0.55);
+  border: 1px solid var(--primary-alpha-20);
+  background: var(--login-lang-bg);
   backdrop-filter: blur(12px);
   color: var(--text-main);
   font-size: 0.875rem;
@@ -23,15 +30,24 @@
     transform 0.2s;
 }
 
-.langSwitch svg {
+.themeSwitch {
+  padding: 0.55rem;
+  width: 2.65rem;
+  height: 2.65rem;
+  justify-content: center;
+}
+
+.langSwitch svg,
+.themeSwitch svg {
   width: 1.15rem;
   height: 1.15rem;
   color: var(--primary);
 }
 
-.langSwitch:hover {
-  background: rgba(var(--primary-rgb), 0.12);
-  border-color: rgba(var(--primary-rgb), 0.35);
+.langSwitch:hover,
+.themeSwitch:hover {
+  background: var(--primary-alpha-12);
+  border-color: var(--primary-alpha-30);
   transform: translateY(-1px);
 }
 
@@ -47,23 +63,9 @@
   justify-content: center;
   padding: 2rem 1.5rem;
   overflow: hidden;
-  background-color: var(--brand-900);
-  background-image:
-    radial-gradient(
-      ellipse 90% 70% at 50% -15%,
-      rgba(var(--primary-rgb), 0.16) 0%,
-      transparent 58%
-    ),
-    radial-gradient(
-      ellipse 55% 45% at 100% 100%,
-      rgba(var(--primary-rgb), 0.1) 0%,
-      transparent 52%
-    ),
-    radial-gradient(
-      ellipse 45% 40% at 0% 85%,
-      rgba(33, 128, 166, 0.12) 0%,
-      transparent 48%
-    );
+  background-color: var(--login-page-bg);
+  color: var(--text-main);
+  background-image: var(--login-page-image);
 }
 
 .bgDecor {
@@ -101,7 +103,7 @@
   height: 480px;
   top: -140px;
   inset-inline-end: -100px;
-  background: rgba(var(--primary-rgb), 0.2);
+  background: var(--primary-alpha-20);
   opacity: 0.5;
 }
 
@@ -110,7 +112,7 @@
   height: 360px;
   bottom: -120px;
   inset-inline-start: -80px;
-  background: rgba(33, 128, 166, 0.18);
+  background: var(--blue-alpha-18);
   opacity: 0.45;
 }
 
@@ -127,12 +129,7 @@
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    165deg,
-    rgba(10, 20, 30, 0.78) 0%,
-    rgba(13, 26, 38, 0.86) 50%,
-    rgba(18, 62, 89, 0.72) 100%
-  );
+  background: var(--login-overlay);
   z-index: 1;
 }
 
@@ -144,20 +141,14 @@
   max-width: 460px;
   padding: 2.5rem 2.75rem 2.35rem;
   border-radius: 28px;
-  background: linear-gradient(
-    168deg,
-    rgba(22, 44, 64, 0.94) 0%,
-    rgba(14, 28, 42, 0.97) 100%
-  );
+  background: var(--login-card-bg);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
-  border: 1px solid rgba(var(--primary-rgb), 0.14);
-  box-shadow:
-    0 24px 64px rgba(5, 12, 20, 0.55),
-    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
-    0 1px 0 rgba(255, 255, 255, 0.07) inset;
+  border: 1px solid var(--login-card-border);
+  box-shadow: var(--login-card-shadow);
   animation: cardFadeIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   overflow: hidden;
+  color: var(--text-main);
 }
 
 .cardGlow {
@@ -170,7 +161,7 @@
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(var(--primary-rgb), 0.12) 0%,
+    var(--primary-alpha-12) 0%,
     transparent 70%
   );
   pointer-events: none;
@@ -283,11 +274,11 @@
   align-items: stretch;
   min-height: 3.375rem;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(8, 16, 26, 0.72);
+  border: 1px solid var(--login-input-border);
+  background: var(--login-input-bg);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    0 1px 2px rgba(0, 0, 0, 0.12);
+    var(--login-input-inset),
+    var(--shadow-black-06);
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
@@ -295,25 +286,25 @@
 }
 
 .inputShell:hover:not(:focus-within):not(.hasError) {
-  border-color: rgba(var(--primary-rgb), 0.28);
-  background: rgba(10, 20, 32, 0.82);
+  border-color: var(--primary-alpha-25);
+  background: var(--login-input-bg-hover);
 }
 
 .inputShell:focus-within {
-  border-color: rgba(var(--primary-rgb), 0.55);
-  background: rgba(10, 22, 36, 0.92);
+  border-color: var(--primary-alpha-50);
+  background: var(--login-input-bg-focus);
   box-shadow:
-    0 0 0 3px rgba(var(--primary-rgb), 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 0 0 3px var(--primary-alpha-12),
+    var(--login-input-inset);
 }
 
 .inputShell.filled:not(:focus-within):not(.hasError) {
-  border-color: rgba(var(--primary-rgb), 0.2);
+  border-color: var(--primary-alpha-20);
 }
 
 .inputShell.hasError {
-  border-color: rgba(232, 93, 108, 0.55);
-  background: rgba(232, 93, 108, 0.04);
+  border-color: var(--danger-alpha-55);
+  background: var(--danger-alpha-04);
 }
 
 .inputShell.hasError:focus-within {
@@ -331,7 +322,7 @@
   align-items: center;
   justify-content: center;
   width: 3rem;
-  color: rgba(var(--primary-rgb), 0.75);
+  color: var(--primary-alpha-75);
   font-size: 1.2rem;
   transition: color 0.2s ease;
 }
@@ -341,19 +332,19 @@
 }
 
 .inputShell.filled:not(.hasError) .inputIcon {
-  color: var(--brand-100);
+  color: var(--login-filled-icon);
 }
 
 .inputDivider {
   align-self: center;
   width: 1px;
   height: 1.35rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--login-divider);
   flex-shrink: 0;
 }
 
 .inputShell:focus-within .inputDivider {
-  background: rgba(var(--primary-rgb), 0.35);
+  background: var(--primary-alpha-30);
 }
 
 .input {
@@ -396,7 +387,7 @@
 }
 
 .input::placeholder {
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--login-placeholder);
   font-weight: 400;
 }
 
@@ -411,7 +402,7 @@
   -webkit-text-fill-color: var(--text-main);
   caret-color: var(--text-main);
   transition: background-color 9999s ease-out;
-  box-shadow: 0 0 0 1000px rgba(10, 20, 30, 0.01) inset;
+  box-shadow: 0 0 0 1000px var(--login-autofill-inset) inset;
 }
 
 .togglePassword {
@@ -425,7 +416,7 @@
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.42);
+  color: var(--login-toggle);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -443,11 +434,11 @@
 
 .togglePassword.toggleActive {
   color: var(--primary);
-  background: rgba(var(--primary-rgb), 0.14);
+  background: var(--primary-alpha-15);
 }
 
 .togglePassword:focus-visible {
-  outline: 2px solid rgba(var(--primary-rgb), 0.5);
+  outline: 2px solid var(--primary-alpha-50);
   outline-offset: 2px;
 }
 
@@ -480,8 +471,8 @@
   width: 1.125rem;
   height: 1.125rem;
   border-radius: 4px;
-  border: 1.5px solid rgba(var(--primary-rgb), 0.35);
-  background: rgba(10, 20, 30, 0.45);
+  border: 1.5px solid var(--primary-alpha-30);
+  background: var(--login-remember-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -519,7 +510,7 @@
 }
 
 .rememberRow:hover .rememberBox {
-  border-color: rgba(var(--primary-rgb), 0.55);
+  border-color: var(--primary-alpha-50);
 }
 
 .rememberLabel {
@@ -540,8 +531,8 @@
   padding: 1rem 1.25rem;
   border-radius: 14px;
   border: none;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--brand-100) 100%);
-  color: var(--brand-800);
+  background: var(--login-btn-bg);
+  color: var(--login-btn-text);
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
@@ -551,20 +542,22 @@
   justify-content: center;
   gap: 0.625rem;
   transition:
-    transform 0.2s,
-    box-shadow 0.2s,
-    filter 0.2s;
-  box-shadow: var(--shadow-primary-sm);
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+  box-shadow: var(--login-btn-shadow);
 }
 
 .submitBtn:hover:not(:disabled) {
   transform: translateY(-2px);
-  filter: brightness(1.05);
-  box-shadow: var(--shadow-primary-md);
+  background: var(--login-btn-bg-hover);
+  box-shadow: var(--login-btn-shadow-hover);
 }
 
 .submitBtn:active:not(:disabled) {
   transform: translateY(0);
+  background: var(--login-btn-bg-active);
+  box-shadow: var(--login-btn-shadow);
 }
 
 .submitBtn:disabled {
@@ -575,8 +568,8 @@
 .spinner {
   width: 20px;
   height: 20px;
-  border: 2.5px solid rgba(13, 26, 38, 0.2);
-  border-top-color: var(--brand-800);
+  border: 2.5px solid var(--login-spinner-track);
+  border-top-color: var(--login-btn-text);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
@@ -591,6 +584,11 @@
 @media (max-width: 480px) {
   .loginPage {
     padding: 1rem;
+  }
+
+  .topActions {
+    top: 0.85rem;
+    inset-inline-end: 0.85rem;
   }
 
   .card {

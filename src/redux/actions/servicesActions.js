@@ -20,6 +20,18 @@ export const fetchServices = createAsyncThunk(
   { condition: createFetchCondition((state) => state.services) }
 );
 
+export const fetchServiceById = createAsyncThunk(
+  `${SLICE.SERVICES}/fetchById`,
+  async (id, { rejectWithValue }) => {
+    try {
+      const data = await crudGet(`${ENDPOINTS.SERVICES}/${id}`);
+      return data.service || data;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const createService = createAsyncThunk(
   `${SLICE.SERVICES}/create`,
   async (formData, { rejectWithValue }) => {

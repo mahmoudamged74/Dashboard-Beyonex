@@ -119,20 +119,12 @@
 }
 
 .nav::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    180deg,
-    rgba(var(--primary-rgb), 0.45) 0%,
-    rgba(var(--primary-rgb), 0.65) 100%
-  );
+  background: var(--sidebar-scrollbar-thumb);
   border-radius: 100px;
 }
 
 .nav::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    180deg,
-    rgba(125, 217, 230, 0.75) 0%,
-    rgba(var(--primary-rgb), 0.9) 100%
-  );
+  background: var(--sidebar-scrollbar-thumb-hover);
 }
 
 .nav::-webkit-scrollbar-button {
@@ -145,7 +137,7 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  padding: 0.6rem 0.6rem;
+  padding: 0.4rem 0.6rem;
   border-radius: 11px;
   color: var(--text-muted);
   font-weight: 500;
@@ -159,9 +151,85 @@
   white-space: nowrap;
 }
 
-.navItem span:last-child {
+.navLabel {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navBadge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--danger-alpha-10);
+  border: 1px solid var(--danger-alpha-20);
+  color: var(--color-danger);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  z-index: 0;
+  animation:
+    navBadgeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both,
+    navBadgeFade 2.4s ease-in-out 0.4s infinite;
+}
+
+.navBadge::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: var(--danger-alpha-15);
+  z-index: -1;
+  animation: navBadgeHalo 2.4s ease-in-out 0.4s infinite;
+  pointer-events: none;
+}
+
+@keyframes navBadgeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.65);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes navBadgeFade {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes navBadgeHalo {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navBadge,
+  .navBadge::before {
+    animation: none;
+  }
 }
 
 .navItem:hover {
@@ -173,6 +241,12 @@
 .navItem:hover .icon {
   background: var(--primary-alpha-10);
   color: var(--primary);
+}
+
+.navItem:hover .navBadge,
+.active .navBadge {
+  background: var(--danger-alpha-15);
+  border-color: var(--danger-alpha-25);
 }
 
 .active {

@@ -36,10 +36,15 @@ export const getActionMessageKey = (action, outcome = 'success') => {
   return bucket[normalized] || bucket.save;
 };
 
-const withTypeClass = (type, options = {}) => ({
-  className: TYPE_CLASS[type] || TYPE_CLASS.default,
-  ...options,
-});
+const withTypeClass = (type, options = {}) => {
+  const { className, ...rest } = options;
+  return {
+    className: [TYPE_CLASS[type] || TYPE_CLASS.default, className]
+      .filter(Boolean)
+      .join(" "),
+    ...rest,
+  };
+};
 
 /**
  * App toast API — consistent styling across the dashboard.
@@ -61,7 +66,8 @@ const toast = {
   inbox: (content, options = {}) =>
     toastify(content, {
       className: 'app-toast app-toast--inbox',
-      autoClose: 5000,
+      autoClose: 5500,
+      closeOnClick: true,
       icon: React.createElement(InboxToastIcon),
       ...options,
     }),

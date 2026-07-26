@@ -2,8 +2,16 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import toast from "../../utils/toast";
-import { MdLanguage, MdEmail, MdLockOutline, MdVisibility, MdVisibilityOff } from "react-icons/md";
-import { useAppDispatch, useAppReady, useSiteFavicon } from "../../hooks";
+import {
+  MdLanguage,
+  MdEmail,
+  MdLockOutline,
+  MdVisibility,
+  MdVisibilityOff,
+  MdDarkMode,
+  MdLightMode,
+} from "react-icons/md";
+import { useAppDispatch, useAppReady, useSiteFavicon, useTheme } from "../../hooks";
 import { loginUser } from "../../redux/actions/authActions";
 import { normalizeLanguage, toggleAppLanguage } from "../../i18n";
 import { getRememberMe, getRememberedEmail } from "../../utils/authStorage";
@@ -13,6 +21,7 @@ const Login = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { isDark, toggleTheme } = useTheme();
 
   useAppReady();
   const faviconSrc = useSiteFavicon();
@@ -68,15 +77,31 @@ const Login = () => {
 
   return (
     <div className={styles.loginPage} dir={isRtl ? "rtl" : "ltr"} lang={lang}>
-      <button
-        type="button"
-        className={styles.langSwitch}
-        onClick={toggleLanguage}
-        aria-label={t("login.switch_language")}
-      >
-        <MdLanguage aria-hidden="true" />
-        <span>{t("language")}</span>
-      </button>
+      <div className={styles.topActions}>
+        <button
+          type="button"
+          className={styles.themeSwitch}
+          onClick={toggleTheme}
+          aria-label={isDark ? t("theme_light") : t("theme_dark")}
+          title={isDark ? t("theme_light") : t("theme_dark")}
+        >
+          {isDark ? (
+            <MdLightMode aria-hidden="true" />
+          ) : (
+            <MdDarkMode aria-hidden="true" />
+          )}
+        </button>
+
+        <button
+          type="button"
+          className={styles.langSwitch}
+          onClick={toggleLanguage}
+          aria-label={t("login.switch_language")}
+        >
+          <MdLanguage aria-hidden="true" />
+          <span>{t("language")}</span>
+        </button>
+      </div>
 
       <div className={styles.bgDecor} aria-hidden="true">
         <div className={styles.bgGrid} />
